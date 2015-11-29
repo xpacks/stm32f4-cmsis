@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013-2014 ARM Ltd.
+ * Copyright (c) 2013-2015 ARM Ltd.
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        9. December 2014
- * $Revision:    V2.07
+ * $Date:        3. February 2015
+ * $Revision:    V2.08
  *
  * Driver:       Driver_USBH0
  * Configured:   via RTE_Device.h configuration file
@@ -35,6 +35,8 @@
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.08
+ *    - Corrected signalling of STALL handshake
  *  Version 2.07
  *    - Added overcurrent state functionality (without event)
  *  Version 2.06
@@ -904,7 +906,7 @@ static int32_t ARM_USBH_PipeTransfer (ARM_USBH_PIPE_HANDLE pipe_hndl, uint32_t p
   \fn          uint32_t ARM_USBH_PipeTransferGetResult (ARM_USBH_PIPE_HANDLE pipe_hndl)
   \brief       Get result of USB Pipe transfer.
   \param[in]   pipe_hndl  Pipe Handle
-  \return      number of successfully transfered data bytes
+  \return      number of successfully transferred data bytes
 */
 static uint32_t ARM_USBH_PipeTransferGetResult (ARM_USBH_PIPE_HANDLE pipe_hndl) {
 
@@ -1046,6 +1048,7 @@ void USBH_FS_IRQ (uint32_t gintsts) {
           goto halt_ch;
         } else if (hcint & OTG_FS_HCINTx_STALL) { /* If STALL event           */
           transfer_info[ch].event = ARM_USBH_EVENT_HANDSHAKE_STALL;
+          goto halt_ch;
         } else if ((hcint & OTG_FS_HCINTx_NAK  ) ||         /* If NAK received*/
                    (hcint & OTG_FS_HCINTx_TXERR) ||         /* If TXERR rece  */
                    (hcint & OTG_FS_HCINTx_BBERR) ||         /* If BBERR rece  */

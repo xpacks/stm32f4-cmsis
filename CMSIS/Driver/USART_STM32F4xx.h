@@ -37,14 +37,16 @@
 #include "RTE_Components.h"
 
 #ifdef   RTE_DEVICE_FRAMEWORK_CUBE_MX
+#define  VM_ASYNC                        (1UL)
+#define  VM_ASYNC_SINGLE_WIRE            (2UL)
+#define  VM_ASYNC_MULTI_PROCESSOR        (3UL)
+#define  VM_ASYNC_LIN                    (4UL)
+#define  VM_SYNC                         (5UL)
+#define  VM_IRDA                         (6UL)
+#define  VM_SMARTCARD                    (7UL)
+#define  Asynchronous                    VM_ASYNC
+#define  IrDA                            VM_IRDA
 #include "MX_Device.h"
-
-// Virtual modes
-#define USART_VM_ASYNC                   (1UL)
-#define USART_VM_ASYNC_SINGLE_WIRE       (1UL << 1)
-#define USART_VM_SYNC                    (1UL << 2)
-#define USART_VM_IRDA                    (1UL << 3)
-#define USART_VM_SMARTCARD               (1UL << 4)
 
 // MX macros
 #ifdef MX_USART1
@@ -890,6 +892,17 @@
 #endif
 #if (defined(__USART_DMA_RX) && defined(__USART_DMA_TX))
 #define __USART_DMA
+#endif
+
+// USART BRR macro
+#ifdef USART_ASYNC
+#define __USART_BRR __UART_BRR_SAMPLING16
+#endif
+#ifdef USART_IRDA
+#define __USART_BRR __IRDA_BRR
+#endif
+#ifdef USART_SMARTCARD
+#define __USART_BRR __SMARTCARD_BRR
 #endif
 
 // USART flags

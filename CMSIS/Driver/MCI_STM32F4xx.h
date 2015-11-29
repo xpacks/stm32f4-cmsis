@@ -30,11 +30,11 @@
 #include "Driver_MCI.h"
 #include "stm32f4xx_hal.h"
 
+#include "RTE_Components.h"
 #if   defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
 #include "RTE_Device.h"
 #elif defined(RTE_DEVICE_FRAMEWORK_CUBE_MX)
 #include "MX_Device.h"
-#include "RTE_Components.h"
 #else
 #error "::Device:STM32Cube Framework: not selected in RTE"
 #endif

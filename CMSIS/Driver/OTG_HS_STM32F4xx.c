@@ -93,7 +93,8 @@ void OTG_HS_IRQHandler (void) {
   \fn          void OTG_HS_PinsConfigure (uint8_t pins_mask)
   \brief       Configure single or multiple USB Pin(s).
   \param[in]   Mask of pins to be configured (possible masking values:
-               USB_PIN_DP, USB_PIN_DM, USB_PIN_VBUS, USB_PIN_OC, USB_PIN_ID)
+               ARM_USB_PIN_DP, ARM_USB_PIN_DM, ARM_USB_PIN_VBUS,
+               ARM_USB_PIN_OC, ARM_USB_PIN_ID)
 */
 void OTG_HS_PinsConfigure (uint8_t pins_mask) {
   GPIO_InitTypeDef GPIO_InitStruct;
@@ -303,7 +304,8 @@ void OTG_HS_PinsConfigure (uint8_t pins_mask) {
   \fn          void OTG_HS_PinsUnconfigure (uint8_t pins_mask)
   \brief       De-configure to reset settings single or multiple USB Pin(s).
   \param[in]   Mask of pins to be de-configured (possible masking values:
-               USB_PIN_DP, USB_PIN_DM, USB_PIN_VBUS, USB_PIN_OC, USB_PIN_ID)
+               ARM_USB_PIN_DP, ARM_USB_PIN_DM, ARM_USB_PIN_VBUS,
+               ARM_USB_PIN_OC, ARM_USB_PIN_ID)
 */
 void OTG_HS_PinsUnconfigure (uint8_t pins_mask) {
 

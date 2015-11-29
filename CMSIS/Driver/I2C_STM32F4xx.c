@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *   
  *
- * $Date:        24. October 2014
- * $Revision:    V2.01
+ * $Date:        05. January 2015
+ * $Revision:    V2.02
  *  
  * Driver:       Driver_I2C1, Driver_I2C2, Driver_I2C3
  * Configured:   via RTE_Device.h configuration file 
@@ -36,6 +36,9 @@
  * -------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.02
+ *    Corrected transfer issues after ARM_I2C_EVENT_ADDRESS_NACK.
+ *    Corrected slave address parameter checking.
  *  Version 2.01
  *    Corrected 10-bit addressing mode
  *    Slave operation mode issues fixed
@@ -642,7 +645,11 @@ static int32_t I2C_MasterTransmit (uint32_t       addr,
                                    bool           xfer_pending,
                                    I2C_RESOURCES *i2c) {
 
-  if ((data == NULL) || (num == 0U) || (addr > 0x3FFU)) {
+  if ((data == NULL) || (num == 0U)) {
+    return ARM_DRIVER_ERROR_PARAMETER;
+  }
+
+  if ((addr & ~(ARM_I2C_ADDRESS_10BIT | ARM_I2C_ADDRESS_GC)) > 0x3FFU) {
     return ARM_DRIVER_ERROR_PARAMETER;
   }
 
@@ -666,7 +673,7 @@ static int32_t I2C_MasterTransmit (uint32_t       addr,
   i2c->info->xfer.num  = num;
   i2c->info->xfer.cnt  = 0U;
   i2c->info->xfer.data = (uint8_t *)data;
-  i2c->info->xfer.addr = (uint16_t)(addr & 0x3FFU);
+  i2c->info->xfer.addr = (uint16_t)(addr);
   i2c->info->xfer.ctrl = 0U;
 
   if (xfer_pending) {
@@ -708,7 +715,10 @@ static int32_t I2C_MasterReceive (uint32_t       addr,
                                   bool           xfer_pending,
                                   I2C_RESOURCES *i2c) {
 
-  if ((data == NULL) || (num == 0U) || (addr > 0x3FFU)) {
+  if ((data == NULL) || (num == 0U)) {
+    return ARM_DRIVER_ERROR_PARAMETER;
+  }
+  if ((addr & ~(ARM_I2C_ADDRESS_10BIT | ARM_I2C_ADDRESS_GC)) > 0x3FFU) {
     return ARM_DRIVER_ERROR_PARAMETER;
   }
 
@@ -732,7 +742,7 @@ static int32_t I2C_MasterReceive (uint32_t       addr,
   i2c->info->xfer.num  = num;
   i2c->info->xfer.cnt  = 0U;
   i2c->info->xfer.data = data;
-  i2c->info->xfer.addr = (uint16_t)(addr & 0x3FFU);
+  i2c->info->xfer.addr = (uint16_t)(addr);
   i2c->info->xfer.ctrl = 0U;
 
   if (xfer_pending) {
@@ -947,7 +957,7 @@ static int32_t I2C_Control (uint32_t control, uint32_t arg, I2C_RESOURCES *i2c) 
         HAL_GPIO_WritePin (i2c->io.scl_port, i2c->io.scl_pin, GPIO_PIN_RESET);
         HAL_Delay (I2C_BUS_CLEAR_CLOCK_PERIOD/2);
       }
-      
+
       /* Check SDA state */
       state = HAL_GPIO_ReadPin (i2c->io.sda_port, i2c->io.sda_pin);
 
@@ -1442,6 +1452,12 @@ static void I2C_ER_IRQHandler (I2C_RESOURCES *i2c) {
     evt = ARM_I2C_EVENT_TRANSFER_DONE | ARM_I2C_EVENT_BUS_ERROR;
 
   }
+  /* Abort DMA streams */
+  if ((i2c->dma_tx != NULL) && (i2c->dma_rx != NULL)) {
+    HAL_DMA_Abort (i2c->dma_tx->h);
+    HAL_DMA_Abort (i2c->dma_rx->h);
+  }
+
   /* Clear error flags */
   i2c->reg->SR1 &= ~err;
 

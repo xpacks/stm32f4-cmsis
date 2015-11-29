@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013 - 2014 ARM Ltd.
+ * Copyright (c) 2013 - 2015 ARM Ltd.
  *
  * This software is provided 'as-is', without any express or implied warranty. 
  * In no event will the authors be held liable for any damages arising from 
@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *   
  *
- * $Date:        18. November 2014
- * $Revision:    V2.01
+ * $Date:        22. January 2015
+ * $Revision:    V2.02
  *
  * Driver:       Driver_SPI1, Driver_SPI2, Driver_SPI3,
  *               Driver_SPI4, Driver_SPI5, Driver_SPI6
@@ -40,6 +40,8 @@
  * -------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.02
+ *    Corrected spi->info->mode handling
  *  Version 2.01
  *    STM32CubeMX generated code can also be used to configure the driver.
  *  Version 2.00
@@ -78,7 +80,7 @@
 
 #include "SPI_STM32F4xx.h"
 
-#define ARM_SPI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,01)
+#define ARM_SPI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,02)
 
 // Driver Version
 static const ARM_DRIVER_VERSION DriverVersion = { ARM_SPI_API_VERSION, ARM_SPI_DRV_VERSION };
@@ -1635,7 +1637,7 @@ static int32_t SPI_Control (uint32_t control, uint32_t arg, const SPI_RESOURCES 
   }
 
   // Slave select slave modes
-  if (spi->info->mode ==  ARM_SPI_MODE_SLAVE) {
+  if (mode ==  ARM_SPI_MODE_SLAVE) {
     switch (control & ARM_SPI_SS_SLAVE_MODE_Msk) {
       case ARM_SPI_SS_SLAVE_HW:
         if (spi->io.nss) {

@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013 - 2014 ARM Ltd.
+ * Copyright (c) 2013 - 2015 ARM Ltd.
  *
  * This software is provided 'as-is', without any express or implied warranty. 
  * In no event will the authors be held liable for any damages arising from 
@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *   
  *
- * $Date:        10. November 2014
- * $Revision:    V2.01
+ * $Date:        23. January 2015
+ * $Revision:    V2.02
  *  
  * Driver:       Driver_MCI0
  * Configured:   via RTE_Device.h configuration file 
@@ -34,6 +34,10 @@
  * -------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.02
+ *    Added support for SD high speed bus mode, check device errata sheet
+ *    and define MemoryCard_Bus_Mode_HS_Enable for this module to enable
+ *    high speed bus mode.
  *  Version 2.01
  *    STM32CubeMX generated code can also be used to configure the driver
  *    Sepatare DMA streams used for receive and transmit
@@ -78,7 +82,14 @@
 
 #include "MCI_STM32F4xx.h"
 
-#define ARM_MCI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,01)  /* driver version */
+#define ARM_MCI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,02)  /* driver version */
+
+/* Enable High Speed bus mode */
+#if defined(MemoryCard_Bus_Mode_HS_Enable)
+  #define SDIO_BUS_MODE_HS    1U
+#else
+  #define SDIO_BUS_MODE_HS    0U
+#endif
 
 /* Define Card Detect pin active state */
 #if !defined(MemoryCard_CD_Pin_Active)
@@ -132,7 +143,7 @@ static const ARM_MCI_CAPABILITIES DriverCapabilities = {
   SDIO_BUS_WIDTH_8,                               /* data_width_8      */
   0U,                                             /* data_width_4_ddr  */
   0U,                                             /* data_width_8_ddr  */
-  0U,                                             /* high_speed        */
+  SDIO_BUS_MODE_HS,                               /* high_speed        */
   0U,                                             /* uhs_signaling     */
   0U,                                             /* uhs_tuning        */
   0U,                                             /* uhs_sdr50         */
@@ -775,23 +786,31 @@ static int32_t Control (uint32_t control, uint32_t arg) {
       /* Determine clock divider and set bus speed */
       bps = arg;
 
-      /* bps = SDIOCLK / (clkdiv + 2) */
-      clkdiv = (SDIOCLK + bps - 1U) / bps;
+      if ((bps < SDIOCLK) || (SDIO_BUS_MODE_HS == 0U)) {
+        /* bps = SDIOCLK / (clkdiv + 2) */
+        clkdiv = (SDIOCLK + bps - 1U) / bps;
 
-      if (clkdiv < 2) { clkdiv  = 0U; }
-      else            { clkdiv -= 2U; }
+        if (clkdiv < 2) { clkdiv  = 0U; }
+        else            { clkdiv -= 2U; }
 
-      if (clkdiv > SDIO_CLKCR_CLKDIV) {
-        clkdiv  = SDIO_CLKCR_CLKDIV;
+        if (clkdiv > SDIO_CLKCR_CLKDIV) {
+          clkdiv  = SDIO_CLKCR_CLKDIV;
+        }
+
+        SDIO->CLKCR = (SDIO->CLKCR & ~SDIO_CLKCR_CLKDIV)   |
+                      SDIO_CLKCR_PWRSAV | SDIO_CLKCR_CLKEN | clkdiv;
+        bps = SDIOCLK / (clkdiv + 2U);
       }
+      else {
+        /* Max output clock is SDIOCLK */
+        SDIO->CLKCR |= SDIO_CLKCR_BYPASS | SDIO_CLKCR_PWRSAV | SDIO_CLKCR_CLKEN;
 
-      SDIO->CLKCR = (SDIO->CLKCR & ~SDIO_CLKCR_CLKDIV)   |
-                    SDIO_CLKCR_PWRSAV | SDIO_CLKCR_CLKEN | clkdiv;
+        bps = SDIOCLK;
+      }
 
       for (val = (SDIOCLK/5000000U)*20U; val; val--) {
         ; /* Wait a bit to get stable clock */
       }
-      bps = SDIOCLK / (clkdiv + 2U);
 
       MCI.rd_timeout = 100U * (bps / 1000U);      /* 100ms */
       MCI.wr_timeout = 250U * (bps / 1000U);      /* 250ms */
@@ -808,7 +827,7 @@ static int32_t Control (uint32_t control, uint32_t arg) {
           break;
         case ARM_MCI_BUS_HIGH_SPEED:
           /* Speed mode up to 50MHz */
-          SDIO->CLKCR |= SDIO_CLKCR_NEGEDGE;
+          /* Errata: configuration with the NEGEDGE bit set should not be used. */
           break;
         default: return ARM_DRIVER_ERROR_UNSUPPORTED;
       }
