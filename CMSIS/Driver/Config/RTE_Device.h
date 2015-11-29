@@ -17,8 +17,8 @@
  *
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * $Date:        29. May 2015
- * $Revision:    V2.2.0
+ * $Date:        10. September 2015
+ * $Revision:    V2.3.0
  *
  * Project:      RTE Device Configuration for ST STM32F4xx
  * -------------------------------------------------------------------------- */
@@ -1712,6 +1712,80 @@
 #define RTE_SDIO_TX_DMA_STREAM          6
 #define RTE_SDIO_TX_DMA_CHANNEL         4
 #define RTE_SDIO_TX_DMA_PRIORITY        0
+
+// </e>
+
+
+// <e> CAN1 (Controller Area Network 1) [Driver_CAN1]
+// <i> Configuration settings for Driver_CAN1 in component ::CMSIS Driver:CAN
+#define RTE_CAN1                        0
+
+//   <o> CAN1_RX Pin <0=>PA11 <1=>PB8 <2=>PD0 <3=>PI9
+#define RTE_CAN1_RX_PORT_ID             0
+#if    (RTE_CAN1_RX_PORT_ID == 0)
+#define RTE_CAN1_RX_PORT                GPIOA
+#define RTE_CAN1_RX_BIT                 GPIO_PIN_11
+#elif  (RTE_CAN1_RX_PORT_ID == 1)
+#define RTE_CAN1_RX_PORT                GPIOB
+#define RTE_CAN1_RX_BIT                 GPIO_PIN_8
+#elif  (RTE_CAN1_RX_PORT_ID == 2)
+#define RTE_CAN1_RX_PORT                GPIOD
+#define RTE_CAN1_RX_BIT                 GPIO_PIN_0
+#elif  (RTE_CAN1_RX_PORT_ID == 3)
+#define RTE_CAN1_RX_PORT                GPIOI
+#define RTE_CAN1_RX_BIT                 GPIO_PIN_9
+#else
+#error "Invalid CAN1_RX Pin Configuration!"
+#endif
+
+//   <o> CAN1_TX Pin <0=>PA12 <1=>PB9 <2=>PD1 <3=>PH13
+#define RTE_CAN1_TX_PORT_ID             0
+#if    (RTE_CAN1_TX_PORT_ID == 0)
+#define RTE_CAN1_TX_PORT                GPIOA
+#define RTE_CAN1_TX_BIT                 GPIO_PIN_12
+#elif  (RTE_CAN1_TX_PORT_ID == 1)
+#define RTE_CAN1_TX_PORT                GPIOB
+#define RTE_CAN1_TX_BIT                 GPIO_PIN_9
+#elif  (RTE_CAN1_TX_PORT_ID == 2)
+#define RTE_CAN1_TX_PORT                GPIOD
+#define RTE_CAN1_TX_BIT                 GPIO_PIN_1
+#elif  (RTE_CAN1_TX_PORT_ID == 3)
+#define RTE_CAN1_TX_PORT                GPIOH
+#define RTE_CAN1_TX_BIT                 GPIO_PIN_13
+#else
+#error "Invalid CAN1_TX Pin Configuration!"
+#endif
+
+// </e>
+
+
+// <e> CAN2 (Controller Area Network 2) [Driver_CAN2]
+// <i> Configuration settings for Driver_CAN2 in component ::CMSIS Driver:CAN
+#define RTE_CAN2                        0
+
+//   <o> CAN2_RX Pin <0=>PB5 <1=>PB12
+#define RTE_CAN2_RX_PORT_ID             0
+#if    (RTE_CAN2_RX_PORT_ID == 0)
+#define RTE_CAN2_RX_PORT                GPIOB
+#define RTE_CAN2_RX_BIT                 GPIO_PIN_5
+#elif  (RTE_CAN2_RX_PORT_ID == 1)
+#define RTE_CAN2_RX_PORT                GPIOB
+#define RTE_CAN2_RX_BIT                 GPIO_PIN_12
+#else
+#error "Invalid CAN2_RX Pin Configuration!"
+#endif
+
+//   <o> CAN2_TX Pin <0=>PB6 <1=>PB13
+#define RTE_CAN2_TX_PORT_ID             0
+#if    (RTE_CAN2_TX_PORT_ID == 0)
+#define RTE_CAN2_TX_PORT                GPIOB
+#define RTE_CAN2_TX_BIT                 GPIO_PIN_6
+#elif  (RTE_CAN2_TX_PORT_ID == 1)
+#define RTE_CAN2_TX_PORT                GPIOB
+#define RTE_CAN2_TX_BIT                 GPIO_PIN_13
+#else
+#error "Invalid CAN2_TX Pin Configuration!"
+#endif
 
 // </e>
 

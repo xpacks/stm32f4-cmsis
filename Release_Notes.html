@@ -511,7 +511,8 @@ ul
 {margin-bottom:0in;}
 -->
 </style><!--[if gte mso 10]> <style> /* Style Definitions */ table.MsoNormalTable {mso-style-name:"Table Normal"; mso-tstyle-rowband-size:0; mso-tstyle-colband-size:0; mso-style-noshow:yes; mso-style-parent:""; mso-padding-alt:0in 5.4pt 0in 5.4pt; mso-para-margin:0in; mso-para-margin-bottom:.0001pt; mso-pagination:widow-orphan; font-size:10.0pt; font-family:"Times New Roman"; mso-ansi-language:#0400; mso-fareast-language:#0400; mso-bidi-language:#0400;} </style> <![endif]--><!--[if gte mso 9]><xml> <o:shapedefaults v:ext="edit" spidmax="6146"/> </xml><![endif]--><!--[if gte mso 9]><xml> <o:shapelayout v:ext="edit"> <o:idmap v:ext="edit" data="1"/> </o:shapelayout></xml><![endif]-->
-  <meta content="MCD Application Team" name="author"></head><body link="blue" vlink="blue">
+  <meta content="MCD Application Team" name="author"></head>
+<body link="blue" vlink="blue">
 <div class="Section1">
 <p class="MsoNormal"><span style="font-family: Arial;"><br>
 </span><span style="font-family: Arial;"><o:p></o:p></span></p>
@@ -567,7 +568,7 @@ architecture, making it simple to fine tune custom applications and scalable to
 fit most requirements</span></li>
             </ul>
 &nbsp; &nbsp; &nbsp;<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <img style="width: 801px; height: 460px;" alt="" src="_htmresc/STM32Cube_components.bmp"><br><br>
-<ul style="margin-top: 0cm;" type="square"><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><p class="MsoNormal"><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">The <span style="font-weight: bold;">HAL (Hardware Abstraction Layer)</span> drivers provided within this package <span style="font-weight: bold;">supports</span> the<span style="font-weight: bold;">&nbsp; </span></span><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;"><span style="font-weight: bold;">STM32F405/415/407/417/427/437/429/439/401xC</span></span><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;"><span style="font-weight: bold;">/401xE/411xC</span></span><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;"><span style="font-weight: bold;">/411xE/446 Lines</span></span><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;"><span style="font-weight: bold;"></span><br>
+<ul style="margin-top: 0cm;" type="square"><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><p class="MsoNormal"><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">The <span style="font-weight: bold;">HAL (Hardware Abstraction Layer)</span> drivers provided within this package <span style="font-weight: bold;">supports</span> the<span style="font-weight: bold;">&nbsp; </span></span><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;"><span style="font-weight: bold;">STM32F405/415/407/417/427/437/429/439/401xC</span></span><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;"><span style="font-weight: bold;">/401xE/411xC</span></span><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;"><span style="font-weight: bold;">/411xE/446/469/479/410xx Lines</span></span><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;"><span style="font-weight: bold;"></span><br>
                 </span></p>
               </li>
 
@@ -607,8 +608,646 @@ fit most requirements</span></li>
               </ul>
 
 </ul>
-            <h2 style="background: rgb(51, 102, 255) none repeat scroll 0% 50%; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;"><span style="font-size: 12pt; color: white;"><a name="History"></a>Update History</span></h2>
-            <h3 style="background: rgb(51, 102, 255) none repeat scroll 0% 50%; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial; margin-right: 500pt; width: 202px;"><span style="font-size: 10pt; font-family: Arial; color: white;">V1.6.0 / 25-May-2015</span></h3>
+            <h2 style="background: rgb(51, 102, 255) none repeat scroll 0% 50%; -moz-background-clip: initial; -moz-background-origin: initial; -moz-background-inline-policy: initial;"><span style="font-size: 12pt; color: white;"><a name="History"></a>Update History</span></h2>
+            <h3 style="background: rgb(51, 102, 255) none repeat scroll 0% 50%; -moz-background-clip: initial; -moz-background-origin: initial; -moz-background-inline-policy: initial; margin-right: 500pt; width: 202px;"><span style="font-size: 10pt; font-family: Arial; color: white;">V1.8.0 / 14-August-2015</span></h3>
+
+
+
+
+
+
+            
+            
+            
+            
+            <p class="MsoNormal" style="margin: 4.5pt 0cm 4.5pt 18pt;"><b style=""><u><span style="font-size: 10pt; font-family: Verdana; color: black;">Main
+Changes<o:p></o:p></span></u></b></p>
+
+
+
+
+            
+            
+            
+            
+            
+            <ul><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt; font-weight: bold;"><span style="font-size: 10pt; font-family: Verdana,sans-serif;"><span style="font-weight: bold;">Official release to support&nbsp;</span></span><span style="color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: left; text-indent: 0px; text-transform: none; white-space: normal; widows: 1; word-spacing: 0px; font-size: 10pt; font-family: Verdana,sans-serif;" lang="EN-US"><b>STM32F469xx</b></span><span style="color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: left; text-indent: 0px; text-transform: none; white-space: normal; widows: 1; word-spacing: 0px; font-size: 10pt; font-family: Verdana,sans-serif;"><span class="Apple-converted-space">,<span class="Apple-converted-space">&nbsp;</span><span style="font-weight: bold;">STM32F479xx</span>,<span class="Apple-converted-space">&nbsp;</span><span style="font-weight: bold;">STM32F10Cx,<span class="Apple-converted-space">&nbsp;</span></span></span></span><span style="color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: left; text-indent: 0px; text-transform: none; white-space: normal; widows: 1; word-spacing: 0px; font-size: 10pt; font-family: Verdana,sans-serif;"><span class="Apple-converted-space"><span style="font-weight: bold;">STM32F10Rx<span class="Apple-converted-space">&nbsp;</span></span>and<span style="font-weight: bold;"><span class="Apple-converted-space">&nbsp;</span></span></span></span><span style="color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: left; text-indent: 0px; text-transform: none; white-space: normal; widows: 1; word-spacing: 0px; font-size: 10pt; font-family: Verdana,sans-serif;"><span class="Apple-converted-space"><span style="font-weight: bold;">STM32F10Tx</span></span></span><span style="font-size: 10pt; font-family: Verdana,sans-serif;"><span style="font-weight: bold;"></span></span><span style="font-size: 10pt; font-family: Verdana,sans-serif;"><span style="font-weight: bold;"> devices</span></span></li><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt; font-weight: bold;"><span style="font-size: 10pt; font-family: Verdana,sans-serif;">Fix known defects and several enhancements implementation</span></li><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-size: 10pt; font-family: Verdana,sans-serif;"><span style="font-weight: bold;">\HAL</span><br>
+</span></li><ul><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;" lang="EN-US"></span><span style="font-size: 10pt; font-family: Verdana,sans-serif;">Support of the STM32F469xx /&nbsp;</span><span style="font-size: 10pt; font-family: Verdana,sans-serif;">STM32F479xx /&nbsp;</span><span style="font-size: 10pt; font-family: Verdana,sans-serif;">STM32F410Cx</span><span style="font-size: 10pt; font-family: Verdana,sans-serif;"> /&nbsp;</span><span style="font-size: 10pt; font-family: Verdana,sans-serif;"></span><span style="font-size: 10pt; font-family: Verdana,sans-serif;">STM32F410Rx</span><span style="font-size: 10pt; font-family: Verdana,sans-serif;"> /&nbsp;</span><span style="font-size: 10pt; font-family: Verdana,sans-serif;"></span><span style="font-size: 10pt; font-family: Verdana,sans-serif;">STM32F410Tx</span><span style="font-size: 10pt; font-family: Verdana,sans-serif;"> </span><span style="font-size: 10pt; font-family: Verdana,sans-serif;"> devices:</span></li><ul><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-size: 10pt; font-family: Verdana,sans-serif;"><span style="font-weight: bold;">Add new drivers for DSI and LPTIM peripherals</span></span></li></ul></ul><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-size: 10pt; font-family: Verdana; font-weight: normal;"><span style="font-weight: bold;">\Middlewares</span></span></li><ul><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt; font-weight: bold;"><span style="font-size: 10pt; font-family: Verdana; font-weight: normal;">New USB Host V3.2.2:&nbsp;</span><span style="font-size: 10pt; font-family: Verdana;"><span style="font-weight: normal;">Fix MSC Get Ready Delay issue </span></span></li><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt; font-weight: bold;"><span style="font-size: 10pt; font-family: Verdana; font-weight: normal;">Updated STemWin
+V5.28:&nbsp;</span><span style="color: rgb(0, 0, 0); font-family: Verdana; font-size: 13.3333px; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: left; text-indent: 0px; text-transform: none; white-space: normal; widows: 1; word-spacing: 0px; display: inline ! important; float: none;">Upgrade to use SEGGER emWin version V5.28&nbsp;</span><span style="font-size: 10pt; font-family: Verdana; font-weight: normal;">
+                  </span></li><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt; font-weight: bold;"><span style="font-size: 10pt; font-family: Verdana; font-weight: normal;">Updated PolarSSL V1.2.8:&nbsp;Fix some compilation warnings&nbsp;</span></li><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-family: Verdana; font-size: 10pt;">New STM32 PDM 
+audio software decoding Library</span><span style="font-family: Verdana; font-size: 10pt;"> </span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">V2.1.0:&nbsp;</span><span style="color: rgb(0, 0, 0); font-family: Verdana; font-size: 13.3333px; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: left; text-indent: 0px; text-transform: none; white-space: normal; widows: 1; word-spacing: 0px; display: inline ! important; float: none;">enhance volume setting</span></li><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-family: Verdana; font-size: 10pt;">New FreeRTOS 
+V8.2.1</span></li><li class="MsoNormal" style="margin: 4.5pt 0in; font-size: 12pt; font-family: 'Times New Roman'; color: black; font-weight: bold;"><span style="font-family: Verdana,sans-serif; font-size: 10pt; font-weight: normal;">Upgrade to<span class="Apple-converted-space">&nbsp;</span></span><span style="font-family: Verdana; font-size: 10pt; font-weight: normal;">FatFS R0.11</span></li><ul><li class="MsoNormal" style="margin: 4.5pt 0in; font-size: 12pt; font-family: 'Times New Roman'; color: black; font-weight: bold;"><span style="font-family: Verdana; font-size: 10pt; font-weight: normal;"><span style="text-decoration: underline; font-weight: bold;">Note</span>:
+For application code based on previous FatFs versions: when moving to
+R0.11, ffconf.h file must be updated, taking ffconf_template.h file as
+reference.<br></span></li></ul></ul></ul><ul style="list-style-type: square;"><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt; font-weight: bold;"><span style="font-size: 10pt; font-family: Verdana; font-weight: normal;"><span style="font-weight: bold;">\BSP</span><br>
+                </span></li><ul><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-size: 10pt; font-family: Verdana,sans-serif;">Add new BPS drivers for STM32469I_EVAL / STM32469I-Discovery boards</span><span style="font-size: 10pt; font-family: Verdana,sans-serif;"></span></li><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-size: 10pt; font-family: Verdana,sans-serif;">Align&nbsp;all other BSP drivers with the V4.0.x of BSP Components Common drivers</span></li></ul><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt; font-weight: bold;"><span style="font-size: 10pt; font-family: Verdana; font-weight: normal;"><span style="font-weight: bold;">\Projects</span><br>
+                </span></li><ul><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-size: 10pt; font-family: Verdana;"><span style="font-weight: normal;">Add Examples, Applications and Demonstration firmware for STM32F469xx/</span></span><span style="font-size: 10pt; font-family: Verdana;"><span style="font-weight: normal;">STM32F479xx</span></span><span style="font-size: 10pt; font-family: Verdana;"><span style="font-weight: normal;"> devices and&nbsp;</span></span><span style="font-size: 10pt; font-family: Verdana,sans-serif;">STM32469I_EVAL/</span><span style="font-size: 10pt; font-family: Verdana,sans-serif;">STM32469I-Discovery</span><span style="font-size: 10pt; font-family: Verdana;"><span style="font-weight: normal;"> boards</span></span></li><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-size: 10pt; font-family: Verdana;"><span style="font-weight: normal;">Add Examples for&nbsp;STM32410xx_Nucleo board (14 in total)</span></span></li><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-size: 10pt; font-family: Verdana;"><span style="font-weight: normal;">All projects updated following changes in latest version of HAL and Middlewares</span></span></li><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;"><span style="font-weight: normal;">Migration of MDK-ARM projects created with v4.73 &amp;&nbsp;</span></span><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;"><span style="font-weight: normal;">v5.10</span></span><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;"><span style="font-weight: normal;">
+to
+v5.14 for STM32F429I-Discovery, STM32F401RE-Nucleo, STM32F411RE-Nucleo,
+STM324x9I_EVAL, STM324xG_EVAL, STM32F4-Discovery and
+STM32F401-Discovery projects.</span></span></li></ul><ul><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt; font-weight: bold;"><span style="font-size: 10pt; font-family: Verdana; font-weight: normal;">Miscellaneous enhancements and bugs fix</span></li><li class="MsoNormal" style="margin: 4.5pt 0in; font-size: 12pt; font-family: 'Times New Roman',serif; color: black;"><span style="font-size: 10pt; font-family: Verdana;"><span style="text-decoration: underline; font-weight: bold;">Note</span>: Demonstration Firmware for STM32469I_EVAL and STM32469I-Discovery, provided within this package, doesn't embed </span><span style="font-size: 10pt; font-family: Verdana;">TouchGFX demonstration module.</span><span style="font-size: 10pt; font-family: Verdana;"> Free evaluation version of the TouchGFX demonstration, based on Draupner Graphics&#8217; commercial graphic library, is available at </span><span style="font-size: 10pt; font-family: Verdana;">www.touchgfx.com/stmicroelectronics</span><span style="font-size: 10pt; font-family: Verdana;"><span class="Apple-converted-space"></span></span><span style="font-size: 10pt; font-family: Verdana;"></span></li></ul></ul>
+
+            
+            <ul style="list-style-type: square;"><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-size: 10pt; font-family: Verdana;">For the complete list of changes,
+please refer to the release notes of each firmware components</span><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;"><span style="font-weight: normal;"></span></span></li></ul>
+
+
+            <span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;"><span style="font-weight: normal;"></span></span>
+            
+            
+
+            
+
+
+            
+            
+            
+            
+            
+            <p class="MsoNormal" style="margin: 4.5pt 0cm 4.5pt 18pt;"><b style=""><u><span style="font-size: 10pt; font-family: Verdana; color: black;"></span></u></b></p><p class="MsoNormal" style="margin: 4.5pt 0cm 4.5pt 18pt;"><b style=""><u><span style="font-size: 10pt; font-family: Verdana; color: black;">Contents<o:p></o:p></span></u></b></p>
+
+
+
+
+
+            <span style="font-size: 10pt; font-family: Verdana;"> </span>
+            
+            
+            
+            
+            <ul style="margin-top: 0cm;" type="square"><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">Drivers</span> 
+<ul><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">Cortex-M 
+CMSIS </span><span style="font-family: Verdana; font-size: 10pt;">V4.30 (<a href="Drivers/CMSIS/index.html">release notes</a>)</span></li></ul>
+<ul><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">STM32F4xx 
+CMSIS V2.4.0 (<a href="Drivers/CMSIS/Device/ST/STM32F4xx/Release_Notes.html">release 
+notes</a>)</span><br><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"></span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">STM32</span><span style="font-family: Verdana; font-size: 10pt;">F4</span><span style="font-family: Verdana; font-size: 10pt;">xx HAL V1.4.0 (<a href="Drivers/STM32F4xx_HAL_Driver/Release_Notes.html">release notes</a>)</span></li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+STM32469I-EVAL V1.0.0 (<a href="Drivers/BSP/STM32469I_EVAL/Release_Notes.html">release notes</a>)</span></li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+STM32469I-Discovery V1.0.0 (<a href="Drivers/BSP/STM32469I-Discovery/Release_Notes.html">release notes</a>)</span></li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+STM32446E-EVAL V1.1.0 (<a href="Drivers/BSP/STM32446E_EVAL/Release_Notes.html">release notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+STM324xG-EVAL V2.1.0 (<a href="Drivers/BSP/STM324xG_EVAL/Release_Notes.html">release notes</a>)</span> 
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+STM324x9I-EVAL V2.2.0 (<a href="Drivers/BSP/STM324x9I_EVAL/Release_Notes.html">release notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+STM32F4-Discovery V2.1.0 (<a href="Drivers/BSP/STM32F4-Discovery/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+STM32F401-Discovery V2.2.0 (<a href="Drivers/BSP/STM32F401-Discovery/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+STM32F429I-Discovery V2.1.2 (<a href="Drivers/BSP/STM32F429I-Discovery/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+STM32F4xx-Nucleo V1.2.2 (<a href="Drivers/BSP/STM32F4xx-Nucleo/Release_Notes.html">release notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+Adafruit_Shield V1.1.1</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Adafruit_Shield/Release_Notes.html">release notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+Components Common </span><span style="font-family: Verdana; font-size: 10pt;">V4.0.1</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/Common/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+Components ampire480272 </span><span style="font-family: Verdana; font-size: 10pt;">V1.0.0</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/ampire480272/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">ampire640480 
+</span><span style="font-family: Verdana; font-size: 10pt;">V1.0.0</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/ampire640480/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">cs43l22 </span><span style="font-family: Verdana; font-size: 10pt;">V2.0.0</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/cs43l22/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">ili9325 </span><span style="font-family: Verdana; font-size: 10pt;">V1.0.2</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/ili9325/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">ili9341 </span><span style="font-family: Verdana; font-size: 10pt;">V1.0.2</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/ili9341/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">l3gd20 </span><span style="font-family: Verdana; font-size: 10pt;">V2.0.0</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/l3gd20/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">lis302dl </span><span style="font-family: Verdana; font-size: 10pt;">V2.0.0</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/lis302dl/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">lis3dsh </span><span style="font-family: Verdana; font-size: 10pt;">V2.0.0</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/lis3dsh/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">lsm303dlhc 
+</span><span style="font-family: Verdana; font-size: 10pt;">V2.0.0</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/lsm303dlhc/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">ov2640 </span><span style="font-family: Verdana; font-size: 10pt;">V1.0.2</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/ov2640/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+st7735</span><span style="font-family: Verdana; font-size: 10pt;"> </span><span style="font-family: Verdana; font-size: 10pt;">V1.1.1</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/st7735/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">stmpe1600 
+</span><span style="font-family: Verdana; font-size: 10pt;">V1.1.0</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/stmpe1600/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">stmpe811 </span><span style="font-family: Verdana; font-size: 10pt;">V2.0.0</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/stmpe811/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">ts3510 </span><span style="font-family: Verdana; font-size: 10pt;">V1.0.1</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/ts3510/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">wm8994 </span><span style="font-family: Verdana; font-size: 10pt;">V2.0.0</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/wm8994/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+mfxstm32l152</span><span style="font-family: Verdana; font-size: 10pt;"> 
+</span><span style="font-family: Verdana; font-size: 10pt;">V2.0.0</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/mfxstm32l152/Release_Notes.html">release 
+notes</a>)</span> 
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+s5k5cag</span><span style="font-family: Verdana; font-size: 10pt;"> </span><span style="font-family: Verdana; font-size: 10pt;">V1.0.0</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/s5k5cag/Release_Notes.html">release 
+notes</a>)</span> 
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+Components n25q256a V1.0.0 </span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Drivers/BSP/Components/n25q256a/Release_Notes.html">release 
+notes</a>)</span></li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+Components exc7200 V1.0.0 </span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Drivers/BSP/Components/exc7200/Release_Notes.html">release 
+notes</a>)</span></li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+Components ft6x06 V1.0.0 </span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Drivers/BSP/Components/ft6x06/Release_Notes.html">release 
+notes</a>)</span></li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+Components otm8009a V1.0.0 </span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Drivers/BSP/Components/otm8009a/Release_Notes.html">release 
+notes</a>)</span></li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+Components s25fl512s V1.0.0 </span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Drivers/BSP/Components/s25fl512s/Release_Notes.html">release 
+notes</a>)</span></li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+Components n25q512a V1.0.0 </span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Drivers/BSP/Components/n25q512a/Release_Notes.html">release 
+notes</a>)</span></li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+Components n25q128a V1.0.0 </span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Drivers/BSP/Components/n25q128a/Release_Notes.html">release 
+notes</a>)</span> </li></ul></li></ul>
+<ul style="margin-top: 0cm;" type="square"><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">Middlewares</span></li><ul><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">STemWin 
+V5.28 </span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Middlewares/ST/STemWin/Release_Notes.html">release 
+notes</a>)</span></li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">STM32 PDM 
+audio software decoding Library</span><span style="font-family: Verdana; font-size: 10pt;"> </span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">V2.1.0 (<a href="Middlewares/ST/STM32_Audio/Addons/PDM/Release_Notes.html">release 
+notes</a>)</span> 
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">STM32 USB 
+Device Library V2.4.1</span><span style="font-family: Verdana; font-size: 10pt;"> 
+</span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Middlewares/ST/STM32_USB_Device_Library/Release_Notes.html">release 
+notes</a>)</span></li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">STM32 USB 
+Host Library V3.2.2</span><span style="font-family: Verdana; font-size: 10pt;"> 
+</span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Middlewares/ST/STM32_USB_Host_Library/Release_Notes.html">release 
+notes</a>)</span></li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">FatFS 
+R0.11</span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"> </span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Middlewares/Third_Party/FatFs/doc/updates.txt">release notes</a>) ST 
+modified 20150508 </span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Middlewares/Third_Party/FatFs/src/st_readme.txt">release 
+notes</a>)</span><span style="font-family: Verdana; font-size: 10pt;"> 
+</span><span style="font-family: Verdana; font-size: 10pt;"></span></li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">FreeRTOS 
+V8.2.1</span><span style="font-family: Verdana; font-size: 10pt;"> </span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Middlewares/Third_Party/FreeRTOS/Source/readme.txt">release notes</a>) 
+</span><span style="font-family: Verdana; font-size: 10pt;">ST modified 20150327 
+</span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Middlewares/Third_Party/FreeRTOS/Source/st_readme.txt">release 
+notes</a>)</span><span style="font-family: Verdana; font-size: 10pt;"> 
+</span></li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">LibJPEG 
+V8d</span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"> </span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Middlewares/Third_Party/LibJPEG/change.log">release notes</a>) 
+</span><span style="font-family: Verdana; font-size: 10pt;">ST modified 20141223 
+</span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Middlewares/Third_Party/LibJPEG/st_readme.txt">release 
+notes</a>)</span><span style="font-family: Verdana; font-size: 10pt;"> </span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">LwIP 
+V1.4.1</span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"> </span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Middlewares/Third_Party/LwIP/CHANGELOG">release notes</a>) </span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">ST modified 20140619 </span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Middlewares/Third_Party/LwIP/st_readme.txt">release notes</a>)</span><span style="font-family: Verdana; font-size: 10pt;"> <br></span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">PolarSSL 
+V1.2.8</span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"> </span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Middlewares/Third_Party/PolarSSL/ChangeLog">release 
+notes</a>) </span><span style="font-family: Verdana; font-size: 10pt;">ST modified 20150327</span></li></ul></ul>
+
+
+
+
+<ul style="margin-top: 0cm;" type="square"><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">Utilities</span> 
+<ul><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">CPU 
+</span><span style="font-family: Verdana; font-size: 10pt;">V1.1.0</span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"> </span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Utilities/CPU/Release_Notes.html">release notes</a>)</span></li></ul>
+<ul><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">Fonts 
+</span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">V1.0.0</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Utilities/Fonts/Release_Notes.html">release notes</a>)</span></li></ul>
+<ul><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">Log 
+</span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">V1.0.0</span><span style="font-family: Verdana; font-size: 10pt;"> </span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Utilities/Log/Release_Notes.html">release notes</a>)</span></li></ul></li></ul>
+
+
+
+
+            <span style="font-size: 10pt; font-family: Verdana;"></span><br>
+
+
+
+
+            <span style="font-size: 10pt; font-family: Verdana;"><span style="text-decoration: underline;"><span style="font-weight: bold;"></span></span></span>
+            
+            
+            
+            
+            <p class="MsoNormal" style="margin: 4.5pt 0cm 4.5pt 23px; width: 868px;"><b style=""><u><span style="font-size: 10pt; font-family: Verdana; color: black;">Development Toolchains and Compilers<o:p></o:p></span></u></b></p>
+
+
+
+
+
+            
+            
+            
+            
+            <ul style="margin-top: 0cm;" type="square"><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: Verdana;">IAR Embedded Workbench for ARM 
+(EWARM) toolchain v7.40.4</span></li><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: Verdana;">RealView Microcontroller Development Kit (MDK-ARM) toolchain v5.14 + Keil.STM32F4xx_DFP.2.6.0.pack</span></li><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: Verdana;">Atollic TrueSTUDIO STM32 (TrueSTUDIO) toolchain v5.1.1</span></li><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: Verdana;">System Workbench for STM32 (SW4STM32) toolchain V1.4 + ST-Link</span></li></ul>
+
+
+
+
+            <br>
+
+
+
+
+            
+            
+            
+            
+            <p class="MsoNormal" style="margin: 4.5pt 0cm 4.5pt 23px; width: 868px;"><b><u><span style="font-size: 10pt; color: black; font-family: Verdana;">Supported Devices 
+and EVAL boards<o:p></o:p></span></u></b></p>
+
+
+
+
+
+            
+            
+            
+            
+            <ul style="margin-top: 0cm;" type="square"><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: Verdana;">STM32F469xx/479xx devices </span><span style="font-size: 10pt; font-family: Verdana;">STM32469I_EVAL board RevB</span></li><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: Verdana;">STM32F469xx and </span><span style="font-size: 10pt; font-family: Verdana;">STM32469I-Discovery</span><span style="font-size: 10pt; font-family: Verdana;"> board RevB</span></li><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">STM32F410xx </span><span style="font-size: 10pt; font-family: Verdana;">and STM32F410xx-Nucleo</span><span style="font-size: 10pt; font-family: Verdana;"> board RevC</span></li><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: Verdana;">STM32F446xx devices </span><span style="font-size: 10pt; font-family: Verdana;">STM32446E_EVAL board RevB</span></li><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: Verdana;">STM32F429xx/439xx devices and 
+</span><span style="font-size: 10pt; font-family: Verdana;">STM324x9I-EVAL 
+board RevB<br>
+</span></li><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: Verdana;">STM32F429xx and </span><span style="font-size: 10pt; font-family: Verdana;">STM32F429I-Discovery</span><span style="font-size: 10pt; font-family: Verdana;"> board RevB</span><br>
+<span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;"></span></li><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">STM32F407xx/417x</span><span style="font-size: 10pt; font-family: Verdana;">x devices and 
+                </span><span style="font-size: 10pt; font-family: Verdana;">STM324xG-EVAL 
+board RevC<br>
+</span></li><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">STM32F407xx and </span><span style="font-size: 10pt; font-family: Verdana;">STM32F4-Discovery board RevC</span></li><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">STM32F401xC </span><span style="font-size: 10pt; font-family: Verdana;">and STM32F401C-Discovery</span><span style="font-size: 10pt; font-family: Verdana;"> board RevB<br>
+</span></li><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">STM32F401xE </span><span style="font-size: 10pt; font-family: Verdana;">and STM32F401RE-Nucleo</span><span style="font-size: 10pt; font-family: Verdana;"> board RevC</span></li><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">STM32F411xE </span><span style="font-size: 10pt; font-family: Verdana;">and STM32F411RE-Nucleo</span><span style="font-size: 10pt; font-family: Verdana;"> board RevC</span></li></ul>
+
+
+
+
+            <br>
+
+
+
+
+            
+            
+            
+            
+            <p class="MsoNormal" style="margin: 4.5pt 0cm 4.5pt 23px; width: 868px;"><b><u><span style="font-size: 10pt; color: black; font-family: Verdana;">Known 
+Limitations<br>
+</span></u></b></p>
+
+
+
+
+            
+            
+            
+            
+            <ul style="list-style-type: square;"><li><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">USB_Device\AUDIO_Standalone application for STM324x9I_EVAL</span></li><ul><li><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">MDK-ARM
+and TrueSTUDIO projects are provided with optimization set to &#8220;None&#8221;,
+to avoid audio glitch when USB cable is disconnected</span></li></ul><li><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">STM324x9I-EVAL, STM324xG-EVAL and STM32F429I-Discovery demonstration</span></li><ul><li><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;"></span><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">TrueSTUDIO project is not provided</span></li></ul></ul><h3 style="background: rgb(51, 102, 255) none repeat scroll 0% 50%; -moz-background-clip: initial; -moz-background-origin: initial; -moz-background-inline-policy: initial; margin-right: 500pt; width: 202px;"><span style="font-size: 10pt; font-family: Arial; color: white;">V1.7.0 / 01-July-2015</span></h3>
+
+
+
+
+
+
+
+            
+            
+            
+            
+            
+            <p class="MsoNormal" style="margin: 4.5pt 0cm 4.5pt 18pt;"><b style=""><u><span style="font-size: 10pt; font-family: Verdana; color: black;">Main
+Changes<o:p></o:p></span></u></b></p>
+
+
+
+
+
+            
+            
+            
+            
+            
+            
+            <ul style="list-style-type: square;"><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt; font-weight: bold;"><span style="font-size: 10pt; font-family: Verdana,sans-serif;"><span style="font-weight: bold;">Official release to support&nbsp;</span></span><span style="font-size: 10pt; font-family: Verdana;">STM32446E-Nucleo</span><span style="font-size: 10pt; font-family: Verdana;"> board</span><br>
+                <span style="font-size: 10pt; font-family: Verdana,sans-serif;"><span style="font-weight: bold;"></span></span></li><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt; font-weight: bold;"><span style="font-size: 10pt; font-family: Verdana,sans-serif;"><span style="font-weight: bold;">Maintenance release to </span></span><span style="font-size: 10pt; font-family: Verdana,sans-serif;">fix known defects</span></li><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-size: 10pt; font-family: Verdana,sans-serif;"><span style="font-weight: bold;">\HAL</span><br>
+</span></li><ul><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-size: 10pt; font-family: Verdana,sans-serif;">General updates to fix known defects and enhancements implementation</span></li><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-size: 10pt; font-family: Verdana,sans-serif;"><span style="font-weight: bold;">One change done on the HAL may require an update on the application code based on HAL V1.3.1</span></span></li><ul><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-size: 10pt; font-family: Verdana,sans-serif;">HASH IT process: </span><span style="font-family: 'Verdana','sans-serif'; font-size: 10pt;">update to call the HAL_HASH_InCpltCallback() at the end of the complete buffer instead of</span><span style="font-family: 'Verdana','sans-serif'; font-size: 10pt;"> every each 512 bits</span></li></ul></ul></ul>
+
+            
+            <ul style="list-style-type: square;"><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt; font-weight: bold;"><span style="font-size: 10pt; font-family: Verdana; font-weight: normal;"><span style="font-weight: bold;">\CMSIS</span></span><span style="font-size: 10pt; font-family: Verdana; font-weight: normal;"></span></li><ul><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-size: 10pt; font-family: Verdana,sans-serif;">General updates to fix known defects and enhancements implementation</span></li></ul><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt; font-weight: bold;"><span style="font-size: 10pt; font-family: Verdana; font-weight: normal;"><span style="font-weight: bold;">\Middlewares</span></span></li><ul><li style="margin: 4.5pt 0in; font-family: 'Times New Roman';"><span style="font-family: Verdana; font-size: 10pt;">Updated USB Device V2.4.1:&nbsp;</span><span style="font-family: Verdana,sans-serif; font-size: 10pt;">Fix known defects and several enhancement implementation</span><span style="font-family: Verdana; font-size: 10pt;"></span></li><li style="margin: 4.5pt 0in; font-family: 'Times New Roman';"><span style="font-family: Verdana; font-size: 10pt;">Updated USB Host V3.2.1:&nbsp;</span><span style="font-family: Verdana,sans-serif; font-size: 10pt;">Fix known defects and several enhancement implementation</span></li></ul><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt; font-weight: bold;"><span style="font-size: 10pt; font-family: Verdana; font-weight: normal;"><span style="font-weight: bold;">\BSP</span><br>
+                </span></li><ul><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-size: 10pt; font-family: Verdana,sans-serif;">Update&nbsp;</span><span style="font-family: Verdana; font-size: 10pt;">STM324x9I-EVAL &nbsp;BSP driver to support the exc7200 touch controller</span><span style="font-size: 10pt; font-family: Verdana,sans-serif;"></span></li></ul><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt; font-weight: bold;"><span style="font-size: 10pt; font-family: Verdana; font-weight: normal;"><span style="font-weight: bold;">\Projects</span><br>
+                </span></li><ul><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-size: 10pt; font-family: Verdana;"><span style="font-weight: normal;">Add Examples for&nbsp;STM32446E_Nucleo board (11 in total)</span></span></li><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-size: 10pt; font-family: Verdana;"><span style="font-weight: normal;">Add the support </span></span><span style="font-size: 10pt; font-family: Verdana,sans-serif;">System Workbench for STM32 (SW4STM32) toolchain for STM32446E_EVAL board projects</span></li><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-size: 10pt; font-family: Verdana;"><span style="font-weight: normal;"></span></span><span style="font-size: 10pt; font-family: Verdana;"><span style="font-weight: normal;"></span></span><span style="font-size: 10pt; font-family: Verdana;"><span style="font-weight: normal;">Demonstrations for </span></span><span style="font-size: 10pt; font-family: Verdana;"><span style="font-weight: normal;">all STM32F4 boards:&nbsp;</span></span><span style="font-size: 10pt; font-family: Verdana; font-weight: normal;">Miscellaneous enhancements and bugs fix</span></li><ul><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-size: 10pt; font-family: Verdana; font-weight: normal;">Improve performance for STM32F4xG-EVAL and STM32F4x9I-EVAL</span></li><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-size: 10pt; font-family: Verdana; font-weight: normal;">Add the support of new 5.7'' LCD reference for </span><span style="font-size: 10pt; font-family: Verdana; font-weight: normal;">STM32F4x9I-EVAL</span></li></ul></ul><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-size: 10pt; font-family: Verdana;">For the complete list of changes,
+please refer to the release notes of each firmware components</span></li></ul>
+
+
+            
+            
+
+
+            <span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;"><span style="font-weight: normal;"></span></span>
+            
+            
+
+            
+
+
+            
+            
+            
+            
+            
+            
+            
+            <p class="MsoNormal" style="margin: 4.5pt 0cm 4.5pt 18pt;"><b style=""><u><span style="font-size: 10pt; font-family: Verdana; color: black;">Contents<o:p></o:p></span></u></b></p>
+
+
+
+
+
+
+            <span style="font-size: 10pt; font-family: Verdana;"> </span>
+            
+            
+            
+            
+            
+            <ul style="margin-top: 0cm;" type="square"><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">Drivers</span> 
+<ul><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">Cortex-M 
+CMSIS </span><span style="font-family: Verdana; font-size: 10pt;">V4.20 (<a href="Drivers/CMSIS/index.html">release notes</a>)</span></li></ul>
+<ul><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">STM32F4xx 
+CMSIS V2.3.2 (<a href="Drivers/CMSIS/Device/ST/STM32F4xx/Release_Notes.html">release 
+notes</a>)</span><br><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"></span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">STM32</span><span style="font-family: Verdana; font-size: 10pt;">F4</span><span style="font-family: Verdana; font-size: 10pt;">xx HAL V1.3.2 (<a href="Drivers/STM32F4xx_HAL_Driver/Release_Notes.html">release notes</a>)</span> 
+
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+STM32446E-EVAL V1.0.0 (<a href="Drivers/BSP/STM32446E_EVAL/Release_Notes.html">release notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+STM324xG-EVAL V2.0.5 (<a href="Drivers/BSP/STM324xG_EVAL/Release_Notes.html">release notes</a>)</span> 
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+STM324x9I-EVAL V2.1.0 (<a href="Drivers/BSP/STM324x9I_EVAL/Release_Notes.html">release notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+STM32F4-Discovery V2.0.4 (<a href="Drivers/BSP/STM32F4-Discovery/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+STM32F401-Discovery V2.1.3 (<a href="Drivers/BSP/STM32F401-Discovery/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+STM32F429I-Discovery V2.1.2 (<a href="Drivers/BSP/STM32F429I-Discovery/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+STM32F4xx-Nucleo V1.2.1 (<a href="Drivers/BSP/STM32F4xx-Nucleo/Release_Notes.html">release notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+Adafruit_Shield V1.1.1</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Adafruit_Shield/Release_Notes.html">release notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+Components Common </span><span style="font-family: Verdana; font-size: 10pt;">V2.2.0</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/Common/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+Components ampire480272 </span><span style="font-family: Verdana; font-size: 10pt;">V1.0.0</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/ampire480272/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">ampire640480 
+</span><span style="font-family: Verdana; font-size: 10pt;">V1.0.0</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/ampire640480/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">cs43l22 </span><span style="font-family: Verdana; font-size: 10pt;">V1.0.1</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/cs43l22/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">ili9325 </span><span style="font-family: Verdana; font-size: 10pt;">V1.0.2</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/ili9325/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">ili9341 </span><span style="font-family: Verdana; font-size: 10pt;">V1.0.2</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/ili9341/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">l3gd20 </span><span style="font-family: Verdana; font-size: 10pt;">V1.1.1</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/l3gd20/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">lis302dl </span><span style="font-family: Verdana; font-size: 10pt;">V1.0.2</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/lis302dl/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">lis3dsh </span><span style="font-family: Verdana; font-size: 10pt;">V1.0.2</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/lis3dsh/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">lsm303dlhc 
+</span><span style="font-family: Verdana; font-size: 10pt;">V1.0.1</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/lsm303dlhc/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">ov2640 </span><span style="font-family: Verdana; font-size: 10pt;">V1.0.2</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/ov2640/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+st7735</span><span style="font-family: Verdana; font-size: 10pt;"> </span><span style="font-family: Verdana; font-size: 10pt;">V1.1.1</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/st7735/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">stmpe1600 
+</span><span style="font-family: Verdana; font-size: 10pt;">V1.1.0</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/stmpe1600/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">stmpe811 </span><span style="font-family: Verdana; font-size: 10pt;">V2.0.0</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/stmpe811/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">ts3510 </span><span style="font-family: Verdana; font-size: 10pt;">V1.0.1</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/ts3510/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+</span><span style="font-family: Verdana; font-size: 10pt;">wm8994 </span><span style="font-family: Verdana; font-size: 10pt;">V1.0.2</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/wm8994/Release_Notes.html">release 
+notes</a>)</span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+mfxstm32l152</span><span style="font-family: Verdana; font-size: 10pt;"> 
+</span><span style="font-family: Verdana; font-size: 10pt;">V1.1.0</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/mfxstm32l152/Release_Notes.html">release 
+notes</a>)</span> 
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+</span><span style="font-family: Verdana; font-size: 10pt;">Components 
+s5k5cag</span><span style="font-family: Verdana; font-size: 10pt;"> </span><span style="font-family: Verdana; font-size: 10pt;">V1.0.0</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Drivers/BSP/Components/s5k5cag/Release_Notes.html">release 
+notes</a>)</span> 
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+Components n25q256a V1.0.0 </span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Drivers/BSP/Components/n25q256a/Release_Notes.html">release 
+notes</a>)</span></li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">BSP 
+Components exc7200 V1.0.0 </span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Drivers/BSP/Components/exc7200/Release_Notes.html">release 
+notes</a>)</span> </li></ul></li></ul>
+
+            <ul style="margin-top: 0cm;" type="square"><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">Middlewares</span> 
+<ul><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">STemWin 
+V5.26 </span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Middlewares/ST/STemWin/Release_Notes.html">release 
+notes</a>)</span></li></ul>
+<ul><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">STM32 PDM 
+audio software decoding Library</span><span style="font-family: Verdana; font-size: 10pt;"> </span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">V2.0.1 (<a href="Middlewares/ST/STM32_Audio/Addons/PDM/Release_Notes.html">release 
+notes</a>)</span> 
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">STM32 USB 
+Device Library V2.4.1</span><span style="font-family: Verdana; font-size: 10pt;"> 
+</span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Middlewares/ST/STM32_USB_Device_Library/Release_Notes.html">release 
+notes</a>)</span></li></ul>
+<ul><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">STM32 USB 
+Host Library V3.2.1</span><span style="font-family: Verdana; font-size: 10pt;"> 
+</span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Middlewares/ST/STM32_USB_Host_Library/Release_Notes.html">release 
+notes</a>)</span></li></ul>
+<ul><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">FatFS 
+R0.10b</span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"> </span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Middlewares/Third_Party/FatFs/doc/updates.txt">release notes</a>) ST 
+modified 20141120 </span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Middlewares/Third_Party/FatFs/src/st_readme.txt">release 
+notes</a>)</span><span style="font-family: Verdana; font-size: 10pt;"> 
+</span><span style="font-family: Verdana; font-size: 10pt;"></span></li></ul>
+<ul><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">FreeRTOS 
+V8.1.2</span><span style="font-family: Verdana; font-size: 10pt;"> </span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Middlewares/Third_Party/FreeRTOS/Source/readme.txt">release notes</a>) 
+</span><span style="font-family: Verdana; font-size: 10pt;">ST modified 20141225 
+</span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Middlewares/Third_Party/FreeRTOS/Source/st_readme.txt">release 
+notes</a>)</span><span style="font-family: Verdana; font-size: 10pt;"> 
+</span></li></ul>
+<ul><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">LibJPEG 
+V8d</span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"> </span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Middlewares/Third_Party/LibJPEG/change.log">release notes</a>) 
+</span><span style="font-family: Verdana; font-size: 10pt;">ST modified 20141223 
+</span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Middlewares/Third_Party/LibJPEG/st_readme.txt">release 
+notes</a>)</span><span style="font-family: Verdana; font-size: 10pt;"> </span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">LwIP 
+V1.4.1</span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"> </span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Middlewares/Third_Party/LwIP/CHANGELOG">release notes</a>) </span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">ST modified 20140619 </span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Middlewares/Third_Party/LwIP/st_readme.txt">release notes</a>)</span><span style="font-family: Verdana; font-size: 10pt;"> <br></span>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">PolarSSL 
+V1.2.8</span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"> </span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Middlewares/Third_Party/PolarSSL/ChangeLog">release 
+notes</a>) </span><span style="font-family: Verdana; font-size: 10pt;">ST modified 20150313 </span><span style="font-family: Verdana; font-size: 10pt;"></span></li></ul>
+</li><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">Utilities</span> 
+<ul><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">CPU 
+</span><span style="font-family: Verdana; font-size: 10pt;">V1.1.0</span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"> </span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Utilities/CPU/Release_Notes.html">release notes</a>)</span></li></ul>
+<ul><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">Fonts 
+</span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">V1.0.0</span><span style="font-family: Verdana; font-size: 10pt;"> (<a href="Utilities/Fonts/Release_Notes.html">release notes</a>)</span></li></ul>
+<ul><li style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;" class="MsoNormal"><span style="font-family: Verdana; font-size: 10pt;">Log 
+</span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;"></span><span style="font-family: Verdana; font-size: 10pt;">V1.0.0</span><span style="font-family: Verdana; font-size: 10pt;"> </span><span style="font-family: Verdana; font-size: 10pt;">(<a href="Utilities/Log/Release_Notes.html">release notes</a>)</span></li></ul></li></ul>
+
+
+
+
+
+            <span style="font-size: 10pt; font-family: Verdana;"></span><br>
+
+
+
+
+
+            <span style="font-size: 10pt; font-family: Verdana;"><span style="text-decoration: underline;"><span style="font-weight: bold;"></span></span></span>
+            
+            
+            
+            
+            
+            <p class="MsoNormal" style="margin: 4.5pt 0cm 4.5pt 23px; width: 868px;"><b style=""><u><span style="font-size: 10pt; font-family: Verdana; color: black;">Development Toolchains and Compilers<o:p></o:p></span></u></b></p>
+
+
+
+
+
+
+            
+            
+            
+            
+            
+            <ul style="margin-top: 0cm;" type="square"><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: Verdana;">IAR Embedded Workbench for ARM 
+(EWARM) toolchain v7.40.1</span></li><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: Verdana;">RealView Microcontroller Development Kit (MDK-ARM) toolchain v5.13</span></li><ul><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;"><span style="font-weight: normal;"><span style="font-weight: bold; font-style: italic;">Important
+note:</span>&nbsp;</span></span></li><ul><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;"><span style="font-weight: normal;">some </span></span><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;"><span style="font-weight: normal;">of MDK-ARM projects was created with v4.73, and others with
+v5.10 (mainly for STM32F411RE-Nucleo projects). If you are using
+MDK-ARM v5.10 (and later) you have to install a legacy patch to be able
+to open projects built with v4.73, here is the download <a href="http://www2.keil.com/mdk5/legacy" target="_blank">link</a></span></span></li><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;"><span style="font-weight: normal;">all STM32F446E_EVAL projects were created with MDK-ARM v5.13</span></span></li></ul></ul><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: Verdana;">Atollic TrueSTUDIO STM32 (TrueSTUDIO) toolchain v5.1.1</span></li><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: Verdana;">System Workbench for STM32 (SW4STM32) toolchain V1.1.0 + ST-Link<br>
+</span></li></ul>
+
+
+
+
+
+            <br>
+
+
+
+
+
+            
+            
+            
+            
+            
+            <p class="MsoNormal" style="margin: 4.5pt 0cm 4.5pt 23px; width: 868px;"><b><u><span style="font-size: 10pt; color: black; font-family: Verdana;">Supported Devices 
+and EVAL boards<o:p></o:p></span></u></b></p>
+
+
+
+
+
+
+            
+            
+            
+            
+            
+            <ul style="margin-top: 0cm;" type="square"><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: Verdana;">STM32F446xx devices </span><span style="font-size: 10pt; font-family: Verdana;">STM32446E_EVAL board RevB</span><span style="font-size: 10pt; font-family: Verdana;"></span></li><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: Verdana;">STM32F429xx/439xx devices and 
+</span><span style="font-size: 10pt; font-family: Verdana;">STM324x9I-EVAL 
+board RevB<br>
+</span></li><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: Verdana;">STM32F429xx and </span><span style="font-size: 10pt; font-family: Verdana;">STM32F429I-Discovery</span><span style="font-size: 10pt; font-family: Verdana;"> board RevB</span><br>
+<span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;"></span></li><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">STM32F407xx/417x</span><span style="font-size: 10pt; font-family: Verdana;">x devices and 
+                </span><span style="font-size: 10pt; font-family: Verdana;">STM324xG-EVAL 
+board RevC<br>
+</span></li><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">STM32F407xx and </span><span style="font-size: 10pt; font-family: Verdana;">STM32F4-Discovery board RevC</span></li><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">STM32F401xC </span><span style="font-size: 10pt; font-family: Verdana;">and STM32F401C-Discovery</span><span style="font-size: 10pt; font-family: Verdana;"> board RevB<br>
+</span></li><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">STM32F401xE </span><span style="font-size: 10pt; font-family: Verdana;">and STM32F401RE-Nucleo</span><span style="font-size: 10pt; font-family: Verdana;"> board RevC</span></li><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">STM32F411xE </span><span style="font-size: 10pt; font-family: Verdana;">and STM32F411RE-Nucleo</span><span style="font-size: 10pt; font-family: Verdana;"> board RevC</span></li><li class="MsoNormal" style="margin-top: 4.5pt; margin-bottom: 4.5pt; color: black;"><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">STM32F446RE&nbsp;</span><span style="font-size: 10pt; font-family: Verdana;">and STM32446E-Nucleo</span><span style="font-size: 10pt; font-family: Verdana;"> board RevC</span></li></ul>
+
+
+
+
+
+            <br>
+
+
+
+
+
+            
+            
+            
+            
+            
+            <p class="MsoNormal" style="margin: 4.5pt 0cm 4.5pt 23px; width: 868px;"><b><u><span style="font-size: 10pt; color: black; font-family: Verdana;">Known 
+Limitations<br>
+</span></u></b></p>
+
+
+
+
+
+            
+            
+            
+            
+            
+            <ul style="list-style-type: square;"><li><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">The
+following issues are detected when using EWARM V7.30, however they are
+not present when using EWARM V7.10, they will be fixed in next release:</span></li><ul><li><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">Display/LTDC_AnimatedPictureFromSDCard
+and LTDC_PicturesFromSDCard applications for STM324x9I_EVAL work
+correctly with all optimization levels except High-Size one, where the
+parse of SD card is failing.</span></li></ul><ul><li><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">Demonstration project for STM324xG_EVAL:</span></li></ul><ul><ul><li><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">Kernel Log doesn&#8217;t display Media files directory, after browsing any media file</span></li></ul><ul><li><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">Generated
+noise once unplugging a USB key from the board, once playing audio
+file, or when switching automatically to the next audio file</span></li></ul></ul><li><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">USB_Device\AUDIO_Standalone application for STM324x9I_EVAL</span></li><ul><li><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">MDK-ARM
+and TrueSTUDIO projects are provided with optimization set to &#8220;None&#8221;,
+to avoid audio glitch when USB cable is disconnected</span></li></ul><li><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">STM324x9I-EVAL, STM324xG-EVAL and STM32F429I-Discovery demonstration</span></li><ul><li><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;"></span><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">TrueSTUDIO project is not provided</span></li></ul><li><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">Display\LTDC_Paint</span><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;"> application for STM324x9I_EVAL</span></li><ul><li><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">Works only with MB1063 LCD display, not functional with MB1046</span></li></ul><li><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">FatFs\FatFs_USBDisk_MultipleAccess_RTOS</span><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;"> application for STM324x9I_EVAL</span></li><ul><li><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">Robustness to be improved, the application may not work correctly after several board reset</span><br><span style="font-size: 10pt; font-family: Arial; color: white;"></span></li></ul></ul><h3 style="background: rgb(51, 102, 255) none repeat scroll 0% 50%; -moz-background-clip: initial; -moz-background-origin: initial; -moz-background-inline-policy: initial; margin-right: 500pt; width: 202px;"><span style="font-size: 10pt; font-family: Arial; color: white;">V1.6.0 / 25-May-2015</span></h3>
 
 
 
@@ -985,7 +1624,7 @@ to avoid audio glitch when USB cable is disconnected</span></li></ul><li><span s
             </ul>
             <br>
 
-            <h3 style="background: rgb(51, 102, 255) none repeat scroll 0% 50%; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial; margin-right: 500pt; width: 202px;"><span style="font-size: 10pt; font-family: Arial; color: white;">V1.5.0 / 13-March-2015</span></h3>
+            <h3 style="background: rgb(51, 102, 255) none repeat scroll 0% 50%; -moz-background-clip: initial; -moz-background-origin: initial; -moz-background-inline-policy: initial; margin-right: 500pt; width: 202px;"><span style="font-size: 10pt; font-family: Arial; color: white;">V1.5.0 / 13-March-2015</span></h3>
 
 
 
@@ -1316,7 +1955,7 @@ to avoid audio glitch when USB cable is disconnected</span></li></ul><li><span s
               <ul>
 <li><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">Robustness to be improved, the application may not work correctly after several board reset</span></li>
               </ul>
-</ul><h3 style="background: rgb(51, 102, 255) none repeat scroll 0% 50%; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial; margin-right: 500pt; width: 202px;"><span style="font-size: 10pt; font-family: Arial; color: white;">V1.4.0 / 26-December-2014</span></h3>
+</ul><h3 style="background: rgb(51, 102, 255) none repeat scroll 0% 50%; -moz-background-clip: initial; -moz-background-origin: initial; -moz-background-inline-policy: initial; margin-right: 500pt; width: 202px;"><span style="font-size: 10pt; font-family: Arial; color: white;">V1.4.0 / 26-December-2014</span></h3>
 
 
 
@@ -1671,7 +2310,7 @@ to avoid audio glitch when USB cable is disconnected</span></li>
 </ul>
             <br>
 
-            <h3 style="background: rgb(51, 102, 255) none repeat scroll 0% 50%; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial; margin-right: 500pt; width: 180px;"><span style="font-size: 10pt; font-family: Arial; color: white;">V1.3.0 / 26-June-2014</span></h3>
+            <h3 style="background: rgb(51, 102, 255) none repeat scroll 0% 50%; -moz-background-clip: initial; -moz-background-origin: initial; -moz-background-inline-policy: initial; margin-right: 500pt; width: 180px;"><span style="font-size: 10pt; font-family: Arial; color: white;">V1.3.0 / 26-June-2014</span></h3>
 
 
 
@@ -1905,7 +2544,7 @@ to avoid audio glitch when USB cable is disconnected</span></li>
 
             </ul>
 
-            <h3 style="background: rgb(51, 102, 255) none repeat scroll 0% 50%; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial; margin-right: 500pt; width: 180px;"><span style="font-size: 10pt; font-family: Arial; color: white;">V1.2.0 / 19-June-2014</span></h3>
+            <h3 style="background: rgb(51, 102, 255) none repeat scroll 0% 50%; -moz-background-clip: initial; -moz-background-origin: initial; -moz-background-inline-policy: initial; margin-right: 500pt; width: 180px;"><span style="font-size: 10pt; font-family: Arial; color: white;">V1.2.0 / 19-June-2014</span></h3>
 
 
 
@@ -2117,7 +2756,7 @@ Limitations<br>
             
             <ul style="margin-top: 0cm;" type="square"><li class="MsoNormal" style="color: black; margin-top: 4.5pt; margin-bottom: 4.5pt;"><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;;">NA<br>
                 </span></li></ul>
-<h3 style="background: rgb(51, 102, 255) none repeat scroll 0% 50%; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial; margin-right: 500pt; width: 180px;"><span style="font-size: 10pt; font-family: Arial; color: white;">V1.1.0 / 26-February-2014</span></h3>
+<h3 style="background: rgb(51, 102, 255) none repeat scroll 0% 50%; -moz-background-clip: initial; -moz-background-origin: initial; -moz-background-inline-policy: initial; margin-right: 500pt; width: 180px;"><span style="font-size: 10pt; font-family: Arial; color: white;">V1.1.0 / 26-February-2014</span></h3>
 
 
 
@@ -2280,7 +2919,7 @@ Limitations<br>
 
             
             
-            <h3 style="background: rgb(51, 102, 255) none repeat scroll 0% 50%; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial; margin-right: 500pt; width: 180px;"><span style="font-size: 10pt; font-family: Arial; color: white;">V1.0.0 / 18-February-2014</span></h3>
+            <h3 style="background: rgb(51, 102, 255) none repeat scroll 0% 50%; -moz-background-clip: initial; -moz-background-origin: initial; -moz-background-inline-policy: initial; margin-right: 500pt; width: 180px;"><span style="font-size: 10pt; font-family: Arial; color: white;">V1.0.0 / 18-February-2014</span></h3>
 
 
 
@@ -2440,7 +3079,7 @@ Limitations<br>
             </ul>
 <span style="font-size: 10pt; font-family: Verdana;"></span>
 
-<h2 style="background: rgb(51, 102, 255) none repeat scroll 0% 50%; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;"><span style="font-size: 12pt; color: white;"><a name="License"></a>License<o:p></o:p></span></h2><p class="MsoNormal"><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;; color: black;">Licensed under MCD-ST Liberty SW License Agreement V2, (the "License"); You may not use this&nbsp;</span><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;; color: black;">package</span><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;; color: black;"> except in compliance with the License. You may obtain a copy of the License at:<br><br></span></p><div style="text-align: center;"><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;; color: black;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a target="_blank" href="http://www.st.com/software_license_agreement_liberty_v2">http://www.st.com/software_license_agreement_liberty_v2</a></span><br><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;; color: black;"></span></div><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;; color: black;"><br>Unless
+<h2 style="background: rgb(51, 102, 255) none repeat scroll 0% 50%; -moz-background-clip: initial; -moz-background-origin: initial; -moz-background-inline-policy: initial;"><span style="font-size: 12pt; color: white;"><a name="License"></a>License<o:p></o:p></span></h2><p class="MsoNormal"><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;; color: black;">Licensed under MCD-ST Liberty SW License Agreement V2, (the "License"); You may not use this&nbsp;</span><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;; color: black;">package</span><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;; color: black;"> except in compliance with the License. You may obtain a copy of the License at:<br><br></span></p><div style="text-align: center;"><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;; color: black;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a target="_blank" href="http://www.st.com/software_license_agreement_liberty_v2">http://www.st.com/software_license_agreement_liberty_v2</a></span><br><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;; color: black;"></span></div><span style="font-size: 10pt; font-family: &quot;Verdana&quot;,&quot;sans-serif&quot;; color: black;"><br>Unless
 required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS, <br>WITHOUT
 WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See

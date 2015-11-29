@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        02. June 2015
- * $Revision:    V2.2
+ * $Date:        04. September 2015
+ * $Revision:    V2.3
  *
  * Driver:       Driver_ETH_MAC0
  * Configured:   via RTE_Device.h configuration file
@@ -34,6 +34,8 @@
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.3
+ *    Corrected lockup after long runtime (unhandled MMC interrupts)
  *  Version 2.2
  *    Updated initialization, uninitialization and power procedures
  *  Version 2.1
@@ -50,20 +52,62 @@
  *  Version 1.0
  *    Initial release
  */
+ 
+ /*! \page stm32f4_emac CMSIS-Driver Ethernet MAC Setup
 
-/* STM32CubeMX configuration:
- *
- * Pinout tab:
- *   - Select ETH peripheral and select MII or RMII mode
- * Clock Configuration tab:
- *   - Ensure that HCLK is at least 25MHz or above
- *   - Ensure thet SYSCLK is at least 50MHz or above if Ethernet PTP is required
- * Configuration tab:
- *   - Select ETH under Connectivity section which opens ETH Configuration window:
- *       - Parameter Settings tab: settings are unused by this driver
- *       - NVIC Settings: enable Ethernet global interrupt
- *       - GPIO Settings: configure as needed
- */
+The CMSIS-Driver EMAC requires:
+  - Setup of HCLK to 25MHz or higher
+  - Optional setup of SYSCLK to 50MHz or higher, when Ethernet PTP is used
+  - Setup of ETH in MII or RMII mode
+
+Valid settings for various evaluation boards are listed in the table below:
+
+Peripheral Resource | MCBSTM32F400      | STM32F4-Discovery | 32F401C-Discovery | 32F429I-Discovery
+:-------------------|:------------------|:------------------|:------------------|:------------------
+ETH Mode            | <b>RMII</b>       | n/a               | n/a               | n/a
+
+For different boards, refer to the hardware schematics to reflect correct setup values.
+
+The STM32CubeMX configuration for MCBSTM32F400 with steps for Pinout, Clock, and System Configuration are 
+listed below. Enter the values that are marked \b bold.
+
+Pinout tab
+----------
+  1. Configure ETH mode
+     - Peripherals \b ETH: Mode=<b>RMII</b>
+
+Clock Configuration tab
+-----------------------
+  1. Configure HCLK Clock: HCLK (MHz) = <b>25 or higher</b>
+
+Configuration tab
+-----------------
+  1. Under Connectivity open \b ETH Configuration:
+     - <b>GPIO Settings</b>: review settings, no changes required
+          Pin Name | Signal on Pin | GPIO mode | GPIO Pull-up/Pull..| Maximum out | User Label
+          :--------|:--------------|:----------|:-------------------|:------------|:----------
+          PA1      | ETH_REF_CLK   | Alternate | No pull-up and no..| High        |.
+          PA2      | ETH_MDIO      | Alternate | No pull-up and no..| High        |.
+          PA7      | ETH_CRS_DV    | Alternate | No pull-up and no..| High        |.
+          PC1      | ETH_MDC       | Alternate | No pull-up and no..| High        |.
+          PC4      | ETH_RXD0      | Alternate | No pull-up and no..| High        |.
+          PC5      | ETH_RXD1      | Alternate | No pull-up and no..| High        |.
+          PG11     | ETH_TX_EN     | Alternate | No pull-up and no..| High        |.
+          PG13     | ETH_TXD0      | Alternate | No pull-up and no..| High        |.
+          PG14     | ETH_TXD1      | Alternate | No pull-up and no..| High        |.
+
+     - <b>NVIC Settings</b>: enable interrupts
+          Interrupt Table                      | Enable | Preemption Priority | Sub Priority
+          :------------------------------------|:-------|:--------------------|:--------------
+          Ethernet global interrupt            |\b ON   | 0                   | 0
+
+     - Parameter Settings: not used
+     - User Constants: not used
+
+     Click \b OK to close the ETH Configuration dialog
+*/
+
+/*! \cond */
 
 /* Receive/transmit Checksum offload enable */
 #ifndef EMAC_CHECKSUM_OFFLOAD
@@ -77,7 +121,7 @@
 
 #include "EMAC_STM32F4xx.h"
 
-#define ARM_ETH_MAC_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,2) /* driver version */
+#define ARM_ETH_MAC_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,3) /* driver version */
 
 /* Timeouts */
 #define PHY_TIMEOUT         2U          /* PHY Register access timeout in ms  */
@@ -190,28 +234,32 @@ static uint32_t  tx_buf [NUM_TX_BUF][ETH_BUF_SIZE>>2];
   \brief       Enable GPIO clock
 */
 static void Enable_GPIO_Clock (const GPIO_TypeDef *GPIOx) {
-  if      (GPIOx == GPIOA) { __GPIOA_CLK_ENABLE(); }
-  else if (GPIOx == GPIOB) { __GPIOB_CLK_ENABLE(); }
-  else if (GPIOx == GPIOC) { __GPIOC_CLK_ENABLE(); }
-  else if (GPIOx == GPIOD) { __GPIOD_CLK_ENABLE(); }
-  else if (GPIOx == GPIOE) { __GPIOE_CLK_ENABLE(); }
+  if      (GPIOx == GPIOA) { __HAL_RCC_GPIOA_CLK_ENABLE(); }
+  else if (GPIOx == GPIOB) { __HAL_RCC_GPIOB_CLK_ENABLE(); }
+  else if (GPIOx == GPIOC) { __HAL_RCC_GPIOC_CLK_ENABLE(); }
+#if defined(GPIOD)
+  else if (GPIOx == GPIOD) { __HAL_RCC_GPIOD_CLK_ENABLE(); }
+#endif
+#if defined(GPIOE)
+  else if (GPIOx == GPIOE) { __HAL_RCC_GPIOE_CLK_ENABLE(); }
+#endif
 #if defined(GPIOF)
-  else if (GPIOx == GPIOF) { __GPIOF_CLK_ENABLE(); }
+  else if (GPIOx == GPIOF) { __HAL_RCC_GPIOF_CLK_ENABLE(); }
 #endif
 #if defined(GPIOG)
-  else if (GPIOx == GPIOG) { __GPIOG_CLK_ENABLE(); }
+  else if (GPIOx == GPIOG) { __HAL_RCC_GPIOG_CLK_ENABLE(); }
 #endif
 #if defined(GPIOH)
-  else if (GPIOx == GPIOH) { __GPIOH_CLK_ENABLE(); }
+  else if (GPIOx == GPIOH) { __HAL_RCC_GPIOH_CLK_ENABLE(); }
 #endif
 #if defined(GPIOI)
-  else if (GPIOx == GPIOI) { __GPIOI_CLK_ENABLE(); }
+  else if (GPIOx == GPIOI) { __HAL_RCC_GPIOI_CLK_ENABLE(); }
 #endif
 #if defined(GPIOJ)
-  else if (GPIOx == GPIOJ) { __GPIOJ_CLK_ENABLE(); }
+  else if (GPIOx == GPIOJ) { __HAL_RCC_GPIOJ_CLK_ENABLE(); }
 #endif
 #if defined(GPIOK)
-  else if (GPIOx == GPIOK) { __GPIOK_CLK_ENABLE(); }
+  else if (GPIOx == GPIOK) { __HAL_RCC_GPIOK_CLK_ENABLE(); }
 #endif
 }
 #endif
@@ -401,16 +449,16 @@ static int32_t PowerControl (ARM_POWER_STATE state) {
       ETH->PTPTSCR = 0U;
 
       /* Reset Ethernet MAC peripheral */
-      __ETHMAC_FORCE_RESET();
+      __HAL_RCC_ETHMAC_FORCE_RESET();
       __NOP(); __NOP(); __NOP(); __NOP();
-      __ETHMAC_RELEASE_RESET();
+      __HAL_RCC_ETHMAC_RELEASE_RESET();
 
       /* Disable Ethernet clocks */
-      __ETHMAC_CLK_DISABLE();
-      __ETHMACTX_CLK_DISABLE();
-      __ETHMACRX_CLK_DISABLE();
+      __HAL_RCC_ETHMAC_CLK_DISABLE();
+      __HAL_RCC_ETHMACTX_CLK_DISABLE();
+      __HAL_RCC_ETHMACRX_CLK_DISABLE();
       #if (EMAC_TIME_STAMP)
-      __ETHMACPTP_CLK_DISABLE();
+      __HAL_RCC_ETHMACPTP_CLK_DISABLE();
       #endif
       
       Emac.flags = EMAC_FLAG_INIT;
@@ -429,11 +477,11 @@ static int32_t PowerControl (ARM_POWER_STATE state) {
       #endif
 
       /* Enable Ethernet clocks */
-      __ETHMAC_CLK_ENABLE();
-      __ETHMACTX_CLK_ENABLE();
-      __ETHMACRX_CLK_ENABLE();
+      __HAL_RCC_ETHMAC_CLK_ENABLE();
+      __HAL_RCC_ETHMACTX_CLK_ENABLE();
+      __HAL_RCC_ETHMACRX_CLK_ENABLE();
       #if (EMAC_TIME_STAMP)
-      __ETHMACPTP_CLK_ENABLE();
+      __HAL_RCC_ETHMACPTP_CLK_ENABLE();
       #endif
 
       /* Soft reset MAC DMA controller */
@@ -493,6 +541,10 @@ static int32_t PowerControl (ARM_POWER_STATE state) {
       ETH->PTPSSIR = PTPSSIR_Val(HAL_RCC_GetHCLKFreq());
       Emac.tx_ts_index  = 0U;
       #endif
+
+      /* Disable MMC interrupts */
+      ETH->MMCTIMR = ETH_MMCTIMR_TGFM  | ETH_MMCTIMR_TGFMSCM | ETH_MMCTIMR_TGFSCM;
+      ETH->MMCRIMR = ETH_MMCRIMR_RGUFM | ETH_MMCRIMR_RFAEM   | ETH_MMCRIMR_RFCEM;
 
       NVIC_ClearPendingIRQ (ETH_IRQn);
       NVIC_EnableIRQ (ETH_IRQn);
@@ -1107,3 +1159,5 @@ ARM_DRIVER_ETH_MAC Driver_ETH_MAC0 = {
   PHY_Read,
   PHY_Write
 };
+
+/*! \endcond */

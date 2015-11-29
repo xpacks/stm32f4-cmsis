@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        10. June 2015
- * $Revision:    V2.11
+ * $Date:        27. August 2015
+ * $Revision:    V2.13
  *
  * Driver:       Driver_USBH0
  * Configured:   via RTE_Device.h configuration file
@@ -40,34 +40,13 @@
  *                      requirements
  *     - default value: 8
  *     - maximum value: 8
- * --------------------------------------------------------------------------
- * STM32CubeMX configuration:
- *
- * Pinout tab:
- *   - Select USB_OTG_FS peripheral and enable Host mode for proper PHY
- *   - Select USB_OTG_FS_VBUS_Power pin on STM32F4xx package in chip view
- *         - Left click on selected pin
- *         - Select pin as GPIO Input
- *         - Right click on pin to enter "USB_OTG_FS_VBUS_Power" User Label
- *          (If pin active state is High then constant
- *           USB_OTG_FS_VBUS_Power_Pin_Active with value 1 should be defined)
- *   - Select USB_OTG_FS_Overrcurrent pin
- *         - Left click on selected pin in chip view
- *         - Select pin as GPIO Input
- *         - Right click on pin to enter "USB_OTG_FS_Overrcurrent" User Label
- *          (If pin active state is High then constant
- *           USB_OTG_FS_Overcurrent_Pin_Active with value 1 should be defined)
- * Clock Configuration tab:
- *   - Configure clock
- * Configuration tab:
- *   - Select USB_FS under Connectivity section which opens USB_FS
- *     Configuration window:
- *       - Parameter Settings tab: settings are unused by this driver
- *       - NVIC Settings: enable USB On The Go FS global interrupt
- *       - GPIO Settings: configure as needed
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.13
+ *    STM32CubeMX generated code can also be used to configure the driver.
+ *  Version 2.12
+ *    Removed global variable otg_fs_state
  *  Version 2.11
  *    PowerControl for Power OFF and Uninitialize functions made unconditional
  *  Version 2.10
@@ -96,7 +75,72 @@
  *  Version 2.0
  *    Initial release for USB Host CMSIS Driver API v2.0
  */
+ 
+/*! \page stm32f4_usbh_fs CMSIS-Driver USBH_FS Setup
 
+The CMSIS-Driver USBH_FS requires:
+  - Setup of USB clk to 48MHz
+  - Configuration of USB_OTG_FS
+  - Optional Configuration for VBUS Power Pin:
+    - Configure arbitrary pin in GPIO_Output mode and add User Label: USB_OTG_FS_VBUS_Power
+  - Optional Configuration for Overcurrent Pin:
+    - Configure arbitrary pin in GPIO_Input mode and add User Label: USB_OTG_FS_Overcurrent
+ 
+\note The User Label name is used to connect the CMSIS-Driver to the GPIO pin.
+
+Valid settings for various evaluation boards are listed in the table below:
+
+Peripheral Resource     | MCBSTM32F400      | STM32F4-Discovery | 32F401C-Discovery | 32F429I-Discovery
+:-----------------------|:------------------|:------------------|:------------------|:------------------
+USB_OTG_FS Mode         | <b>Host_Only</b>  | <b>Host_Only</b>  | <b>Host_Only</b>  | <b>Host_Only</b>
+VBUS Power output pin   | PH5               | PC0               | PC0               | PC4
+Overcurrent input pin   | PF11              | PD5               | PD5               | PC5
+
+For different boards, refer to the hardware schematics to reflect correct setup values.
+ 
+The STM32CubeMX configuration for MCBSTM32F400 with steps for Pinout, Clock, and System Configuration are 
+listed below. Enter the values that are marked \b bold.
+ 
+Pinout tab
+----------
+  1. Configure USBH mode
+     - Peripherals \b USB_OTG_FS: Mode=<b>Host_Only</b>
+  2. Configure USB_OTG_FS_VBUS_Power pin:
+     - Click in chip diagram on pin \b PH5 and select \b GPIO_Output
+  3. Configure USB_OTG_FS_Overcurrent pin:
+     - Click in chip diagram on pin \b PF11 and select \b GPIO_Input
+ 
+Clock Configuration tab
+-----------------------
+  1. Configure USB Clock: "48MHz clocks (MHz)": 48
+ 
+Configuration tab
+-----------------
+  1. Under Connectivity open \b USB_OTG_FS Configuration:
+     - DMA Settings: not used
+     - <b>GPIO Settings</b>: review settings, no changes required
+          Pin Name | Signal on Pin | GPIO mode | GPIO Pull-up/Pull..| Maximum out | User Label
+          :--------|:--------------|:----------|:-------------------|:------------|:----------
+          PA11     | USB_OTG_FS_DM | Alternate | No pull-up and no..| High        |.
+          PA12     | USB_OTG_FS_DP | Alternate | No pull-up and no..| High        |.
+     - <b>NVIC Settings</b>: enable interrupts
+          Interrupt Table                      | Enable | Preemption Priority | Sub Priority
+          :------------------------------------|:-------|:--------------------|:--------------
+          USB On The Go FS global interrupt    |\b ON   | 0                   | 0
+     - Parameter Settings: not used
+     - User Constants: not used
+     - Click \b OK to close the USB_OTG_FS Configuration dialog
+  2. Under System open \b GPIO Pin Configuration
+     - Enter user label for USB_OTG_FS_VBUS_Power and USB_OTG_FS_Overcurrent pin
+          Pin Name | Signal on Pin | GPIO mode       | GPIO Pull-up/Pull..| Maximum out | User Label
+          :--------|:--------------|:----------------|:-------------------|:------------|:----------
+          PH5      | n/a           | Output Push pull| No pull-up and no..| n/a         |\b USB_OTG_FS_VBUS_Power
+          PF11     | n/a           | Input mode      | No pull-up and no..| n/a         |\b USB_OTG_FS_Overcurrent
+ 
+     - Click \b OK to close the Pin Configuration dialog
+*/
+
+/*! \cond */
 
 #include <stdint.h>
 #include <string.h>
@@ -114,17 +158,22 @@
 #endif
 
 extern uint8_t otg_fs_role;
-extern uint8_t otg_fs_state;
 
 extern void OTG_FS_PinsConfigure   (uint8_t pins_mask);
 extern void OTG_FS_PinsUnconfigure (uint8_t pins_mask);
 extern void OTG_FS_PinVbusOnOff    (bool state);
 extern bool OTG_FS_PinGetOC        (void);
 
+#ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
+#ifdef MX_USB_OTG_FS_HOST
+extern HCD_HandleTypeDef hhcd_USB_OTG_FS;
+#endif
+#endif
+
 
 // USBH Driver *****************************************************************
 
-#define ARM_USBH_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,11)
+#define ARM_USBH_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,13)
 
 // Driver Version
 static const ARM_DRIVER_VERSION usbh_driver_version = { ARM_USBH_API_VERSION, ARM_USBH_DRV_VERSION };
@@ -173,6 +222,7 @@ typedef struct {                        // Pipe structure definition
 static ARM_USBH_SignalPortEvent_t SignalPortEvent;
 static ARM_USBH_SignalPipeEvent_t SignalPipeEvent;
 
+static bool            hw_powered = false;
 static bool            port_reset;
 
 // Pipes runtime information
@@ -431,15 +481,18 @@ static ARM_USBH_CAPABILITIES USBH_GetCapabilities (void) { return usbh_driver_ca
 static int32_t USBH_Initialize (ARM_USBH_SignalPortEvent_t cb_port_event,
                                 ARM_USBH_SignalPipeEvent_t cb_pipe_event) {
 
-  if ((otg_fs_state & OTG_FS_USBH_DRIVER_INITIALIZED) != 0U) { return ARM_DRIVER_OK; }
-
   SignalPortEvent = cb_port_event;
   SignalPipeEvent = cb_pipe_event;
 
-  otg_fs_role  =  ARM_USB_ROLE_HOST;
-  OTG_FS_PinsConfigure (ARM_USB_PIN_DP | ARM_USB_PIN_DM | ARM_USB_PIN_OC | ARM_USB_PIN_VBUS);
+  otg_fs_role = ARM_USB_ROLE_HOST;
 
-  otg_fs_state =  OTG_FS_USBH_DRIVER_INITIALIZED;
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+  OTG_FS_PinsConfigure (ARM_USB_PIN_DP | ARM_USB_PIN_DM | ARM_USB_PIN_OC | ARM_USB_PIN_VBUS);
+#endif
+
+#ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
+  hhcd_USB_OTG_FS.Instance = USB_OTG_FS;
+#endif
 
   return ARM_DRIVER_OK;
 }
@@ -451,9 +504,10 @@ static int32_t USBH_Initialize (ARM_USBH_SignalPortEvent_t cb_port_event,
 */
 static int32_t USBH_Uninitialize (void) {
 
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
   OTG_FS_PinsUnconfigure (ARM_USB_PIN_DP | ARM_USB_PIN_DM | ARM_USB_PIN_OC | ARM_USB_PIN_VBUS);
-  otg_fs_role   =  ARM_USB_ROLE_NONE;
-  otg_fs_state &= ~OTG_FS_USBH_DRIVER_INITIALIZED;
+#endif
+  otg_fs_role = ARM_USB_ROLE_NONE;
 
   return ARM_DRIVER_OK;
 }
@@ -468,9 +522,11 @@ static int32_t USBH_PowerControl (ARM_POWER_STATE state) {
 
   switch (state) {
     case ARM_POWER_OFF:
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
       NVIC_DisableIRQ      (OTG_FS_IRQn);               // Disable interrupt
       NVIC_ClearPendingIRQ (OTG_FS_IRQn);               // Clear pending interrupt
-      otg_fs_state  &= ~OTG_FS_USBH_DRIVER_POWERED;     // Clear powered flag
+#endif
+      hw_powered     = false;                           // Clear powered flag
       OTG->GAHBCFG  &= ~OTG_FS_GAHBCFG_GINTMSK;         // Disable USB interrupts
       RCC->AHB2RSTR |=  RCC_AHB2RSTR_OTGFSRST;          // Reset OTG FS module
                                                         // Reset variables
@@ -480,13 +536,21 @@ static int32_t USBH_PowerControl (ARM_POWER_STATE state) {
       OTG->GCCFG    &= ~OTG_FS_GCCFG_PWRDWN;            // Enable PHY power down
       OTG->PCGCCTL  |=  OTG_FS_PCGCCTL_STPPCLK;         // Stop PHY clock
       OTG->GCCFG     =  0U;                             // Reset core configuration
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
       RCC->AHB2ENR  &= ~RCC_AHB2ENR_OTGFSEN;            // Disable OTG FS clock
+#else
+      HAL_HCD_MspDeInit(&hhcd_USB_OTG_FS);
+#endif
       break;
 
     case ARM_POWER_FULL:
-      if ((otg_fs_state & OTG_FS_USBH_DRIVER_POWERED) != 0U) { return ARM_DRIVER_OK; }
+      if (hw_powered == true) { return ARM_DRIVER_OK; }
 
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
       RCC->AHB2ENR  |=  RCC_AHB2ENR_OTGFSEN;            // OTG FS clock enable
+#else
+      HAL_HCD_MspInit(&hhcd_USB_OTG_FS);
+#endif
       RCC->AHB2RSTR |=  RCC_AHB2RSTR_OTGFSRST;          // Reset OTG FS module
       osDelay(1U);
       RCC->AHB2RSTR &= ~RCC_AHB2RSTR_OTGFSRST;          // Clear reset of OTG FS module
@@ -497,6 +561,9 @@ static int32_t USBH_PowerControl (ARM_POWER_STATE state) {
       OTG->GCCFG    |=  OTG_FS_GCCFG_PWRDWN;            // Disable power down
       OTG->GUSBCFG  |=  OTG_FS_GUSBCFG_PHYSEL;          // Full-speed transceiver
 
+      // Wait until AHB Master state machine is in the idle condition
+      while ((OTG->GRSTCTL & OTG_FS_GRSTCTL_AHBIDL) == 0U);
+
       OTG->GRSTCTL  |=  OTG_FS_GRSTCTL_CSRST;           // Core soft reset
       while ((OTG->GRSTCTL & OTG_FS_GRSTCTL_CSRST) != 0U);
       osDelay (1U);
@@ -506,16 +573,15 @@ static int32_t USBH_PowerControl (ARM_POWER_STATE state) {
                                                         // Reset variables
       port_reset =  false;
       memset((void *)(pipe), 0, sizeof(pipe));
-      osDelay (20U);
 
       OTG->GCCFG    &= ~OTG_FS_GCCFG_VBUSBSEN;          // Disable VBUS sensing device "B"
       OTG->GCCFG    &= ~OTG_FS_GCCFG_VBUSASEN;          // Disable VBUS sensing device "A"
       OTG->GCCFG    |=  OTG_FS_GCCFG_NOVBUSSENS;        // Disable VBUS sensing
 
-      if (((OTG->GUSBCFG & OTG_FS_GUSBCFG_FHMOD) == 0U) || ((OTG->GUSBCFG & OTG_FS_GUSBCFG_FDMOD) == 1U)) {
+      if (((OTG->GUSBCFG & OTG_FS_GUSBCFG_FHMOD) == 0U) || ((OTG->GUSBCFG & OTG_FS_GUSBCFG_FDMOD) != 0U)) {
         OTG->GUSBCFG &= ~OTG_FS_GUSBCFG_FDMOD;          // Clear force device mode
         OTG->GUSBCFG |=  OTG_FS_GUSBCFG_FHMOD;          // Force host mode
-        osDelay (50U);
+        osDelay (100U);
       }
 
       // Rx FIFO setting
@@ -533,10 +599,12 @@ static int32_t USBH_PowerControl (ARM_POWER_STATE state) {
                         OTG_FS_GINTMSK_SOFM)   ;
 
       OTG->GAHBCFG  |=  OTG_FS_GAHBCFG_GINTMSK;         // Enable interrupts
-
-      otg_fs_state  |=  OTG_FS_USBH_DRIVER_POWERED;     // Set powered flag
       NVIC_SetPriority (OTG_FS_IRQn, 0);                // Set highest interrupt priority
+
+      hw_powered     = true;                            // Set powered flag
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
       NVIC_EnableIRQ   (OTG_FS_IRQn);                   // Enable interrupt
+#endif
       break;
 
     default:
@@ -557,8 +625,8 @@ static int32_t USBH_PowerControl (ARM_POWER_STATE state) {
 */
 static int32_t USBH_PortVbusOnOff (uint8_t port, bool vbus) {
 
-  if ((otg_fs_state & OTG_FS_USBH_DRIVER_POWERED) == 0U) { return ARM_DRIVER_ERROR;           }
-  if (port != 0U)                                        { return ARM_DRIVER_ERROR_PARAMETER; }
+  if (hw_powered == false) { return ARM_DRIVER_ERROR;           }
+  if (port != 0U)          { return ARM_DRIVER_ERROR_PARAMETER; }
 
   if (vbus != 0U) {                                     // VBUS power on
     OTG->HPRT    |=  OTG_FS_HPRT_PPWR;                  // Port power on
@@ -581,8 +649,8 @@ static int32_t USBH_PortReset (uint8_t port) {
   uint32_t hprt;
   uint32_t hcfg;
 
-  if ((otg_fs_state & OTG_FS_USBH_DRIVER_POWERED) == 0U) { return ARM_DRIVER_ERROR;           }
-  if (port != 0U)                                        { return ARM_DRIVER_ERROR_PARAMETER; }
+  if (hw_powered == false) { return ARM_DRIVER_ERROR;           }
+  if (port != 0U)          { return ARM_DRIVER_ERROR_PARAMETER; }
 
   hcfg = OTG->HCFG;
   hprt = OTG->HPRT;
@@ -614,7 +682,7 @@ static int32_t USBH_PortReset (uint8_t port) {
   hprt &= ~OTG_FS_HPRT_PRST;                            // Clear port reset
   OTG->HPRT = hprt;
   osDelay (50U);
-  if (port_reset != 0U) {
+  if (port_reset == true) {
     port_reset = false;
     return ARM_DRIVER_ERROR;
   }
@@ -630,8 +698,8 @@ static int32_t USBH_PortReset (uint8_t port) {
 */
 static int32_t USBH_PortSuspend (uint8_t port) {
 
-  if ((otg_fs_state & OTG_FS_USBH_DRIVER_POWERED) == 0U) { return ARM_DRIVER_ERROR;           }
-  if (port != 0U)                                        { return ARM_DRIVER_ERROR_PARAMETER; }
+  if (hw_powered == false) { return ARM_DRIVER_ERROR;           }
+  if (port != 0U)          { return ARM_DRIVER_ERROR_PARAMETER; }
 
   OTG->HPRT |=  OTG_FS_HPRT_PSUSP;                      // Port suspend
 
@@ -646,8 +714,8 @@ static int32_t USBH_PortSuspend (uint8_t port) {
 */
 static int32_t USBH_PortResume (uint8_t port) {
 
-  if ((otg_fs_state & OTG_FS_USBH_DRIVER_POWERED) == 0U) { return ARM_DRIVER_ERROR;           }
-  if (port != 0U)                                        { return ARM_DRIVER_ERROR_PARAMETER; }
+  if (hw_powered == false) { return ARM_DRIVER_ERROR;           }
+  if (port != 0U)          { return ARM_DRIVER_ERROR_PARAMETER; }
 
   OTG->HPRT |=  OTG_FS_HPRT_PRES;                       // Port resume
 
@@ -664,8 +732,8 @@ static ARM_USBH_PORT_STATE USBH_PortGetState (uint8_t port) {
   ARM_USBH_PORT_STATE port_state = { 0U, 0U, 0U };
   uint32_t hprt;
 
-  if ((otg_fs_state & OTG_FS_USBH_DRIVER_POWERED) == 0U) { return port_state; }
-  if (port != 0U)                                        { return port_state; }
+  if (hw_powered == false) { return port_state; }
+  if (port != 0U)          { return port_state; }
 
   hprt = OTG->HPRT;
 
@@ -717,7 +785,7 @@ static ARM_USBH_PIPE_HANDLE USBH_PipeCreate (uint8_t dev_addr, uint8_t dev_speed
   PIPE_t    *ptr_pipe;
   OTG_FS_HC *ptr_ch;
 
-  if ((otg_fs_state & OTG_FS_USBH_DRIVER_POWERED) == 0U) { return NULL; }
+  if (hw_powered == false) { return NULL; }
 
   ptr_ch = USBH_CH_FindFree ();                 // Find free Channel
   if (ptr_ch == 0U) { return NULL; }            // If no free
@@ -781,12 +849,12 @@ static int32_t USBH_PipeModify (ARM_USBH_PIPE_HANDLE pipe_hndl, uint8_t dev_addr
   OTG_FS_HC *ptr_ch;
   uint32_t   hcchar;
 
-  if ((otg_fs_state & OTG_FS_USBH_DRIVER_POWERED) == 0U) { return ARM_DRIVER_ERROR;           }
-  if (pipe_hndl == 0U)                                   { return ARM_DRIVER_ERROR_PARAMETER; }
+  if (hw_powered == false)    { return ARM_DRIVER_ERROR;           }
+  if (pipe_hndl  == 0U)       { return ARM_DRIVER_ERROR_PARAMETER; }
 
   ptr_ch   = (OTG_FS_HC *)(pipe_hndl);
   ptr_pipe = (PIPE_t    *)(&pipe[USBH_CH_GetIndexFromAddress (ptr_ch)]);
-  if (ptr_pipe->active != 0U)                            { return ARM_DRIVER_ERROR_BUSY;      }
+  if (ptr_pipe->active != 0U) { return ARM_DRIVER_ERROR_BUSY;      }
 
   // Fill in all fields of Endpoint Descriptor
   hcchar  =   ptr_ch->HCCHAR;
@@ -813,12 +881,12 @@ static int32_t USBH_PipeDelete (ARM_USBH_PIPE_HANDLE pipe_hndl) {
   PIPE_t    *ptr_pipe;
   OTG_FS_HC *ptr_ch;
 
-  if ((otg_fs_state & OTG_FS_USBH_DRIVER_POWERED) == 0U) { return ARM_DRIVER_ERROR;           }
-  if (pipe_hndl == 0U)                                   { return ARM_DRIVER_ERROR_PARAMETER; }
+  if (hw_powered == false)    { return ARM_DRIVER_ERROR;           }
+  if (pipe_hndl  == 0U)       { return ARM_DRIVER_ERROR_PARAMETER; }
 
   ptr_ch   = (OTG_FS_HC *)(pipe_hndl);
   ptr_pipe = (PIPE_t    *)(&pipe[USBH_CH_GetIndexFromAddress (ptr_ch)]);
-  if (ptr_pipe->active != 0U)                            { return ARM_DRIVER_ERROR_BUSY;      }
+  if (ptr_pipe->active != 0U) { return ARM_DRIVER_ERROR_BUSY;      }
 
   ptr_ch->HCCHAR   = 0U;
   ptr_ch->HCINT    = 0U;
@@ -841,12 +909,12 @@ static int32_t USBH_PipeReset (ARM_USBH_PIPE_HANDLE pipe_hndl) {
   PIPE_t    *ptr_pipe;
   OTG_FS_HC *ptr_ch;
 
-  if ((otg_fs_state & OTG_FS_USBH_DRIVER_POWERED) == 0U) { return ARM_DRIVER_ERROR;           }
-  if (pipe_hndl == 0U)                                   { return ARM_DRIVER_ERROR_PARAMETER; }
+  if (hw_powered == false)    { return ARM_DRIVER_ERROR;           }
+  if (pipe_hndl  == 0U)       { return ARM_DRIVER_ERROR_PARAMETER; }
 
   ptr_ch   = (OTG_FS_HC *)(pipe_hndl);
   ptr_pipe = (PIPE_t    *)(&pipe[USBH_CH_GetIndexFromAddress (ptr_ch)]);
-  if (ptr_pipe->active != 0U)                            { return ARM_DRIVER_ERROR_BUSY;      }
+  if (ptr_pipe->active != 0U) { return ARM_DRIVER_ERROR_BUSY;      }
 
   ptr_ch->HCINT    = 0U;
   ptr_ch->HCINTMSK = 0U;
@@ -870,12 +938,12 @@ static int32_t USBH_PipeReset (ARM_USBH_PIPE_HANDLE pipe_hndl) {
 static int32_t USBH_PipeTransfer (ARM_USBH_PIPE_HANDLE pipe_hndl, uint32_t packet, uint8_t *data, uint32_t num) {
   PIPE_t *ptr_pipe;
 
-  if ((otg_fs_state & OTG_FS_USBH_DRIVER_POWERED) == 0U) { return ARM_DRIVER_ERROR;           }
-  if (pipe_hndl == 0U)                                   { return ARM_DRIVER_ERROR_PARAMETER; }
-  if ((OTG->HPRT & OTG_FS_HPRT_PCSTS) == 0U)             { return ARM_DRIVER_ERROR;           }
+  if (hw_powered == false)                   { return ARM_DRIVER_ERROR;           }
+  if (pipe_hndl  == 0U)                      { return ARM_DRIVER_ERROR_PARAMETER; }
+  if ((OTG->HPRT & OTG_FS_HPRT_PCSTS) == 0U) { return ARM_DRIVER_ERROR;           }
 
   ptr_pipe = (PIPE_t *)(&pipe[USBH_CH_GetIndexFromAddress ((OTG_FS_HC *)(pipe_hndl))]);
-  if (ptr_pipe->active != 0U)                            { return ARM_DRIVER_ERROR_BUSY;      }
+  if (ptr_pipe->active != 0U)                         { return ARM_DRIVER_ERROR_BUSY;      }
 
   // Update current transfer information
   ptr_pipe->packet                = packet;
@@ -924,8 +992,8 @@ static uint32_t USBH_PipeTransferGetResult (ARM_USBH_PIPE_HANDLE pipe_hndl) {
 static int32_t USBH_PipeTransferAbort (ARM_USBH_PIPE_HANDLE pipe_hndl) {
   PIPE_t *ptr_pipe;
 
-  if ((otg_fs_state & OTG_FS_USBH_DRIVER_POWERED) == 0U) { return ARM_DRIVER_ERROR;           }
-  if (pipe_hndl == 0U)                                   { return ARM_DRIVER_ERROR_PARAMETER; }
+  if (hw_powered == false) { return ARM_DRIVER_ERROR;           }
+  if (pipe_hndl  == 0U)    { return ARM_DRIVER_ERROR_PARAMETER; }
 
   ptr_pipe = (PIPE_t *)(&pipe[USBH_CH_GetIndexFromAddress ((OTG_FS_HC *)(pipe_hndl))]);
 
@@ -944,7 +1012,7 @@ static int32_t USBH_PipeTransferAbort (ARM_USBH_PIPE_HANDLE pipe_hndl) {
 */
 static uint16_t USBH_GetFrameNumber (void) {
 
-  if ((otg_fs_state & OTG_FS_USBH_DRIVER_POWERED) == 0U) { return 0U; }
+  if (hw_powered == false) { return 0U; }
 
   return ((OTG->HFNUM >> 3) & 0x7FFU);
 }
@@ -966,13 +1034,13 @@ void USBH_FS_IRQ (uint32_t gintsts) {
     hprt = OTG->HPRT;
     OTG->HPRT = hprt & (~OTG_FS_HPRT_PENA);             // Leave PENA bit
     if ((hprt & OTG_FS_HPRT_PCDET) != 0U) {             // Port connect detected
-      if (port_reset == 0U) {                           // If port not under reset
+      if (port_reset == false) {                        // If port not under reset
         SignalPortEvent(0, ARM_USBH_EVENT_CONNECT);
       }
     }
     if ((hprt & OTG_FS_HPRT_PENCHNG) != 0U) {           // If port enable changed
       if ((hprt & OTG_FS_HPRT_PENA) != 0U) {            // If device connected
-        if (port_reset != 0U) {
+        if (port_reset == true) {
           port_reset = false;
           SignalPortEvent(0, ARM_USBH_EVENT_RESET);
         }
@@ -980,8 +1048,8 @@ void USBH_FS_IRQ (uint32_t gintsts) {
     }
   }
   if ((gintsts & OTG_FS_GINTSTS_DISCINT) != 0U) {       // If device disconnected
-    OTG->GINTSTS = OTG_FS_GINTSTS_DISCINT;              // Clear disconnect int
-    if (port_reset == 0U) {                             // Ignore discon under reset
+    OTG->GINTSTS = OTG_FS_GINTSTS_DISCINT;              // Clear disconnect interrupt
+    if (port_reset == false) {                          // Ignore disconnect under reset
       ptr_ch   = (OTG_FS_HC *)(&OTG->HCCHAR0);
       ptr_pipe = (PIPE_t    *)(pipe);
       for (ch = 0U; ch < USBH_MAX_PIPE_NUM; ch++) {
@@ -995,8 +1063,8 @@ void USBH_FS_IRQ (uint32_t gintsts) {
       SignalPortEvent(0, ARM_USBH_EVENT_DISCONNECT);
     }
   }
-                                                        // Handle reception int
-  if ((gintsts & OTG_FS_GINTSTS_RXFLVL) != 0U) {        // If RXFIFO non-empty int
+                                                        // Handle reception interrupt
+  if ((gintsts & OTG_FS_GINTSTS_RXFLVL) != 0U) {        // If RXFIFO non-empty interrupt
     OTG->GINTMSK &= ~OTG_FS_GINTMSK_RXFLVLM;
     grxsts = OTG->GRXSTSR;
     if (((grxsts >> 17) & 0x0FU) == 0x02U) {            // If PKTSTS = 0x02
@@ -1027,7 +1095,7 @@ void USBH_FS_IRQ (uint32_t gintsts) {
     }
     OTG->GINTMSK |= OTG_FS_GINTMSK_RXFLVLM;
   }
-                                                        // Handle host ctrl int
+                                                        // Handle host ctrl interrupt
   if ((gintsts & OTG_FS_GINTSTS_HCINT) != 0U) {         // If host channel interrupt
     haint = OTG->HAINT;
     for (ch = 0U; ch < USBH_MAX_PIPE_NUM; ch++) {
@@ -1138,7 +1206,7 @@ halt_ch:                                                // Halt the channel
   }
 
   // Handle periodic transfer timings
-  if ((gintsts & OTG_FS_GINTSTS_SOF) != 0U) {           // If start of frame int
+  if ((gintsts & OTG_FS_GINTSTS_SOF) != 0U) {           // If start of frame interrupt
     OTG->GINTSTS =  OTG_FS_GINTSTS_SOF;                 // Clear SOF interrupt
     ptr_pipe     = (PIPE_t *)(pipe);
     for (ch = 0U; ch < USBH_MAX_PIPE_NUM; ch++) {
@@ -1193,3 +1261,5 @@ ARM_DRIVER_USBH Driver_USBH0 = {
   USBH_PipeTransferAbort,
   USBH_GetFrameNumber
 };
+
+/*! \endcond */

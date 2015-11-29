@@ -18,24 +18,20 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        10. June 2015
- * $Revision:    V1.4
+ * $Date:        27. August 2015
+ * $Revision:    V1.5
  *
  * Project:      OTG Full/Low-Speed Driver Header for ST STM32F4xx
  * -------------------------------------------------------------------------- */
 
 #include <stdint.h>
 #include "stm32f4xx_hal.h"
-
-#define OTG_FS_USBD_DRIVER_INITIALIZED (1U     )
-#define OTG_FS_USBD_DRIVER_POWERED     (1U << 1)
-#define OTG_FS_USBH_DRIVER_INITIALIZED (1U << 4)
-#define OTG_FS_USBH_DRIVER_POWERED     (1U << 5)
+#include "RTE_Components.h"
 
 #ifdef    RTE_DEVICE_FRAMEWORK_CLASSIC
 #include "RTE_Device.h"
 
-/* Do basic RTE configuration check */
+// Do basic RTE configuration check
 #if    (RTE_USB_OTG_FS == 1)
 #if   ((RTE_USB_OTG_FS_HOST == 1) && (RTE_OTG_FS_VBUS_PIN == 0))
 #error  Configure VBUS Power On/Off pin for USB OTG Full-speed in RTE_Device.h!
@@ -44,18 +40,25 @@
 #error  Enable USB OTG Full-speed in RTE_Device.h!
 #endif
 
-/* If Framework Classic is used create MX defines from RTE defines */
+// If Framework Classic is used create MX defines from RTE defines
+#ifdef RTE_Drivers_USBD0
+#define MX_USB_OTG_FS_DEVICE                    1
+#endif
+#ifdef RTE_Drivers_USBH0
+#define MX_USB_OTG_FS_HOST                      1
+#endif
+
 #define MX_USB_OTG_FS_GPIO_PIN_(n)              GPIO_PIN_##n
 #define MX_USB_OTG_FS_GPIO_PIN(n)               MX_USB_OTG_FS_GPIO_PIN_(n)
 
-/* Pin USB_OTG_FS_VBUS : PA9 */
+// Pin USB_OTG_FS_VBUS : PA9
 #define MX_USB_OTG_FS_VBUS_Pin                  PA9
 #define MX_USB_OTG_FS_VBUS_GPIO_PuPd            GPIO_NOPULL
 #define MX_USB_OTG_FS_VBUS_GPIOx                GPIOA
 #define MX_USB_OTG_FS_VBUS_GPIO_Mode            GPIO_MODE_INPUT
 #define MX_USB_OTG_FS_VBUS_GPIO_Pin             GPIO_PIN_9
 
-/* Pin USB_OTG_FS_DM : PA11 */
+// Pin USB_OTG_FS_DM : PA11
 #define MX_USB_OTG_FS_DM_Pin                    PA11
 #define MX_USB_OTG_FS_DM_GPIO_AF                GPIO_AF10_OTG_FS
 #define MX_USB_OTG_FS_DM_GPIO_Speed             GPIO_SPEED_LOW
@@ -64,7 +67,7 @@
 #define MX_USB_OTG_FS_DM_GPIO_Mode              GPIO_MODE_AF_PP
 #define MX_USB_OTG_FS_DM_GPIO_Pin               GPIO_PIN_11
 
-/* Pin USB_OTG_FS_DP : PA12 */
+// Pin USB_OTG_FS_DP : PA12
 #define MX_USB_OTG_FS_DP_Pin                    PA12
 #define MX_USB_OTG_FS_DP_GPIO_AF                GPIO_AF10_OTG_FS
 #define MX_USB_OTG_FS_DP_GPIO_Speed             GPIO_SPEED_LOW
@@ -73,7 +76,7 @@
 #define MX_USB_OTG_FS_DP_GPIO_Mode              GPIO_MODE_AF_PP
 #define MX_USB_OTG_FS_DP_GPIO_Pin               GPIO_PIN_12
 
-/* Pin USB_OTG_FS_ID : PA10 */
+// Pin USB_OTG_FS_ID : PA10
 #define MX_USB_OTG_FS_ID_Pin                    PA10
 #define MX_USB_OTG_FS_ID_GPIO_AF                GPIO_AF10_OTG_FS
 #define MX_USB_OTG_FS_ID_GPIO_Speed             GPIO_SPEED_LOW
@@ -83,7 +86,7 @@
 #define MX_USB_OTG_FS_ID_GPIO_Pin               GPIO_PIN_10
 
 #if    ((RTE_USB_OTG_FS_HOST == 1) && (RTE_OTG_FS_VBUS_PIN == 1))
-/* Pin USB_OTG_FS_VBUS_Power : GPIO pin */
+// Pin USB_OTG_FS_VBUS_Power : GPIO pin
 #define MX_USB_OTG_FS_VBUS_Power_Pin            1
 #define MX_USB_OTG_FS_VBUS_Power_GPIO_PuPd      GPIO_NOPULL
 #define MX_USB_OTG_FS_VBUS_Power_GPIOx          RTE_OTG_FS_VBUS_PORT
@@ -93,7 +96,7 @@
 #endif
 
 #if    ((RTE_USB_OTG_FS_HOST == 1) && (RTE_OTG_FS_OC_PIN == 1))
-/* Pin USB_OTG_FS_Overcurrent : GPIO pin */
+// Pin USB_OTG_FS_Overcurrent : GPIO pin
 #define MX_USB_OTG_FS_Overcurrent_Pin           1
 #define MX_USB_OTG_FS_Overcurrent_GPIO_PuPd     GPIO_NOPULL
 #define MX_USB_OTG_FS_Overcurrent_GPIOx         RTE_OTG_FS_OC_PORT
@@ -105,19 +108,36 @@
 #elif  (defined(RTE_DEVICE_FRAMEWORK_CUBE_MX))  // #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
 #include "MX_Device.h"
 
-/* Do basic CubeMX configuration check */
+#define CREATE_MX_SYMBOL(mx_def,ext)            MX_##mx_def##_##ext
+#define MX_VAL(mx_def,ext)                      CREATE_MX_SYMBOL(mx_def,ext)
+
+// Do basic CubeMX configuration check
 #ifndef MX_USB_OTG_FS
 #error  Enable USB_OTG_FS in STM32CubeMX!
 #endif
 
-/* Define USB Host VBUS Power Pin active state */
-#ifndef USB_OTG_FS_VBUS_Power_Pin_Active
-#define USB_OTG_FS_VBUS_Power_Pin_Active        0
+#if     defined(MX_USB_OTG_FS_VBUS_Power)
+// Pin USB_OTG_FS_VBUS_Power : GPIO pin
+#define MX_USB_OTG_FS_VBUS_Power_Pin            1
+#define MX_USB_OTG_FS_VBUS_Power_GPIO_PuPd      MX_VAL(MX_USB_OTG_FS_VBUS_Power, GPIO_PuPd)
+#define MX_USB_OTG_FS_VBUS_Power_GPIOx          MX_VAL(MX_USB_OTG_FS_VBUS_Power, GPIOx)
+#define MX_USB_OTG_FS_VBUS_Power_GPIO_Mode      MX_VAL(MX_USB_OTG_FS_VBUS_Power, GPIO_ModeDefaultOutputPP)
+#define MX_USB_OTG_FS_VBUS_Power_GPIO_Pin       MX_VAL(MX_USB_OTG_FS_VBUS_Power, GPIO_Pin)
+#ifndef    USB_OTG_FS_VBUS_Power_Pin_Active
+#define    USB_OTG_FS_VBUS_Power_Pin_Active     0
+#endif
 #endif
 
-/* Define USB Host Overcurrent Pin active state */
-#ifndef USB_OTG_FS_Overcurrent_Pin_Active
-#define USB_OTG_FS_Overcurrent_Pin_Active       0
+#if     defined(MX_USB_OTG_FS_Overcurrent)
+// Pin USB_OTG_FS_Overcurrent : GPIO pin
+#define MX_USB_OTG_FS_Overcurrent_Pin           1
+#define MX_USB_OTG_FS_Overcurrent_GPIO_PuPd     MX_VAL(MX_USB_OTG_FS_Overcurrent, GPIO_PuPd)
+#define MX_USB_OTG_FS_Overcurrent_GPIOx         MX_VAL(MX_USB_OTG_FS_Overcurrent, GPIOx)
+#define MX_USB_OTG_FS_Overcurrent_GPIO_Mode     MX_VAL(MX_USB_OTG_FS_Overcurrent, Mode)
+#define MX_USB_OTG_FS_Overcurrent_GPIO_Pin      MX_VAL(MX_USB_OTG_FS_Overcurrent, GPIO_Pin)
+#ifndef    USB_OTG_FS_Overcurrent_Pin_Active
+#define    USB_OTG_FS_Overcurrent_Pin_Active    0
+#endif
 #endif
 
 #endif                                          // #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
@@ -502,79 +522,79 @@ typedef struct
 #define OTG_FS_DFIFO6_BASE    (OTG_FS_BASE + 0x07000U)
 #define OTG_FS_DFIFO7_BASE    (OTG_FS_BASE + 0x08000U)
 
-#define OTG_FS              ((OTG_FS_TypeDef *) OTG_FS_BASE)
-#define OTG_FS_DFIFO0       (((uint32_t *) OTG_FS_DFIFO0_BASE) )
-#define OTG_FS_DFIFO1       (((uint32_t *) OTG_FS_DFIFO1_BASE) )
-#define OTG_FS_DFIFO2       (((uint32_t *) OTG_FS_DFIFO2_BASE) )
-#define OTG_FS_DFIFO3       (((uint32_t *) OTG_FS_DFIFO3_BASE) )
-#define OTG_FS_DFIFO4       (((uint32_t *) OTG_FS_DFIFO4_BASE) )
-#define OTG_FS_DFIFO5       (((uint32_t *) OTG_FS_DFIFO5_BASE) )
-#define OTG_FS_DFIFO6       (((uint32_t *) OTG_FS_DFIFO6_BASE) )
-#define OTG_FS_DFIFO7       (((uint32_t *) OTG_FS_DFIFO7_BASE) )
+#define OTG_FS                ((OTG_FS_TypeDef *) OTG_FS_BASE)
+#define OTG_FS_DFIFO0         (((uint32_t *) OTG_FS_DFIFO0_BASE) )
+#define OTG_FS_DFIFO1         (((uint32_t *) OTG_FS_DFIFO1_BASE) )
+#define OTG_FS_DFIFO2         (((uint32_t *) OTG_FS_DFIFO2_BASE) )
+#define OTG_FS_DFIFO3         (((uint32_t *) OTG_FS_DFIFO3_BASE) )
+#define OTG_FS_DFIFO4         (((uint32_t *) OTG_FS_DFIFO4_BASE) )
+#define OTG_FS_DFIFO5         (((uint32_t *) OTG_FS_DFIFO5_BASE) )
+#define OTG_FS_DFIFO6         (((uint32_t *) OTG_FS_DFIFO6_BASE) )
+#define OTG_FS_DFIFO7         (((uint32_t *) OTG_FS_DFIFO7_BASE) )
 
 // OTG_FS Host Channel
-typedef __packed struct {               /* Host Channel typedef (HC)          */
+typedef __packed struct {               // Host Channel typedef (HC)
   __packed union {
-    uint32_t HCCHAR;                    /* Channel Characteristics            */
+    uint32_t HCCHAR;                    // Channel Characteristics
     __packed struct {
-      uint32_t MPSIZ     : 11;          /* Endpoint Maximum Packet Size       */
-      uint32_t EPNUM     :  4;          /* Endpoint Number                    */
-      uint32_t EPDIR     :  1;          /* Endpoint Direction                 */
-      uint32_t Reserved0 :  1;          /* Reserved                           */
-      uint32_t LSDEV     :  1;          /* Endpoint Low-speed                 */
-      uint32_t EPTYP     :  2;          /* Endpoint Type                      */
-      uint32_t MCNT      :  2;          /* Periodic Endpoint Multicount       */
-      uint32_t DAD       :  7;          /* Device Address                     */
-      uint32_t ODDFRM    :  1;          /* Periodic Transaction Odd Frame     */
-      uint32_t CHDIS     :  1;          /* Channel Disable                    */
-      uint32_t CHENA     :  1;          /* Channel Enable                     */
+      uint32_t MPSIZ     : 11;          // Endpoint Maximum Packet Size
+      uint32_t EPNUM     :  4;          // Endpoint Number
+      uint32_t EPDIR     :  1;          // Endpoint Direction
+      uint32_t Reserved0 :  1;          // Reserved
+      uint32_t LSDEV     :  1;          // Endpoint Low-speed
+      uint32_t EPTYP     :  2;          // Endpoint Type
+      uint32_t MCNT      :  2;          // Multicount
+      uint32_t DAD       :  7;          // Device Address
+      uint32_t ODDFRM    :  1;          // Periodic Transaction Odd Frame
+      uint32_t CHDIS     :  1;          // Channel Disable
+      uint32_t CHENA     :  1;          // Channel Enable
     };
   };
-  uint32_t Reserved1;                   /* Reserved                           */
+  uint32_t Reserved1;                   // Reserved
   __packed union {
-    uint32_t HCINT;                     /* Channel Interrupt                  */
+    uint32_t HCINT;                     // Channel Interrupt
     __packed struct {
-      uint32_t XFCR      :  1;          /* Transfer Completed                 */
-      uint32_t CHH       :  1;          /* Channel Halted                     */
-      uint32_t Reserved2 :  1;          /* Reserved                           */
-      uint32_t STALL     :  1;          /* STALL Response Received Interrupt  */
-      uint32_t NAK       :  1;          /* NAK Response Received Interrupt    */
-      uint32_t ACK       :  1;          /* ACK Response Rece/Transmit Int     */
-      uint32_t NYET      :  1;          /* NYET Response Received Interrupt   */
-      uint32_t TXERR     :  1;          /* Transaction Error                  */
-      uint32_t BBERR     :  1;          /* Babble Error                       */
-      uint32_t FRMOR     :  1;          /* Frame Overrun                      */
-      uint32_t DTERR     :  1;          /* Data Toggle Error                  */
-    };
-  };
-  __packed union {
-    uint32_t HCINTMSK;                  /* Channel Interrupt Mask             */
-    __packed struct {
-      uint32_t XFCRM     :  1;          /* Transfer Completed Mask            */
-      uint32_t CHHM      :  1;          /* Channel Halted Mask                */
-      uint32_t Reserved4 :  1;          /* Reserved                           */
-      uint32_t STALLM    :  1;          /* STALL Response Rece Interrupt Mask */
-      uint32_t NAKM      :  1;          /* NAK Response Rece Interrupt Mask   */
-      uint32_t ACKM      :  1;          /* ACK Response Rece/Transmit Int Mask*/
-      uint32_t NYETM     :  1;          /* NYET Response Rece/Transmit Int Msk*/
-      uint32_t TXERRM    :  1;          /* Transaction Error Mask             */
-      uint32_t BBERRM    :  1;          /* Babble Error Mask                  */
-      uint32_t FRMORM    :  1;          /* Frame Overrun Mask                 */
-      uint32_t DTERRM    :  1;          /* Data Toggle Error Mask             */
+      uint32_t XFCR      :  1;          // Transfer Completed
+      uint32_t CHH       :  1;          // Channel Halted
+      uint32_t Reserved2 :  1;          // Reserved
+      uint32_t STALL     :  1;          // STALL Response Received Interrupt
+      uint32_t NAK       :  1;          // NAK Response Received Interrupt
+      uint32_t ACK       :  1;          // ACK Response Rece/Transmit Int
+      uint32_t Reserved3 :  1;          // Reserved
+      uint32_t TXERR     :  1;          // Transaction Error
+      uint32_t BBERR     :  1;          // Babble Error
+      uint32_t FRMOR     :  1;          // Frame Overrun
+      uint32_t DTERR     :  1;          // Data Toggle Error
     };
   };
   __packed union {
-    uint32_t HCTSIZ;                    /* Channel Transfer Size              */
+    uint32_t HCINTMSK;                  // Channel Interrupt Mask
     __packed struct {
-      uint32_t XFRSIZ    : 19;          /* Transfer Size                      */
-      uint32_t PKTCNT    : 10;          /* Packet Count                       */
-      uint32_t DPID      :  2;          /* Data PID                           */
-      uint32_t Reserved6 :  1;          /* Reserved                           */
+      uint32_t XFCRM     :  1;          // Transfer Completed Mask
+      uint32_t CHHM      :  1;          // Channel Halted Mask
+      uint32_t Reserved4 :  1;          // Reserved
+      uint32_t STALLM    :  1;          // STALL Response Rece Interrupt Mask
+      uint32_t NAKM      :  1;          // NAK Response Rece Interrupt Mask
+      uint32_t ACKM      :  1;          // ACK Response Rece/Transmit Int Mask
+      uint32_t Reserved5 :  1;          // Reserved
+      uint32_t TXERRM    :  1;          // Transaction Error Mask
+      uint32_t BBERRM    :  1;          // Babble Error Mask
+      uint32_t FRMORM    :  1;          // Frame Overrun Mask
+      uint32_t DTERRM    :  1;          // Data Toggle Error Mask
     };
   };
-  uint32_t Reserved7;                   /* Reserved                           */
-  uint32_t Reserved8;                   /* Reserved                           */
-  uint32_t Reserved9;                   /* Reserved                           */
+  __packed union {
+    uint32_t HCTSIZ;                    // Channel Transfer Size
+    __packed struct {
+      uint32_t XFRSIZ    : 19;          // Transfer Size
+      uint32_t PKTCNT    : 10;          // Packet Count
+      uint32_t DPID      :  2;          // Data PID
+      uint32_t Reserved6 :  1;          // Reserved
+    };
+  };
+  uint32_t Reserved7;                   // Reserved
+  uint32_t Reserved8;                   // Reserved
+  uint32_t Reserved9;                   // Reserved
 } OTG_FS_HC;
 
 #pragma pop
@@ -881,7 +901,6 @@ typedef __packed struct {               /* Host Channel typedef (HC)          */
 #define  OTG_FS_HCINTMSKx_STALLM            ((uint32_t)    1U  <<  3)
 #define  OTG_FS_HCINTMSKx_NAKM              ((uint32_t)    1U  <<  4)
 #define  OTG_FS_HCINTMSKx_ACKM              ((uint32_t)    1U  <<  5)
-#define  OTG_FS_HCINTMSKx_NYET              ((uint32_t)    1U  <<  6)
 #define  OTG_FS_HCINTMSKx_TXERRM            ((uint32_t)    1U  <<  7)
 #define  OTG_FS_HCINTMSKx_BBERRM            ((uint32_t)    1U  <<  8)
 #define  OTG_FS_HCINTMSKx_FRMORM            ((uint32_t)    1U  <<  9)
@@ -1052,8 +1071,8 @@ typedef __packed struct {               /* Host Channel typedef (HC)          */
 #define  OTG_FS_DOEPCTLx_SNAK               ((uint32_t)    1U  << 27)
 #define  OTG_FS_DOEPCTLx_SD0PID             ((uint32_t)    1U  << 28)
 #define  OTG_FS_DOEPCTLx_SEVNFRM            ((uint32_t)    1U  << 28)
-#define  OTG_FS_DOEPCTLx_SODDFRM            ((uint32_t)    1U  << 29)
 #define  OTG_FS_DOEPCTLx_SD1PID             ((uint32_t)    1U  << 29)
+#define  OTG_FS_DOEPCTLx_SODDFRM            ((uint32_t)    1U  << 29)
 #define  OTG_FS_DOEPCTLx_EPDIS              ((uint32_t)    1U  << 30)
 #define  OTG_FS_DOEPCTLx_EPENA              ((uint32_t)    1U  << 31)
 

@@ -18,14 +18,18 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        10. June 2015
- * $Revision:    V2.2
+ * $Date:        27. August 2015
+ * $Revision:    V2.4
  *
  * Project:      OTG Full/Low-Speed Common Driver for ST STM32F4xx
  * Configured:   via RTE_Device.h configuration file
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.4
+ *    STM32CubeMX generated code can also be used to configure the driver.
+ *  Version 2.3
+ *    Removed pins_cfg_mask variable
  *  Version 2.2
  *    Updated GPIO Clock enable functionality
  *  Version 2.1
@@ -50,7 +54,6 @@
 #include "Driver_USBH.h"
 #include "Driver_USBD.h"
 
-#include "RTE_Components.h"
 
 #include "OTG_FS_STM32F4xx.h"
 
@@ -58,17 +61,16 @@
 extern void USBH_FS_IRQ (uint32_t gintsts);
 extern void USBD_FS_IRQ (uint32_t gintsts);
 
-static uint8_t pins_cfg_mask = 0U;
-       uint8_t otg_fs_role   = ARM_USB_ROLE_NONE;
-       uint8_t otg_fs_state  = 0U;
+uint8_t otg_fs_role = ARM_USB_ROLE_NONE;
 
 
-/* Local Functions ************************************************************/
+// Local Functions *************************************************************
 
 /**
   \fn          void Enable_GPIO_Clock (const GPIO_TypeDef *port)
   \brief       Enable GPIO clock
 */
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
 static void Enable_GPIO_Clock (const GPIO_TypeDef *GPIOx) {
   if      (GPIOx == GPIOA) { __GPIOA_CLK_ENABLE(); }
   else if (GPIOx == GPIOB) { __GPIOB_CLK_ENABLE(); }
@@ -94,9 +96,10 @@ static void Enable_GPIO_Clock (const GPIO_TypeDef *GPIOx) {
   else if (GPIOx == GPIOK) { __GPIOK_CLK_ENABLE(); }
 #endif
 }
+#endif
 
 
-/* Common IRQ Routine *********************************************************/
+// Common IRQ Routine **********************************************************
 
 /**
   \fn          void OTG_FS_IRQHandler (void)
@@ -107,22 +110,32 @@ void OTG_FS_IRQHandler (void) {
 
   gintsts = USB_OTG_FS->GINTSTS & USB_OTG_FS->GINTMSK;
 
+#if (defined(MX_USB_OTG_FS_HOST) && defined(MX_USB_OTG_FS_DEVICE))
   switch (otg_fs_role) {
-#ifdef RTE_Drivers_USBH0
+#ifdef MX_USB_OTG_FS_HOST
     case ARM_USB_ROLE_HOST:
       USBH_FS_IRQ (gintsts);
       break;
 #endif
-#ifdef RTE_Drivers_USBD0
+#ifdef MX_USB_OTG_FS_DEVICE
     case ARM_USB_ROLE_DEVICE:
       USBD_FS_IRQ (gintsts);
       break;
 #endif
+    default:
+      break;
   }
+#else
+#ifdef MX_USB_OTG_FS_HOST
+  USBH_FS_IRQ (gintsts);
+#else
+  USBD_FS_IRQ (gintsts);
+#endif
+#endif
 }
 
 
-/* Public Functions ***********************************************************/
+// Public Functions ************************************************************
 
 /**
   \fn          void OTG_FS_PinsConfigure (uint8_t pins_mask)
@@ -132,6 +145,7 @@ void OTG_FS_IRQHandler (void) {
                ARM_USB_PIN_OC, ARM_USB_PIN_ID)
 */
 void OTG_FS_PinsConfigure (uint8_t pins_mask) {
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
   GPIO_InitTypeDef GPIO_InitStruct;
 
   if ((pins_mask & ARM_USB_PIN_DP) != 0U) {
@@ -142,7 +156,6 @@ void OTG_FS_PinsConfigure (uint8_t pins_mask) {
     GPIO_InitStruct.Speed       =  MX_USB_OTG_FS_DP_GPIO_Speed;
     GPIO_InitStruct.Alternate   =  MX_USB_OTG_FS_DP_GPIO_AF;
     HAL_GPIO_Init                 (MX_USB_OTG_FS_DP_GPIOx, &GPIO_InitStruct);
-    pins_cfg_mask |= ARM_USB_PIN_DP;
   }
   if ((pins_mask & ARM_USB_PIN_DM) != 0U) {
     Enable_GPIO_Clock             (MX_USB_OTG_FS_DM_GPIOx);
@@ -152,7 +165,6 @@ void OTG_FS_PinsConfigure (uint8_t pins_mask) {
     GPIO_InitStruct.Speed       =  MX_USB_OTG_FS_DM_GPIO_Speed;
     GPIO_InitStruct.Alternate   =  MX_USB_OTG_FS_DM_GPIO_AF;
     HAL_GPIO_Init                 (MX_USB_OTG_FS_DM_GPIOx, &GPIO_InitStruct);
-    pins_cfg_mask |= ARM_USB_PIN_DM;
   }
 #ifdef MX_USB_OTG_FS_ID_Pin
   if ((pins_mask & ARM_USB_PIN_ID) != 0U) {
@@ -163,7 +175,6 @@ void OTG_FS_PinsConfigure (uint8_t pins_mask) {
     GPIO_InitStruct.Speed       =  MX_USB_OTG_FS_ID_GPIO_Speed;
     GPIO_InitStruct.Alternate   =  MX_USB_OTG_FS_ID_GPIO_AF;
     HAL_GPIO_Init                 (MX_USB_OTG_FS_ID_GPIOx, &GPIO_InitStruct);
-    pins_cfg_mask |= ARM_USB_PIN_ID;
   }
 #endif
 #ifdef MX_USB_OTG_FS_VBUS_Pin           // Device VBUS sensing pin (input)
@@ -176,7 +187,6 @@ void OTG_FS_PinsConfigure (uint8_t pins_mask) {
       GPIO_InitStruct.Speed     =  0U;
       GPIO_InitStruct.Alternate =  0U;
       HAL_GPIO_Init               (MX_USB_OTG_FS_VBUS_GPIOx, &GPIO_InitStruct);
-      pins_cfg_mask |= ARM_USB_PIN_VBUS;
     }
   }
 #endif
@@ -198,7 +208,6 @@ void OTG_FS_PinsConfigure (uint8_t pins_mask) {
       GPIO_InitStruct.Speed     =  0U;
       GPIO_InitStruct.Alternate =  0U;
       HAL_GPIO_Init               (MX_USB_OTG_FS_VBUS_Power_GPIOx, &GPIO_InitStruct);
-      pins_cfg_mask |= ARM_USB_PIN_VBUS;
     }
   }
 #endif
@@ -212,9 +221,9 @@ void OTG_FS_PinsConfigure (uint8_t pins_mask) {
       GPIO_InitStruct.Speed     =  0U;
       GPIO_InitStruct.Alternate =  0U;
       HAL_GPIO_Init               (MX_USB_OTG_FS_Overcurrent_GPIOx, &GPIO_InitStruct);
-      pins_cfg_mask |= ARM_USB_PIN_OC;
     }
   }
+#endif
 #endif
 }
 
@@ -227,43 +236,39 @@ void OTG_FS_PinsConfigure (uint8_t pins_mask) {
 */
 void OTG_FS_PinsUnconfigure (uint8_t pins_mask) {
 
-  if (((pins_cfg_mask & pins_mask) & ARM_USB_PIN_DP) != 0U) {
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+  if ((pins_mask & ARM_USB_PIN_DP) != 0U) {
     HAL_GPIO_DeInit (MX_USB_OTG_FS_DP_GPIOx, MX_USB_OTG_FS_DP_GPIO_Pin);
-    pins_cfg_mask &= ~ARM_USB_PIN_DP;
   }
-  if (((pins_cfg_mask & pins_mask) & ARM_USB_PIN_DM) != 0U) {
+  if ((pins_mask & ARM_USB_PIN_DM) != 0U) {
     HAL_GPIO_DeInit (MX_USB_OTG_FS_DM_GPIOx, MX_USB_OTG_FS_DM_GPIO_Pin);
-    pins_cfg_mask &= ~ARM_USB_PIN_DM;
   }
 #ifdef MX_USB_OTG_FS_ID_Pin
-  if (((pins_cfg_mask & pins_mask) & ARM_USB_PIN_ID) != 0U) {
+  if ((pins_mask & ARM_USB_PIN_ID) != 0U) {
     HAL_GPIO_DeInit (MX_USB_OTG_FS_ID_GPIOx, MX_USB_OTG_FS_ID_GPIO_Pin);
-    pins_cfg_mask &= ~ARM_USB_PIN_ID;
   }
 #endif
 #ifdef MX_USB_OTG_FS_VBUS_Pin
-  if (((pins_cfg_mask & pins_mask) & ARM_USB_PIN_VBUS) != 0U) {
+  if ((pins_mask & ARM_USB_PIN_VBUS) != 0U) {
     if (otg_fs_role == ARM_USB_ROLE_DEVICE) {
       HAL_GPIO_DeInit (MX_USB_OTG_FS_VBUS_GPIOx, MX_USB_OTG_FS_VBUS_GPIO_Pin);
-      pins_cfg_mask &= ~ARM_USB_PIN_VBUS;
     }
   }
 #endif
 #ifdef MX_USB_OTG_FS_VBUS_Power_Pin
-  if (((pins_cfg_mask & pins_mask) & ARM_USB_PIN_VBUS) != 0U) {
+  if ((pins_mask & ARM_USB_PIN_VBUS) != 0U) {
     if (otg_fs_role == ARM_USB_ROLE_HOST) {
       HAL_GPIO_DeInit (MX_USB_OTG_FS_VBUS_Power_GPIOx, MX_USB_OTG_FS_VBUS_Power_GPIO_Pin);
-      pins_cfg_mask &= ~ARM_USB_PIN_VBUS;
     }
   }
 #endif
 #ifdef MX_USB_OTG_FS_Overrcurrent_Pin
-  if (((pins_cfg_mask & pins_mask) & ARM_USB_PIN_OC) != 0U) {
+  if ((pins_mask & ARM_USB_PIN_OC) != 0U) {
     if (otg_fs_role == ARM_USB_ROLE_HOST) {
       HAL_GPIO_DeInit (MX_USB_OTG_FS_Overcurrent_GPIOx, MX_USB_OTG_FS_Overcurrent_GPIO_Pin);
-      pins_cfg_mask &= ~ARM_USB_PIN_OC;
     }
   }
+#endif
 #endif
 }
 
