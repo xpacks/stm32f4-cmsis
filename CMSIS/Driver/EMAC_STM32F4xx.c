@@ -1,51 +1,53 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013 - 2014 ARM Ltd.
+ * Copyright (c) 2013-2015 ARM Ltd.
  *
- * This software is provided 'as-is', without any express or implied warranty. 
- * In no event will the authors be held liable for any damages arising from 
- * the use of this software. Permission is granted to anyone to use this 
- * software for any purpose, including commercial applications, and to alter 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software. Permission is granted to anyone to use this
+ * software for any purpose, including commercial applications, and to alter
  * it and redistribute it freely, subject to the following restrictions:
  *
- * 1. The origin of this software must not be misrepresented; you must not 
+ * 1. The origin of this software must not be misrepresented; you must not
  *    claim that you wrote the original software. If you use this software in
- *    a product, an acknowledgment in the product documentation would be 
- *    appreciated but is not required. 
- * 
- * 2. Altered source versions must be plainly marked as such, and must not be 
- *    misrepresented as being the original software. 
+ *    a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
+ *
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
  *
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        10. November 2014
- * $Revision:    V2.01
- *  
+ * $Date:        02. June 2015
+ * $Revision:    V2.2
+ *
  * Driver:       Driver_ETH_MAC0
- * Configured:   via RTE_Device.h configuration file 
+ * Configured:   via RTE_Device.h configuration file
  * Project:      Ethernet Media Access (MAC) Driver for STM32F4xx
- * ---------------------------------------------------------------------- 
+ * --------------------------------------------------------------------------
  * Use the following configuration settings in the middleware component
  * to connect to this driver.
- * 
- *   Configuration Setting                 Value
- *   ---------------------                 -----
+ *
+ *   Configuration Setting                     Value
+ *   ---------------------                     -----
  *   Connect to hardware via Driver_ETH_MAC# = 0
- * -------------------------------------------------------------------- */
+ * -------------------------------------------------------------------------- */
 
 /* History:
- *  Version 2.01
+ *  Version 2.2
+ *    Updated initialization, uninitialization and power procedures
+ *  Version 2.1
  *    STM32CubeMX generated code can also be used to configure the driver
- *  Version 2.00
+ *  Version 2.0
  *    Updated to the CMSIS Driver API V2.01
  *  Version 1.10
  *    Based on API V2.00
- *  Version 1.02
+ *  Version 1.2
  *    Based on API V1.10 (namespace prefix ARM_ added)
- *  Version 1.01
+ *  Version 1.1
  *    Added checksum offload
  *    Added multicast MAC address filtering 
- *  Version 1.00
+ *  Version 1.0
  *    Initial release
  */
 
@@ -63,11 +65,6 @@
  *       - GPIO Settings: configure as needed
  */
 
-#include "EMAC_STM32F4xx.h"
-
-#define ARM_ETH_MAC_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,01) /* driver version */
-
-
 /* Receive/transmit Checksum offload enable */
 #ifndef EMAC_CHECKSUM_OFFLOAD
 #define EMAC_CHECKSUM_OFFLOAD   1
@@ -77,6 +74,10 @@
 #ifndef EMAC_TIME_STAMP
 #define EMAC_TIME_STAMP         0
 #endif
+
+#include "EMAC_STM32F4xx.h"
+
+#define ARM_ETH_MAC_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,2) /* driver version */
 
 /* Timeouts */
 #define PHY_TIMEOUT         2U          /* PHY Register access timeout in ms  */
@@ -135,10 +136,10 @@ static const ETH_PIN eth_pins[] = {
   { MX_ETH_RXD2_GPIOx, MX_ETH_RXD2_GPIO_Pin },        /* MII, ---- */
   { MX_ETH_RXD3_GPIOx, MX_ETH_RXD3_GPIO_Pin },        /* MII, ---- */
   { MX_ETH_TX_CLK_GPIOx, MX_ETH_TX_CLK_GPIO_Pin },    /* MII, ---- */
-  { MX_ETH_RX_CLK_GPIOx, MX_ETH_RX_CLK_GPIO_Pin },    /* MII, ---- */ 
+  { MX_ETH_RX_CLK_GPIOx, MX_ETH_RX_CLK_GPIO_Pin },    /* MII, ---- */
   { MX_ETH_CRS_GPIOx,   MX_ETH_CRS_GPIO_Pin },        /* MII, ---- */
   { MX_ETH_COL_GPIOx, MX_ETH_COL_GPIO_Pin },          /* MII, ---- */
-  { MX_ETH_RX_DV_GPIOx, MX_ETH_RX_DV_GPIO_Pin },      /* MII, ---- */ 
+  { MX_ETH_RX_DV_GPIOx, MX_ETH_RX_DV_GPIO_Pin },      /* MII, ---- */
   { MX_ETH_RX_ER_GPIOx, MX_ETH_RX_ER_GPIO_Pin },      /* MII, ---- */
 #else
   { MX_ETH_CRS_DV_GPIOx, MX_ETH_CRS_DV_GPIO_Pin },    /* ---, RMII */
@@ -175,19 +176,12 @@ static const ARM_ETH_MAC_CAPABILITIES DriverCapabilities = {
 };
 
 /* Local variables */
-static ARM_ETH_MAC_SignalEvent_t cb_Event;
-static uint8_t                   tx_index;
-static uint8_t                   rx_index;
-#if (EMAC_CHECKSUM_OFFLOAD)
-  static bool                    tx_cks_offload;
-#endif
-#if (EMAC_TIME_STAMP)
-  static uint8_t                 tx_ts_index;
-#endif
-static RX_Desc                   rx_desc[NUM_RX_BUF];
-static TX_Desc                   tx_desc[NUM_TX_BUF];
-static uint32_t                  rx_buf [NUM_RX_BUF][ETH_BUF_SIZE>>2];
-static uint32_t                  tx_buf [NUM_TX_BUF][ETH_BUF_SIZE>>2];
+static EMAC_CTRL Emac;
+
+static RX_Desc   rx_desc[NUM_RX_BUF];
+static TX_Desc   tx_desc[NUM_TX_BUF];
+static uint32_t  rx_buf [NUM_RX_BUF][ETH_BUF_SIZE>>2];
+static uint32_t  tx_buf [NUM_TX_BUF][ETH_BUF_SIZE>>2];
 
 
 #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
@@ -200,17 +194,25 @@ static void Enable_GPIO_Clock (const GPIO_TypeDef *GPIOx) {
   else if (GPIOx == GPIOB) { __GPIOB_CLK_ENABLE(); }
   else if (GPIOx == GPIOC) { __GPIOC_CLK_ENABLE(); }
   else if (GPIOx == GPIOD) { __GPIOD_CLK_ENABLE(); }
-#if (!defined(STM32F401xC)) && (!defined(STM32F401xE)) && (!defined(STM32F411xE))
+  else if (GPIOx == GPIOE) { __GPIOE_CLK_ENABLE(); }
+#if defined(GPIOF)
   else if (GPIOx == GPIOF) { __GPIOF_CLK_ENABLE(); }
+#endif
+#if defined(GPIOG)
   else if (GPIOx == GPIOG) { __GPIOG_CLK_ENABLE(); }
 #endif
+#if defined(GPIOH)
   else if (GPIOx == GPIOH) { __GPIOH_CLK_ENABLE(); }
+#endif
+#if defined(GPIOI)
   else if (GPIOx == GPIOI) { __GPIOI_CLK_ENABLE(); }
-#if defined(STM32F427xx) || defined(STM32F437xx) || defined(STM32F429xx) || defined(STM32F439xx)
+#endif
+#if defined(GPIOJ)
   else if (GPIOx == GPIOJ) { __GPIOJ_CLK_ENABLE(); }
+#endif
+#if defined(GPIOK)
   else if (GPIOx == GPIOK) { __GPIOK_CLK_ENABLE(); }
 #endif
-  else /* GPIOx == GPIOE */{ __GPIOE_CLK_ENABLE(); }
 }
 #endif
 
@@ -232,7 +234,7 @@ static void init_rx_desc (void) {
   }
 
   ETH->DMARDLAR = (uint32_t)&rx_desc[0];
-  rx_index      = 0U;
+  Emac.rx_index = 0U;
 }
 
 /**
@@ -251,12 +253,12 @@ static void init_tx_desc (void) {
     tx_desc[i].Next     = &tx_desc[next];
   }
   ETH->DMATDLAR = (uint32_t)&tx_desc[0];
-  tx_index      = 0U;
+  Emac.tx_index = 0U;
 }
 
 /**
   \fn          uint32_t crc32_8bit_rev (uint32_t crc32, uint8_t val)
-  \brief       Calculate 32-bit CRC (Polynom: 0x04C11DB7, data bit-reversed).
+  \brief       Calculate 32-bit CRC (Polynomial: 0x04C11DB7, data bit-reversed).
   \param[in]   crc32  CRC initial value
   \param[in]   val    Input value
   \return      Calculated CRC value
@@ -328,9 +330,6 @@ static int32_t Initialize (ARM_ETH_MAC_SignalEvent_t cb_event) {
   const ETH_PIN *io;
 #endif
 
-  /* Register driver callback function */
-  cb_Event = cb_event;
-
   /* Enable SYSCFG clock */
   RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
 
@@ -352,12 +351,15 @@ static int32_t Initialize (ARM_ETH_MAC_SignalEvent_t cb_event) {
       GPIO_InitStruct.Pin = io->pin;
       HAL_GPIO_Init (io->port, &GPIO_InitStruct);
     }
-    NVIC_EnableIRQ(ETH_IRQn);
   #else
     heth.Instance = ETH;
-
-    HAL_ETH_MspInit (&heth);
   #endif
+
+  /* Clear control structure */
+  memset (&Emac, 0, sizeof (EMAC_CTRL));
+
+  Emac.cb_event = cb_event;
+  Emac.flags    = EMAC_FLAG_INIT;
 
   return ARM_DRIVER_OK;
 }
@@ -370,15 +372,9 @@ static int32_t Initialize (ARM_ETH_MAC_SignalEvent_t cb_event) {
 static int32_t Uninitialize (void) {
   const ETH_PIN *io;
 
-  /* Disable ethernet interrupts */
-  ETH->DMAIER  = 0U;
-  ETH->PTPTSCR = 0U;
-  NVIC_DisableIRQ(ETH_IRQn);
-
   /* Unconfigure ethernet pins */
   for (io = eth_pins; io != &eth_pins[sizeof(eth_pins)/sizeof(ETH_PIN)]; io++) {
     HAL_GPIO_DeInit(io->port, io->pin);
-
   }
 
   return ARM_DRIVER_OK;
@@ -395,6 +391,15 @@ static int32_t PowerControl (ARM_POWER_STATE state) {
 
   switch (state) {
     case ARM_POWER_OFF:
+      #if defined(RTE_DEVICE_FRAMEWORK_CUBE_MX)
+        HAL_ETH_MspDeInit (&heth);
+      #endif
+
+      /* Disable ethernet interrupts */
+      NVIC_DisableIRQ(ETH_IRQn);
+      ETH->DMAIER  = 0U;
+      ETH->PTPTSCR = 0U;
+
       /* Reset Ethernet MAC peripheral */
       __ETHMAC_FORCE_RESET();
       __NOP(); __NOP(); __NOP(); __NOP();
@@ -407,13 +412,22 @@ static int32_t PowerControl (ARM_POWER_STATE state) {
       #if (EMAC_TIME_STAMP)
       __ETHMACPTP_CLK_DISABLE();
       #endif
-
+      
+      Emac.flags = EMAC_FLAG_INIT;
       break;
 
     case ARM_POWER_LOW:
       return ARM_DRIVER_ERROR_UNSUPPORTED;
 
     case ARM_POWER_FULL:
+      if (Emac.flags & EMAC_FLAG_POWER) {
+        /* Driver already powered */
+        break;
+      }
+      #if defined(RTE_DEVICE_FRAMEWORK_CUBE_MX)
+        HAL_ETH_MspInit (&heth);
+      #endif
+
       /* Enable Ethernet clocks */
       __ETHMAC_CLK_ENABLE();
       __ETHMACTX_CLK_ENABLE();
@@ -435,7 +449,7 @@ static int32_t PowerControl (ARM_POWER_STATE state) {
 
       /* MDC clock range selection */
       hclk = HAL_RCC_GetHCLKFreq();
-      
+
       if (hclk >= 150000000U) {
         clkdiv = ETH_MACMIIAR_CR_Div102;
       } else if (hclk >= 100000000U) {
@@ -477,14 +491,20 @@ static int32_t PowerControl (ARM_POWER_STATE state) {
       ETH->PTPTSCR = ETH_PTPTSSR_TSSIPV4FE | ETH_PTPTSSR_TSSIPV6FE |
                      ETH_PTPTSSR_TSSSR     | ETH_PTPTSCR_TSE;
       ETH->PTPSSIR = PTPSSIR_Val(HAL_RCC_GetHCLKFreq());
-      tx_ts_index  = 0U;
+      Emac.tx_ts_index  = 0U;
       #endif
+
+      NVIC_ClearPendingIRQ (ETH_IRQn);
+      NVIC_EnableIRQ (ETH_IRQn);
+
+      Emac.frame_end = NULL;
+      Emac.flags    |= EMAC_FLAG_POWER;
       break;
 
     default:
       return ARM_DRIVER_ERROR_UNSUPPORTED;
   }
-  
+
   return ARM_DRIVER_OK;
 }
 
@@ -614,8 +634,7 @@ static int32_t SetAddressFilter (const ARM_ETH_MAC_ADDR *ptr_addr, uint32_t num_
   \return      \ref execution_status
 */
 static int32_t SendFrame (const uint8_t *frame, uint32_t len, uint32_t flags) {
-  static uint8_t *frame_end = NULL;
-  uint8_t *dst = frame_end;
+  uint8_t *dst = Emac.frame_end;
   uint32_t ctrl;
 
   if ((frame == NULL) || (len == 0U)) {
@@ -624,16 +643,16 @@ static int32_t SendFrame (const uint8_t *frame, uint32_t len, uint32_t flags) {
 
   if (dst == NULL) {
     /* Start of a new transmit frame */
-    if (tx_desc[tx_index].CtrlStat & DMA_TX_OWN) {
+    if (tx_desc[Emac.tx_index].CtrlStat & DMA_TX_OWN) {
       /* Transmitter is busy, wait */
       return ARM_DRIVER_ERROR_BUSY;
     }
-    dst = tx_desc[tx_index].Addr;
-    tx_desc[tx_index].Size = len;
+    dst = tx_desc[Emac.tx_index].Addr;
+    tx_desc[Emac.tx_index].Size = len;
   }
   else {
     /* Sending data fragments in progress */
-    tx_desc[tx_index].Size += len;
+    tx_desc[Emac.tx_index].Size += len;
   }
   /* Fast-copy data fragments to ETH-DMA buffer */
   for ( ; len > 7U; dst += 8, frame += 8, len -= 8U) {
@@ -648,26 +667,26 @@ static int32_t SendFrame (const uint8_t *frame, uint32_t len, uint32_t flags) {
 
   if (flags & ARM_ETH_MAC_TX_FRAME_FRAGMENT) {
     /* More data to come, remember current write position */
-    frame_end = dst;
+    Emac.frame_end = dst;
     return ARM_DRIVER_OK;
   }
 
   /* Frame is now ready, send it to DMA */
-  ctrl = tx_desc[tx_index].CtrlStat & ~DMA_TX_CIC;
+  ctrl = tx_desc[Emac.tx_index].CtrlStat & ~DMA_TX_CIC;
 #if (EMAC_CHECKSUM_OFFLOAD != 0)
-  if (tx_cks_offload) { ctrl |= DMA_TX_CIC; }
+  if (Emac.tx_cks_offload) { ctrl |= DMA_TX_CIC; }
 #endif
   ctrl &= ~(DMA_TX_IC | DMA_TX_TTSE);
   if (flags & ARM_ETH_MAC_TX_FRAME_EVENT)     { ctrl |= DMA_TX_IC; }
 #if (EMAC_TIME_STAMP != 0)
   if (flags & ARM_ETH_MAC_TX_FRAME_TIMESTAMP) { ctrl |= DMA_TX_TTSE; }
-  tx_ts_index = tx_index;
+  Emac.tx_ts_index = Emac.tx_index;
 #endif
-  tx_desc[tx_index].CtrlStat = ctrl | DMA_TX_OWN;
+  tx_desc[Emac.tx_index].CtrlStat = ctrl | DMA_TX_OWN;
 
-  tx_index++;
-  if (tx_index == NUM_TX_BUF) { tx_index = 0U; }
-  frame_end = NULL;
+  Emac.tx_index++;
+  if (Emac.tx_index == NUM_TX_BUF) { Emac.tx_index = 0U; }
+  Emac.frame_end = NULL;
 
   /* Start frame transmission */
   ETH->DMASR   = ETH_DMASR_TPSS;
@@ -686,7 +705,7 @@ static int32_t SendFrame (const uint8_t *frame, uint32_t len, uint32_t flags) {
                  - value < 0: error occurred, value is execution status as defined with \ref execution_status 
 */
 static int32_t ReadFrame (uint8_t *frame, uint32_t len) {
-  uint8_t const *src = rx_desc[rx_index].Addr;
+  uint8_t const *src = rx_desc[Emac.rx_index].Addr;
 
   /* Fast-copy data to frame buffer */
   for ( ; len > 7U; frame += 8, src += 8, len -= 8U) {
@@ -700,10 +719,10 @@ static int32_t ReadFrame (uint8_t *frame, uint32_t len) {
   if (len > 0U) { frame[0] = src[0]; }
 
   /* Return this block back to ETH-DMA */
-  rx_desc[rx_index].Stat = DMA_RX_OWN;
+  rx_desc[Emac.rx_index].Stat = DMA_RX_OWN;
 
-  rx_index++;
-  if (rx_index == NUM_RX_BUF) { rx_index = 0; }
+  Emac.rx_index++;
+  if (Emac.rx_index == NUM_RX_BUF) { Emac.rx_index = 0; }
 
   if (ETH->DMASR & ETH_DMASR_RBUS) {
     /* Receive buffer unavailable, resume DMA */
@@ -719,7 +738,7 @@ static int32_t ReadFrame (uint8_t *frame, uint32_t len) {
   \return      number of bytes in received frame
 */
 static uint32_t GetRxFrameSize (void) {
-  uint32_t stat = rx_desc[rx_index].Stat;
+  uint32_t stat = rx_desc[Emac.rx_index].Stat;
 
   if (stat & DMA_RX_OWN) {
     /* Owned by DMA */
@@ -750,7 +769,11 @@ void ETH_IRQHandler (void) {
     ETH->MACPMTCSR;
     event |= ARM_ETH_MAC_EVENT_WAKEUP;
   }
-  cb_Event (event);
+
+  /* Callback event notification */
+  if (event && Emac.cb_event) {
+    Emac.cb_event (event);
+  }
 }
 
 /**
@@ -761,7 +784,7 @@ void ETH_IRQHandler (void) {
 */
 static int32_t GetRxFrameTime (ARM_ETH_MAC_TIME *time) {
 #if (EMAC_TIME_STAMP)
-  RX_Desc *rxd = &rx_desc[rx_index];
+  RX_Desc *rxd = &rx_desc[Emac.rx_index];
 
   if (rxd->Stat & DMA_RX_OWN) {
     /* Owned by DMA */
@@ -784,7 +807,7 @@ static int32_t GetRxFrameTime (ARM_ETH_MAC_TIME *time) {
 */
 static int32_t GetTxFrameTime (ARM_ETH_MAC_TIME *time) {
 #if (EMAC_TIME_STAMP)
-  TX_Desc *txd = &tx_desc[tx_ts_index];
+  TX_Desc *txd = &tx_desc[Emac.tx_ts_index];
 
   if (txd->CtrlStat & DMA_RX_OWN) {
     /* Owned by DMA */
@@ -859,10 +882,12 @@ static int32_t Control (uint32_t control, uint32_t arg) {
       }
 
       /* Enable tx checksum generation */
-      tx_cks_offload = false;
       if (arg & ARM_ETH_MAC_CHECKSUM_OFFLOAD_TX) {
         dmaomr |= ETH_DMAOMR_TSF;
-        tx_cks_offload = true;
+        Emac.tx_cks_offload = true;
+      }
+      else {
+        Emac.tx_cks_offload = false;
       }
 #else
       if ((arg & ARM_ETH_MAC_CHECKSUM_OFFLOAD_RX) ||

@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013-2014 ARM Ltd.
+ * Copyright (c) 2013-2015 ARM Ltd.
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -18,11 +18,11 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        10. November 2014
- * $Revision:    V2.01
+ * $Date:        02. June 2015
+ * $Revision:    V2.3
  *
  * Project:      MCI Driver Definitions for ST STM32F4xx
- * ---------------------------------------------------------------------------*/
+ * -------------------------------------------------------------------------- */
 
 #ifndef __MCI_STM32F4XX_H
 #define __MCI_STM32F4XX_H
@@ -38,6 +38,8 @@
 #else
 #error "::Device:STM32Cube Framework: not selected in RTE"
 #endif
+
+#include <string.h>
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
   #if (defined(RTE_Drivers_MCI0) && (RTE_SDIO == 0))
@@ -171,6 +173,16 @@
 /* SDIO Adapter Clock definition */
 #define SDIOCLK            48000000U    /* SDIO adapter clock */
 
+#ifndef SDIO_MASK_STBITERRIE
+#define SDIO_MASK_STBITERRIE    0U
+#endif
+#ifndef SDIO_STA_STBITERR
+#define SDIO_STA_STBITERR       0U
+#endif
+#ifndef SDIO_ICR_STBITERRC
+#define SDIO_ICR_STBITERRC      0U
+#endif
+
 /* Interrupt clear Mask */
 #define SDIO_ICR_BIT_Msk       (SDIO_ICR_CCRCFAILC | \
                                 SDIO_ICR_DCRCFAILC | \
@@ -183,8 +195,7 @@
                                 SDIO_ICR_DATAENDC  | \
                                 SDIO_ICR_STBITERRC | \
                                 SDIO_ICR_DBCKENDC  | \
-                                SDIO_ICR_SDIOITC   | \
-                                SDIO_ICR_CEATAENDC)
+                                SDIO_ICR_SDIOITC)
 
 /* Driver flag definitions */
 #define MCI_INIT      ((uint8_t)0x01)   /* MCI initialized           */
@@ -215,9 +226,6 @@ typedef struct _MCI_INFO {
   uint8_t volatile      flags;          /* Driver state flags                 */
   uint32_t              dctrl;          /* Data control register value        */
   uint32_t              dlen;           /* Data length register value         */
-  uint32_t              dtimer;         /* Data transfer timeout reg. value   */
-  uint32_t              rd_timeout;     /* Read transfer timeout              */
-  uint32_t              wr_timeout;     /* Write transfer timeout             */
 } MCI_INFO;
 
 #endif /* __MCI_STM32F4XX_H */

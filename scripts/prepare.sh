@@ -7,7 +7,8 @@ IFS=$'\n\t'
 
 # RELEASE_VERSION="2.2.0"
 # RELEASE_VERSION="2.3.0"
-RELEASE_VERSION="2.4.0"
+# RELEASE_VERSION="2.4.0"
+RELEASE_VERSION="2.5.0"
 
 FAMILY="STM32F4"
 GITHUB_PROJECT="xpacks/stm32f4-cmsis"
@@ -44,7 +45,9 @@ Drivers/CMSIS/CMSIS?END*.* \
 Drivers/CMSIS/index.html \
 Drivers/CMSIS/README.txt \
 Drivers/CMSIS/Documentation \
+Drivers/CMSIS/DSP_Lib \
 Drivers/CMSIS/Include \
+Drivers/CMSIS/Lib \
 Drivers/CMSIS/RTOS \
 Drivers/CMSIS/SVD \
 Drivers/STM32F?xx_HAL_Driver/ \
@@ -89,7 +92,9 @@ To save space, the following folders/files were removed:
 * Drivers/CMSIS/index.html
 * Drivers/CMSIS/README.txt
 * Drivers/CMSIS/Documentation
+* Drivers/CMSIS/DSP_Lib
 * Drivers/CMSIS/Include
+* Drivers/CMSIS/Lib
 * Drivers/CMSIS/RTOS
 * Drivers/CMSIS/SVD
 * Drivers/STM32F?xx_HAL_Driver/

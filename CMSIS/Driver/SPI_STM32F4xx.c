@@ -1,62 +1,71 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013 - 2015 ARM Ltd.
+ * Copyright (c) 2013-2015 ARM Ltd.
  *
- * This software is provided 'as-is', without any express or implied warranty. 
- * In no event will the authors be held liable for any damages arising from 
- * the use of this software. Permission is granted to anyone to use this 
- * software for any purpose, including commercial applications, and to alter 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software. Permission is granted to anyone to use this
+ * software for any purpose, including commercial applications, and to alter
  * it and redistribute it freely, subject to the following restrictions:
  *
- * 1. The origin of this software must not be misrepresented; you must not 
+ * 1. The origin of this software must not be misrepresented; you must not
  *    claim that you wrote the original software. If you use this software in
- *    a product, an acknowledgment in the product documentation would be 
- *    appreciated but is not required. 
- * 
- * 2. Altered source versions must be plainly marked as such, and must not be 
- *    misrepresented as being the original software. 
- * 
- * 3. This notice may not be removed or altered from any source distribution.
- *   
+ *    a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  *
- * $Date:        22. January 2015
- * $Revision:    V2.02
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ *
+ * 3. This notice may not be removed or altered from any source distribution.
+ *
+ *
+ * $Date:        9. June 2015
+ * $Revision:    V2.6
  *
  * Driver:       Driver_SPI1, Driver_SPI2, Driver_SPI3,
  *               Driver_SPI4, Driver_SPI5, Driver_SPI6
  * Configured:   via RTE_Device.h configuration file
  * Project:      SPI Driver for ST STM32F4xx
- * ----------------------------------------------------------------------
+ * --------------------------------------------------------------------------
  * Use the following configuration settings in the middleware component
  * to connect to this driver.
  *
- *   Configuration Setting               Value     SPI Interface
- *   ---------------------               -----     -------------
+ *   Configuration Setting                 Value   SPI Interface
+ *   ---------------------                 -----   -------------
  *   Connect to hardware via Driver_SPI# = 1       use SPI1
  *   Connect to hardware via Driver_SPI# = 2       use SPI2
  *   Connect to hardware via Driver_SPI# = 3       use SPI3
  *   Connect to hardware via Driver_SPI# = 4       use SPI4
  *   Connect to hardware via Driver_SPI# = 5       use SPI5
  *   Connect to hardware via Driver_SPI# = 6       use SPI6
- * -------------------------------------------------------------------- */
+ * -------------------------------------------------------------------------- */
 
 /* History:
- *  Version 2.02
+ *  Version 2.6
+ *    - PowerControl for Power OFF and Uninitialize functions made unconditional.
+ *    - Corrected status bit-field handling, to prevent race conditions.
+ *  Version 2.5
+ *    Added support for STM32F446xx
+ *  Version 2.4
+ *    Corrected ARM_SPI_EVENT_DATA_LOST event generation in master mode at high bus speeds
+ *  Version 2.3
+ *    Corrected bus speed configuration
+ *  Version 2.2
  *    Corrected spi->info->mode handling
- *  Version 2.01
- *    STM32CubeMX generated code can also be used to configure the driver.
- *  Version 2.00
+ *  Version 2.1
+ *    STM32CubeMX generated code can also be used to configure the driver
+ *  Version 2.0
  *    Updated to CMSIS Driver API V2.00
  *    Added SPI4 and SPI6
- *  Version 1.04
+ *  Version 1.4
  *    Added SPI5
- *  Version 1.03
+ *  Version 1.3
  *    Event send_data_event added to capabilities
  *    SPI IRQ handling corrected
- *  Version 1.02
+ *  Version 1.2
  *    Based on API V1.10 (namespace prefix ARM_ added)
- *  Version 1.01
+ *  Version 1.1
  *    Corrections for configuration without DMA
- *  Version 1.00
+ *  Version 1.0
  *    Initial release
  */
 
@@ -80,7 +89,7 @@
 
 #include "SPI_STM32F4xx.h"
 
-#define ARM_SPI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,02)
+#define ARM_SPI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,6)
 
 // Driver Version
 static const ARM_DRIVER_VERSION DriverVersion = { ARM_SPI_API_VERSION, ARM_SPI_DRV_VERSION };
@@ -836,6 +845,41 @@ static void Enable_GPIO_Clock (GPIO_TypeDef *GPIOx) {
 #endif
 
 /**
+  \fn          void SPI_PeripheralReset (SPI_TypeDef *spi)
+  \brief       SPI Reset
+*/
+static void SPI_PeripheralReset (SPI_TypeDef *spi) {
+
+  if      (spi == SPI1) { __HAL_RCC_SPI1_FORCE_RESET(); }
+  else if (spi == SPI2) { __HAL_RCC_SPI2_FORCE_RESET(); }
+  else if (spi == SPI3) { __HAL_RCC_SPI3_FORCE_RESET(); }
+#ifdef SPI4
+  else if (spi == SPI4) { __HAL_RCC_SPI4_FORCE_RESET(); }
+#endif
+#ifdef SPI5
+  else if (spi == SPI5) { __HAL_RCC_SPI5_FORCE_RESET(); }
+#endif
+#ifdef SPI6
+  else if (spi == SPI6) { __HAL_RCC_SPI6_FORCE_RESET(); }
+#endif
+
+  __NOP(); __NOP(); __NOP(); __NOP(); 
+
+  if      (spi == SPI1) { __HAL_RCC_SPI1_RELEASE_RESET(); }
+  else if (spi == SPI2) { __HAL_RCC_SPI2_RELEASE_RESET(); }
+  else if (spi == SPI3) { __HAL_RCC_SPI3_RELEASE_RESET(); }
+#ifdef SPI4
+  else if (spi == SPI4) { __HAL_RCC_SPI4_RELEASE_RESET(); }
+#endif
+#ifdef SPI5
+  else if (spi == SPI5) { __HAL_RCC_SPI5_RELEASE_RESET(); }
+#endif
+#ifdef SPI6
+  else if (spi == SPI6) { __HAL_RCC_SPI6_RELEASE_RESET(); }
+#endif
+}
+
+/**
   \fn          ARM_DRIVER_VERSION SPIX_GetVersion (void)
   \brief       Get SPI driver version.
   \return      \ref ARM_DRV_VERSION
@@ -868,7 +912,6 @@ static int32_t SPI_Initialize (ARM_SPI_SignalEvent_t cb_event, const SPI_RESOURC
 #endif
 
   if (spi->info->state & SPI_INITIALIZED) { return ARM_DRIVER_OK; }
-  if (spi->info->state & SPI_POWERED)     { return ARM_DRIVER_ERROR; }
 
   // Initialize SPI Run-Time Resources
   spi->info->cb_event = cb_event;
@@ -926,9 +969,6 @@ static int32_t SPI_Initialize (ARM_SPI_SignalEvent_t cb_event, const SPI_RESOURC
       spi->rx_dma->hdma->XferHalfCpltCallback = NULL;
       spi->rx_dma->hdma->XferM1CpltCallback   = NULL;
       spi->rx_dma->hdma->XferErrorCallback    = NULL;
-
-      // Enable DMA IRQ in NVIC
-      HAL_NVIC_EnableIRQ (spi->rx_dma->irq_num);
     }
 
     if (spi->tx_dma != NULL) {
@@ -947,9 +987,6 @@ static int32_t SPI_Initialize (ARM_SPI_SignalEvent_t cb_event, const SPI_RESOURC
       spi->tx_dma->hdma->XferHalfCpltCallback = NULL;
       spi->tx_dma->hdma->XferM1CpltCallback   = NULL;
       spi->tx_dma->hdma->XferErrorCallback    = NULL;
-
-      // Enable DMA IRQ in NVIC
-      HAL_NVIC_EnableIRQ (spi->tx_dma->irq_num);
     }
 
     // Enable DMA clock
@@ -964,7 +1001,6 @@ static int32_t SPI_Initialize (ARM_SPI_SignalEvent_t cb_event, const SPI_RESOURC
 #endif
 #else
   spi->h->Instance = spi->reg;
-  HAL_SPI_MspInit (spi->h);
 
   if (spi->rx_dma != NULL) {
     spi->rx_dma->hdma->XferCpltCallback = spi->rx_dma->cb_complete;
@@ -973,7 +1009,6 @@ static int32_t SPI_Initialize (ARM_SPI_SignalEvent_t cb_event, const SPI_RESOURC
     spi->tx_dma->hdma->XferCpltCallback = spi->tx_dma->cb_complete;
   }
 #endif
-  
 
   spi->info->state = SPI_INITIALIZED;
 
@@ -988,35 +1023,12 @@ static int32_t SPI_Initialize (ARM_SPI_SignalEvent_t cb_event, const SPI_RESOURC
 */
 static int32_t SPI_Uninitialize (const SPI_RESOURCES *spi) {
 
-  if ((spi->info->state & SPI_INITIALIZED) == 0U) { return ARM_DRIVER_OK; }
-  if ( spi->info->state & SPI_POWERED)            { return ARM_DRIVER_ERROR; }
-
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
   // Unconfigure SPI pins
   if (spi->io.mosi != NULL) { HAL_GPIO_DeInit(spi->io.mosi->port, spi->io.mosi->pin); }
   if (spi->io.miso != NULL) { HAL_GPIO_DeInit(spi->io.miso->port, spi->io.miso->pin); }
   if (spi->io.sck  != NULL) { HAL_GPIO_DeInit(spi->io.sck->port,  spi->io.sck->pin); }
   if (spi->io.nss  != NULL) { HAL_GPIO_DeInit(spi->io.nss->port,  spi->io.nss->pin); }
-
-#ifdef __SPI_DMA
-  if ((spi->rx_dma != NULL) || (spi->tx_dma != NULL)) {
-    if (spi->rx_dma != NULL) {
-      // Disable DMA IRQ in NVIC
-      HAL_NVIC_DisableIRQ (spi->rx_dma->irq_num);
-      // Deinitialize DMA
-      HAL_DMA_DeInit (spi->rx_dma->hdma);
-    }
-
-    if (spi->tx_dma != NULL) {
-      // Disable DMA IRQ in NVIC
-      HAL_NVIC_DisableIRQ (spi->tx_dma->irq_num);
-      // Deinitialize DMA
-      HAL_DMA_DeInit (spi->tx_dma->hdma);
-    }
-  }
-#endif
-#else
-  HAL_SPI_MspDeInit (spi->h);
 #endif
 
   // Clear SPI state
@@ -1034,28 +1046,54 @@ static int32_t SPI_Uninitialize (const SPI_RESOURCES *spi) {
 */
 static int32_t SPI_PowerControl (ARM_POWER_STATE state, const SPI_RESOURCES *spi) {
 
-  if ((spi->info->state & SPI_INITIALIZED) == 0U) { return ARM_DRIVER_ERROR; }
-  if ( spi->info->status.busy)                    { return ARM_DRIVER_ERROR_BUSY; }
-
   switch (state) {
     case ARM_POWER_OFF:
-      // Check if SPI is already powered off
-      if ((spi->info->state & SPI_POWERED) == 0U) { return ARM_DRIVER_OK; }
-
-      // Disable SPI Interrupts
-      spi->reg->CR2 = 0U;
+      // SPI peripheral reset
+      SPI_PeripheralReset (spi->reg);
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
       HAL_NVIC_DisableIRQ (spi->irq_num);
-#endif
+#ifdef __SPI_DMA
+      if ((spi->rx_dma != NULL) || (spi->tx_dma != NULL)) {
+        if (spi->rx_dma != NULL) {
+          // Disable DMA IRQ in NVIC
+          HAL_NVIC_DisableIRQ (spi->rx_dma->irq_num);
+          // Deinitialize DMA
+          HAL_DMA_DeInit (spi->rx_dma->hdma);
+        }
 
-      // Disable SPI peripheral
-      spi->reg->CR1 = 0U;
+        if (spi->tx_dma != NULL) {
+          // Disable DMA IRQ in NVIC
+          HAL_NVIC_DisableIRQ (spi->tx_dma->irq_num);
+          // Deinitialize DMA
+          HAL_DMA_DeInit (spi->tx_dma->hdma);
+        }
+      }
+#endif
+#else
+      HAL_SPI_MspDeInit (spi->h);
+#endif
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
       // Disable SPI clock
-      __SPIx_CLK_DISABLE(spi->reg);
+      if      (spi->reg == SPI1) { __HAL_RCC_SPI1_CLK_DISABLE(); }
+      else if (spi->reg == SPI2) { __HAL_RCC_SPI2_CLK_DISABLE(); }
+      else if (spi->reg == SPI3) { __HAL_RCC_SPI3_CLK_DISABLE(); }
+    #ifdef SPI4
+      else if (spi->reg == SPI4) { __HAL_RCC_SPI4_CLK_DISABLE(); }
+    #endif
+    #ifdef SPI5
+      else if (spi->reg == SPI5) { __HAL_RCC_SPI5_CLK_DISABLE(); }
+    #endif
+    #ifdef SPI6
+      else if (spi->reg == SPI6) { __HAL_RCC_SPI6_CLK_DISABLE(); }
+    #endif
 #endif
+
+      // Clear status flags
+      spi->info->status.busy       = 0U;
+      spi->info->status.data_lost  = 0U;
+      spi->info->status.mode_fault = 0U;
 
       // Clear powered flag
       spi->info->state = SPI_INITIALIZED;
@@ -1065,21 +1103,54 @@ static int32_t SPI_PowerControl (ARM_POWER_STATE state, const SPI_RESOURCES *spi
       // Check if SPI already powered
       if (spi->info->state & SPI_POWERED) { return ARM_DRIVER_OK; }
 
-#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
-      // Enable SPI clock
-      __SPIx_CLK_ENABLE(spi->reg);
-#endif
+      // Clear status flags
+      spi->info->status.busy       = 0U;
+      spi->info->status.data_lost  = 0U;
+      spi->info->status.mode_fault = 0U;
 
-      // Disable SPI interrupts
-      spi->reg->CR2 = 0U;
+      spi->xfer->def_val           = 0U;
 
       // Ready for operation - set powered flag
       spi->info->state |= SPI_POWERED;
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
-      HAL_NVIC_ClearPendingIRQ (spi->irq_num);
-      HAL_NVIC_EnableIRQ (spi->irq_num);
+      // Enable SPI clock
+      if      (spi->reg == SPI1) { __HAL_RCC_SPI1_CLK_ENABLE(); }
+      else if (spi->reg == SPI2) { __HAL_RCC_SPI2_CLK_ENABLE(); }
+      else if (spi->reg == SPI3) { __HAL_RCC_SPI3_CLK_ENABLE(); }
+    #ifdef SPI4
+      else if (spi->reg == SPI4) { __HAL_RCC_SPI4_CLK_ENABLE(); }
+    #endif
+    #ifdef SPI5
+      else if (spi->reg == SPI5) { __HAL_RCC_SPI5_CLK_ENABLE(); }
+    #endif
+    #ifdef SPI6
+      else if (spi->reg == SPI6) { __HAL_RCC_SPI6_CLK_ENABLE(); }
+    #endif
+
+      // Clear and Enable SPI IRQ
+      NVIC_ClearPendingIRQ(spi->irq_num);
+      NVIC_EnableIRQ(spi->irq_num);
+
+#ifdef __SPI_DMA
+      if (spi->rx_dma) {
+        // Clear and Enable DMA IRQ in NVIC
+        NVIC_ClearPendingIRQ(spi->rx_dma->irq_num);
+        NVIC_EnableIRQ(spi->rx_dma->irq_num);
+      }
+
+      if (spi->tx_dma) {
+        // Clear and Enable DMA IRQ in NVIC
+        NVIC_ClearPendingIRQ(spi->tx_dma->irq_num);
+        NVIC_EnableIRQ(spi->tx_dma->irq_num);
+      }
 #endif
+#else
+      HAL_SPI_MspInit (spi->h);
+#endif
+
+      // SPI peripheral reset
+      SPI_PeripheralReset (spi->reg);
       break;
 
     case ARM_POWER_LOW:
@@ -1472,7 +1543,7 @@ static int32_t SPI_Control (uint32_t control, uint32_t arg, const SPI_RESOURCES 
       }
       // Disable SPI, update prescaler and enable SPI
       spi->reg->CR1 &= ~SPI_CR1_SPE;
-      spi->reg->CR1 |= (val - 1U) << 3U;
+      spi->reg->CR1  =  (spi->reg->CR1 & ~SPI_CR1_BR) | ((val - 1U) << 3U);
       spi->reg->CR1 |=  SPI_CR1_SPE;
       return ARM_DRIVER_OK;
 
@@ -1703,7 +1774,13 @@ static int32_t SPI_Control (uint32_t control, uint32_t arg, const SPI_RESOURCES 
   \return      SPI status \ref ARM_SPI_STATUS
 */
 static ARM_SPI_STATUS SPI_GetStatus (const SPI_RESOURCES *spi) {
-  return (spi->info->status);
+  ARM_SPI_STATUS status;
+
+  status.busy       = spi->info->status.busy;
+  status.data_lost  = spi->info->status.data_lost;
+  status.mode_fault = spi->info->status.mode_fault;
+
+  return status;
 }
 
 /*SPI IRQ Handler */
@@ -1730,6 +1807,39 @@ void SPI_IRQHandler (const SPI_RESOURCES *spi) {
     // Mode fault flag is set
     spi->info->status.mode_fault = 1U;
     event |= ARM_SPI_EVENT_MODE_FAULT;
+  }
+
+  if (((sr & SPI_SR_RXNE) != 0U) && ((spi->reg->CR2 & SPI_CR2_RXNEIE) != 0U)) {
+    // Receive Buffer Not Empty
+    data = spi->reg->DR;
+
+    if (spi->xfer->num != 0U) {
+      if ((spi->xfer->rx_buf) != NULL) {
+        // Put data into buffer
+        *(spi->xfer->rx_buf++) = (uint8_t)data;
+        if (spi->reg->CR1 & SPI_CR1_DFF) {
+          *(spi->xfer->rx_buf++) = (uint8_t)(data >> 8U);
+        }
+      }
+      spi->xfer->rx_cnt++;
+
+      if (spi->xfer->rx_cnt == spi->xfer->num) {
+
+        // Disable RX Buffer Not Empty Interrupt
+        spi->reg->CR2 &= ~SPI_CR2_RXNEIE;
+
+        spi->xfer->num = 0U;
+        // Clear busy flag
+        spi->info->status.busy = 0U;
+
+        // Transfer completed
+        event |= ARM_SPI_EVENT_TRANSFER_COMPLETE;
+      }
+    }
+    else {
+      // Unexpected transfer, data lost
+      event |= ARM_SPI_EVENT_DATA_LOST;
+    }
   }
 
   if (((sr & SPI_SR_TXE) != 0U) && ((spi->reg->CR2 & SPI_CR2_TXEIE) != 0U)) {
@@ -1761,40 +1871,6 @@ void SPI_IRQHandler (const SPI_RESOURCES *spi) {
     }
   }
 
-  if (((sr & SPI_SR_RXNE) != 0U) && ((spi->reg->CR2 & SPI_CR2_RXNEIE) != 0U)) {
-    // Receive Buffer Not Empty
-    data = spi->reg->DR;
-
-    if (spi->xfer->num != 0U) {
-      if ((spi->xfer->rx_buf) != NULL) {
-        // Put data into buffer
-        *(spi->xfer->rx_buf++) = (uint8_t)data;
-        if (spi->reg->CR1 & SPI_CR1_DFF) {
-          *(spi->xfer->rx_buf++) = (uint8_t)(data >> 8U);
-        }
-      }
-      spi->xfer->rx_cnt++;
-
-      if (spi->xfer->rx_cnt == spi->xfer->num) {
-
-        // Disable RX Buffer Not Empty Interrupt
-        spi->reg->CR2 &= ~SPI_CR2_RXNEIE;
-        HAL_NVIC_ClearPendingIRQ (spi->irq_num);
-
-        spi->xfer->num = 0U;
-        // Clear busy flag
-        spi->info->status.busy = 0U;
-
-        // Transfer completed
-        event |= ARM_SPI_EVENT_TRANSFER_COMPLETE;
-      }
-    }
-    else {
-      // Unexpected transfer, data lost
-      event |= ARM_SPI_EVENT_DATA_LOST;
-    }
-  }
-
   // Send event
   if ((event != 0U) && ((spi->info->cb_event != NULL))) {
     spi->info->cb_event(event);
@@ -1821,7 +1897,7 @@ void SPI_RX_DMA_Complete(const SPI_RESOURCES *spi) {
     return;
   }
 
-  spi->xfer->tx_cnt = spi->xfer->num;
+  spi->xfer->rx_cnt = spi->xfer->num;
 
   spi->info->status.busy = 0U;
   if (spi->info->cb_event != NULL) {

@@ -1,33 +1,33 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013 - 2014 ARM Ltd.
+ * Copyright (c) 2013-2015 ARM Ltd.
  *
- * This software is provided 'as-is', without any express or implied warranty. 
- * In no event will the authors be held liable for any damages arising from 
- * the use of this software. Permission is granted to anyone to use this 
- * software for any purpose, including commercial applications, and to alter 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software. Permission is granted to anyone to use this
+ * software for any purpose, including commercial applications, and to alter
  * it and redistribute it freely, subject to the following restrictions:
  *
- * 1. The origin of this software must not be misrepresented; you must not 
+ * 1. The origin of this software must not be misrepresented; you must not
  *    claim that you wrote the original software. If you use this software in
- *    a product, an acknowledgment in the product documentation would be 
- *    appreciated but is not required. 
- * 
- * 2. Altered source versions must be plainly marked as such, and must not be 
- *    misrepresented as being the original software. 
+ *    a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
+ *
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
  *
  * 3. This notice may not be removed or altered from any source distribution.
- *   
  *
- * $Date:        10. November 2014
- * $Revision:    V2.01
- *  
+ *
+ * $Date:        02. June 2015
+ * $Revision:    V2.2
+ *
  * Project:      Ethernet Media Access (MAC) Definitions for STM32F4xx
- * --------------------------------------------------------------------------*/
+ * -------------------------------------------------------------------------- */
 
 #ifndef __EMAC_STM32F4XX_H
 #define __EMAC_STM32F4XX_H
 
-#include <stdint.h>
+#include <string.h>
 
 #include "Driver_ETH_MAC.h"
 #include "stm32f4xx_hal.h"
@@ -119,6 +119,10 @@
   #endif
 #endif
 
+/* EMAC Driver state flags */
+#define EMAC_FLAG_INIT      (1 << 0)    // Driver initialized
+#define EMAC_FLAG_POWER     (1 << 1)    // Driver power on
+
 /* PTP subsecond increment value */
 #define PTPSSIR_Val(hclk)     ((0x7FFFFFFFU + (hclk)/2U) / (hclk))
 
@@ -175,9 +179,9 @@
 #define DMA_RX_RMAM     0x00000001U     // Rx MAC adr.match/payload cks.error
 
 /* RDES1 - DMA Descriptor RX Packet Control */
-#define DMA_RX_DIC      0x80000000U     // Disable interrupt on completition
+#define DMA_RX_DIC      0x80000000U     // Disable interrupt on completion
 #define DMA_RX_RBS2     0x1FFF0000U     // Receive buffer 2 size
-#define DMA_RX_RER      0x00008000U     // Receove end of ring
+#define DMA_RX_RER      0x00008000U     // Receive end of ring
 #define DMA_RX_RCH      0x00004000U     // Second address chained
 #define DMA_RX_RBS1     0x00001FFFU     // Receive buffer 1 size
 
@@ -185,5 +189,20 @@ typedef struct _ETH_PIN {
   GPIO_TypeDef *port;
   uint16_t      pin;
 } ETH_PIN;
+
+/* EMAC Driver Control Information */
+typedef struct {
+  ARM_ETH_MAC_SignalEvent_t cb_event;   // Event callback
+  uint8_t       flags;                  // Control and state flags
+  uint8_t       tx_index;               // Transmit descriptor index
+  uint8_t       rx_index;               // Receive descriptor index
+#if (EMAC_CHECKSUM_OFFLOAD)
+  bool          tx_cks_offload;         // Checksum offload enabled/disabled
+#endif
+#if (EMAC_TIME_STAMP)
+  uint8_t       tx_ts_index;            // Transmit Timestamp descriptor index
+#endif
+  uint8_t      *frame_end;              // End of assembled frame fragments
+} EMAC_CTRL;
 
 #endif /* __EMAC_STM32F4XX_H */
