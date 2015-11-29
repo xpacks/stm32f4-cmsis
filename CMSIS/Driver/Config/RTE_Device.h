@@ -17,8 +17,8 @@
  * 
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * $Date:        11. October 2014
- * $Revision:    V2.00
+ * $Date:        10. November 2014
+ * $Revision:    V2.01
  *
  * Project:      RTE Device Configuration for ST STM32F4xx
  * -------------------------------------------------------------------------- */
@@ -1679,7 +1679,7 @@
 #define RTE_SDIO_WP_PORT                GPIO_PORT(7)
 #define RTE_SDIO_WP_PIN                 10
 
-//   <e> DMA
+//   <e> DMA Rx
 //     <o1> Number <2=>2
 //     <i>  Selects DMA Number (only DMA2 can be used)
 //     <o2> Stream <3=>3 <6=>6
@@ -1689,11 +1689,27 @@
 //     <o4> Priority <0=>Low <1=>Medium <2=>High <3=>Very High
 //     <i>  Selects DMA Priority
 //   </e>
-#define RTE_SDIO_DMA                    1
-#define RTE_SDIO_DMA_NUMBER             2
-#define RTE_SDIO_DMA_STREAM             3
-#define RTE_SDIO_DMA_CHANNEL            4
-#define RTE_SDIO_DMA_PRIORITY           0
+#define RTE_SDIO_RX_DMA                 1
+#define RTE_SDIO_RX_DMA_NUMBER          2
+#define RTE_SDIO_RX_DMA_STREAM          3
+#define RTE_SDIO_RX_DMA_CHANNEL         4
+#define RTE_SDIO_RX_DMA_PRIORITY        0
+
+//   <e> DMA Tx
+//     <o1> Number <2=>2
+//     <i>  Selects DMA Number (only DMA2 can be used)
+//     <o2> Stream <3=>3 <6=>6
+//     <i>  Selects DMA Stream (only Stream 3 or 6 can be used)
+//     <o3> Channel <4=>4
+//     <i>  Selects DMA Channel (only Channel 1 can be used)
+//     <o4> Priority <0=>Low <1=>Medium <2=>High <3=>Very High
+//     <i>  Selects DMA Priority
+//   </e>
+#define RTE_SDIO_TX_DMA                 1
+#define RTE_SDIO_TX_DMA_NUMBER          2
+#define RTE_SDIO_TX_DMA_STREAM          6
+#define RTE_SDIO_TX_DMA_CHANNEL         4
+#define RTE_SDIO_TX_DMA_PRIORITY        0
 
 // </e>
 

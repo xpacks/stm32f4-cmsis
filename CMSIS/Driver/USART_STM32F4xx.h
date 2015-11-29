@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *   
  *
- * $Date:        25. September 2014
- * $Revision:    V2.00
+ * $Date:        18. November 2014
+ * $Revision:    V2.01
  *
  * Project:      USART Driver definitions for ST STM32F4xx
  * -------------------------------------------------------------------- */
@@ -36,10 +36,209 @@
 
 #include "RTE_Components.h"
 
-#ifndef   RTE_DEVICE_FRAMEWORK_CLASSIC
+#ifdef   RTE_DEVICE_FRAMEWORK_CUBE_MX
 #include "MX_Device.h"
 
+// Virtual modes
+#define USART_VM_ASYNC                   (1UL)
+#define USART_VM_ASYNC_SINGLE_WIRE       (1UL << 1)
+#define USART_VM_SYNC                    (1UL << 2)
+#define USART_VM_IRDA                    (1UL << 3)
+#define USART_VM_SMARTCARD               (1UL << 4)
+
 // MX macros
+#ifdef MX_USART1
+
+#if (MX_USART1_VM == VM_ASYNC)
+#ifndef USART_ASYNC
+#define USART_ASYNC                      (1UL)
+#endif
+#elif (MX_USART1_VM == VM_SYNC)
+#ifndef USART_SYNC
+#define USART_SYNC                       (1UL)
+#endif
+#elif (MX_USART1_VM == VM_IRDA)
+#ifndef USART_IRDA
+#define USART_IRDA                       (1UL)
+#endif
+#elif (MX_USART1_VM == VM_SMARTCARD)
+#ifndef USART_SMARTCARD
+#define USART_SMARTCARD                  (1UL)
+#endif
+#endif
+
+#ifdef MX_USART1_MULTI_PROCESSOR
+  #error "USART multiprocessor mode is not supported. Please select USART proper mode in Cube MX."
+#endif
+#ifdef MX_USART1_LIN
+  #error "USART LIN mode is not supported. Please select proper USART mode in Cube MX."
+#endif
+#endif
+
+#ifdef MX_USART2
+
+#if (MX_USART2_VM == VM_ASYNC)
+#ifndef USART_ASYNC
+#define USART_ASYNC                      (1UL)
+#endif
+#elif (MX_USART2_VM == VM_SYNC)
+#ifndef USART_SYNC
+#define USART_SYNC                       (1UL)
+#endif
+#elif (MX_USART2_VM == VM_IRDA)
+#ifndef USART_IRDA
+#define USART_IRDA                       (1UL)
+#endif
+#elif (MX_USART2_VM == VM_SMARTCARD)
+#ifndef USART_SMARTCARD
+#define USART_SMARTCARD                  (1UL)
+#endif
+#endif
+
+#ifdef MX_USART2_MULTI_PROCESSOR
+  #error "USART multiprocessor mode is not supported. Please select USART proper mode in Cube MX."
+#endif
+#ifdef MX_USART2_LIN
+  #error "USART LIN mode is not supported. Please select proper USART mode in Cube MX."
+#endif
+#endif
+
+#ifdef MX_USART3
+
+#if (MX_USART3_VM == VM_ASYNC)
+#ifndef USART_ASYNC
+#define USART_ASYNC                      (1UL)
+#endif
+#elif (MX_USART3_VM == VM_SYNC)
+#ifndef USART_SYNC
+#define USART_SYNC                       (1UL)
+#endif
+#elif (MX_USART3_VM == VM_IRDA)
+#ifndef USART_IRDA
+#define USART_IRDA                       (1UL)
+#endif
+#elif (MX_USART3_VM == VM_SMARTCARD)
+#ifndef USART_SMARTCARD
+#define USART_SMARTCARD                  (1UL)
+#endif
+#endif
+
+#ifdef MX_USART3_MULTI_PROCESSOR
+  #error "USART multiprocessor mode is not supported. Please select USART proper mode in Cube MX."
+#endif
+#ifdef MX_USART3_LIN
+  #error "USART LIN mode is not supported. Please select proper USART mode in Cube MX."
+#endif
+#endif
+
+#ifdef MX_UART4
+
+#if (MX_UART4_VM == VM_ASYNC)
+#ifndef USART_ASYNC
+#define USART_ASYNC                      (1UL)
+#endif
+#elif (MX_UART4_VM == VM_IRDA)
+#ifndef USART_IRDA
+#define USART_IRDA                       (1UL)
+#endif
+#endif
+
+#ifdef MX_UART4_MULTI_PROCESSOR
+  #error "USART multiprocessor mode is not supported. Please select USART proper mode in Cube MX."
+#endif
+#ifdef MX_UART4_LIN
+  #error "USART LIN mode is not supported. Please select proper USART mode in Cube MX."
+#endif
+#endif
+
+#ifdef MX_UART5
+
+#if (MX_UART5_VM == VM_ASYNC)
+#ifndef USART_ASYNC
+#define USART_ASYNC                      (1UL)
+#endif
+#elif (MX_UART5_VM == VM_IRDA)
+#ifndef USART_IRDA
+#define USART_IRDA                       (1UL)
+#endif
+#endif
+
+#ifdef MX_UART5_MULTI_PROCESSOR
+  #error "USART multiprocessor mode is not supported. Please select USART proper mode in Cube MX."
+#endif
+#ifdef MX_UART5_LIN
+  #error "USART LIN mode is not supported. Please select proper USART mode in Cube MX."
+#endif
+#endif
+
+#ifdef MX_USART6
+
+#if (MX_USART6_VM == VM_ASYNC)
+#ifndef USART_ASYNC
+#define USART_ASYNC                      (1UL)
+#endif
+#elif (MX_USART6_VM == VM_SYNC)
+#ifndef USART_SYNC
+#define USART_SYNC                       (1UL)
+#endif
+#elif (MX_USART6_VM == VM_IRDA)
+#ifndef USART_IRDA
+#define USART_IRDA                       (1UL)
+#endif
+#elif (MX_USART6_VM == VM_SMARTCARD)
+#ifndef USART_SMARTCARD
+#define USART_SMARTCARD                  (1UL)
+#endif
+#endif
+
+#ifdef MX_USART6_MULTI_PROCESSOR
+  #error "USART multiprocessor mode is not supported. Please select USART proper mode in Cube MX."
+#endif
+#ifdef MX_USART6_LIN
+  #error "USART LIN mode is not supported. Please select proper USART mode in Cube MX."
+#endif
+#endif
+
+#ifdef MX_UART7
+
+#if (MX_UART7_VM == VM_ASYNC)
+#ifndef USART_ASYNC
+#define USART_ASYNC                      (1UL)
+#endif
+#elif (MX_UART7_VM == VM_IRDA)
+#ifndef USART_IRDA
+#define USART_IRDA                       (1UL)
+#endif
+#endif
+
+#ifdef MX_UART7_MULTI_PROCESSOR
+  #error "USART multiprocessor mode is not supported. Please select USART proper mode in Cube MX."
+#endif
+#ifdef MX_UART7_LIN
+  #error "USART LIN mode is not supported. Please select proper USART mode in Cube MX."
+#endif
+#endif
+
+#ifdef MX_UART8
+
+#if (MX_UART8_VM == VM_ASYNC)
+#ifndef USART_ASYNC
+#define USART_ASYNC                      (1UL)
+#endif
+#elif (MX_UART8_VM == VM_IRDA)
+#ifndef USART_IRDA
+#define USART_IRDA                       (1UL)
+#endif
+#endif
+
+#ifdef MX_UART8_MULTI_PROCESSOR
+  #error "USART multiprocessor mode is not supported. Please select USART proper mode in Cube MX."
+#endif
+#ifdef MX_UART8_LIN
+  #error "USART LIN mode is not supported. Please select proper USART mode in Cube MX."
+#endif
+#endif
+
 
 #else
 #include "RTE_Device.h"
@@ -693,19 +892,17 @@
 #define __USART_DMA
 #endif
 
-
-
 // USART flags
-#define USART_FLAG_INITIALIZED      (1 << 0)
-#define USART_FLAG_POWERED          (1 << 1)
-#define USART_FLAG_CONFIGURED       (1 << 2)
-#define USART_FLAG_TX_ENABLED       (1 << 3)
-#define USART_FLAG_RX_ENABLED       (1 << 4)
-#define USART_FLAG_SEND_ACTIVE      (1 << 5)
+#define USART_FLAG_INITIALIZED      ((uint8_t)(1U))
+#define USART_FLAG_POWERED          ((uint8_t)(1U << 1))
+#define USART_FLAG_CONFIGURED       ((uint8_t)(1U << 2))
+#define USART_FLAG_TX_ENABLED       ((uint8_t)(1U << 3))
+#define USART_FLAG_RX_ENABLED       ((uint8_t)(1U << 4))
+#define USART_FLAG_SEND_ACTIVE      ((uint8_t)(1U << 5))
 
 // USART synchronous xfer modes
-#define USART_SYNC_MODE_TX           ( 1 )
-#define USART_SYNC_MODE_RX           ( 2 )
+#define USART_SYNC_MODE_TX           ( 1UL )
+#define USART_SYNC_MODE_RX           ( 2UL )
 #define USART_SYNC_MODE_TX_RX        (USART_SYNC_MODE_TX | \
                                       USART_SYNC_MODE_RX)
 
@@ -715,18 +912,20 @@ typedef void (*DMA_Callback_t) (DMA_HandleTypeDef *hdma);
 // USART DMA
 typedef struct _USART_DMA {
   DMA_HandleTypeDef    *hdma;           // DMA handle
-  DMA_Stream_TypeDef   *stream;         // Stream register interface
   DMA_Callback_t        cb_complete;    // DMA complete callback
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+  DMA_Stream_TypeDef   *stream;         // Stream register interface
   uint32_t              channel;        // DMA channel
   uint32_t              priority;       // DMA channel priority
   IRQn_Type             irq_num;        // Stream IRQ number
+#endif
 } USART_DMA;
 
 // USART pin
 typedef const struct _USART_PIN {
   GPIO_TypeDef         *port;           // Port
-  uint32_t              pin;            // Pin
-  uint32_t              af;             // Alternate function
+  uint16_t              pin;            // Pin
+  uint8_t               af;             // Alternate function
 } USART_PIN;
 
 // USART Input/Output Configuration
@@ -748,7 +947,7 @@ typedef struct _USART_TRANSFER_INFO {
   uint32_t              tx_cnt;         // Number of data sent
   uint16_t              dump_val;       // Variable for dumping DMA data
   uint16_t              def_val;        // Default transfer value
-  uint8_t               sync_mode;      // Synchronous mode flag
+  uint32_t              sync_mode;      // Synchronous mode flag
   uint8_t               break_flag;     // Transmit break flag
 } USART_TRANSFER_INFO;
 
@@ -763,6 +962,10 @@ typedef struct _USART_INFO {
 
 // USART Resources definition
 typedef struct {
+#ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
+  void                   *h;                   // USART Handle
+  uint8_t                 vmode;               // Virtual mode
+#endif
   ARM_USART_CAPABILITIES  capabilities;        // Capabilities
   USART_TypeDef          *reg;                 // USART peripheral pointer
   uint32_t              (*periph_clock)(void); // Peripheral bus clock
@@ -773,6 +976,5 @@ typedef struct {
   USART_INFO              *info;               // Run-Time Information
   USART_TRANSFER_INFO     *xfer;               // USART transfer information
 } USART_RESOURCES;
-
 
 #endif /* __USART_STM32F4XX_H */

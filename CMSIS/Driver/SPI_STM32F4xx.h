@@ -19,7 +19,7 @@
  *   
  *
  * $Date:        24. September 2014
- * $Revision:    V2.00
+ * $Revision:    V2.01
  *
  * Project:      SPI Driver definitions for ST STM32F4xx
  * -------------------------------------------------------------------- */
@@ -83,26 +83,26 @@
     #define SPI1_TX_DMA_Handler     DMAx_STREAMy_IRQ(RTE_SPI1_TX_DMA_NUMBER, RTE_SPI1_TX_DMA_STREAM)
   #endif
 
-  #define MX_SPI1_MISO_Pin        1
+  #define MX_SPI1_MISO_Pin        1U
   #define MX_SPI1_MISO_GPIOx      RTE_SPI1_MISO_PORT
   #define MX_SPI1_MISO_GPIO_Pin   (1U << RTE_SPI1_MISO_BIT)
   #define MX_SPI1_MISO_GPIO_PuPd  GPIO_NOPULL
   #define MX_SPI1_MISO_GPIO_AF    GPIO_AF5_SPI1
 
-  #define MX_SPI1_MOSI_Pin        1
+  #define MX_SPI1_MOSI_Pin        1U
   #define MX_SPI1_MOSI_GPIOx      RTE_SPI1_MOSI_PORT
-  #define MX_SPI1_MOSI_GPIO_Pin   (1U << RTE_SPI1_MOSI_BIT)
+  #define MX_SPI1_MOSI_GPIO_Pin  (1U << RTE_SPI1_MOSI_BIT)
   #define MX_SPI1_MOSI_GPIO_PuPd  GPIO_NOPULL
   #define MX_SPI1_MOSI_GPIO_AF    GPIO_AF5_SPI1
 
-  #define MX_SPI1_SCK_Pin         1
+  #define MX_SPI1_SCK_Pin         1U
   #define MX_SPI1_SCK_GPIOx       RTE_SPI1_SCL_PORT
   #define MX_SPI1_SCK_GPIO_Pin    (1U << RTE_SPI1_SCL_BIT)
   #define MX_SPI1_SCK_GPIO_PuPd   GPIO_NOPULL
   #define MX_SPI1_SCK_GPIO_AF     GPIO_AF5_SPI1
 
   #if (RTE_SPI1_NSS_PIN == 1)
-    #define MX_SPI1_NSS_Pin        1
+    #define MX_SPI1_NSS_Pin        1U
     #define MX_SPI1_NSS_GPIOx      RTE_SPI1_NSS_PORT
     #define MX_SPI1_NSS_GPIO_Pin  (1U << RTE_SPI1_NSS_BIT)
     #define MX_SPI1_NSS_GPIO_AF    GPIO_AF5_SPI1
@@ -136,7 +136,7 @@
       #error "PI2 can not be configured as SPI2 MISO on selected device!"
     #endif
   #endif
-  #define MX_SPI2_MISO_Pin       1
+  #define MX_SPI2_MISO_Pin       1U
   #define MX_SPI2_MISO_GPIOx     RTE_SPI2_MISO_PORT
   #define MX_SPI2_MISO_GPIO_Pin  (1U << RTE_SPI2_MISO_BIT)
   #define MX_SPI2_MISO_GPIO_PuPd GPIO_NOPULL
@@ -148,7 +148,7 @@
       #error "PI3 can not be configured as SPI2 MOSI on selected device!"
     #endif
   #endif
-  #define MX_SPI2_MOSI_Pin       1
+  #define MX_SPI2_MOSI_Pin       1U
   #define MX_SPI2_MOSI_GPIOx     RTE_SPI2_MOSI_PORT
   #define MX_SPI2_MOSI_GPIO_Pin  (1U << RTE_SPI2_MOSI_BIT)
   #define MX_SPI2_MOSI_GPIO_PuPd GPIO_NOPULL
@@ -163,24 +163,24 @@
   #if defined(STM32F405xx) || defined(STM32F407xx) || \
       defined(STM32F415xx) || defined(STM32F417xx)
     // PD3 as SPI2 SCK not available on STM32F405xx, STM32F407xx, STM32F415xx and STM32F417xx
-    #if (RTE_SPI2_SCL_PORT_ID == 3)
+    #if (RTE_SPI2_SCL_PORT_ID == 3U)
       #error "PD3 can not be configured as SPI2 SCK on selected device!"
     #endif
   #endif
-  #define MX_SPI2_SCK_Pin       1
+  #define MX_SPI2_SCK_Pin       1U
   #define MX_SPI2_SCK_GPIOx     RTE_SPI2_SCL_PORT
   #define MX_SPI2_SCK_GPIO_Pin  (1U << RTE_SPI2_SCL_BIT)
   #define MX_SPI2_SCK_GPIO_PuPd GPIO_NOPULL
   #define MX_SPI2_SCK_GPIO_AF   GPIO_AF5_SPI2
 
-  #if (RTE_SPI2_NSS_PIN == 1)
+  #if (RTE_SPI2_NSS_PIN == 1U)
     #if defined(STM32F401xC) || defined(STM32F401xE) || defined(STM32F411xE)
       // PI0 as SPI2 NSS not available on STM32F401xx and STM32F411xx
-      #if (RTE_SPI2_NSS_PORT_ID == 3)
+      #if (RTE_SPI2_NSS_PORT_ID == 3U)
         #error "PI0 can not be configured as SPI2 NSS on selected device!"
       #endif
     #endif
-    #define MX_SPI2_NSS_Pin        1
+    #define MX_SPI2_NSS_Pin        1U
     #define MX_SPI2_NSS_GPIOx      RTE_SPI2_NSS_PORT
     #define MX_SPI2_NSS_GPIO_Pin  (1U << RTE_SPI2_NSS_BIT)
     #define MX_SPI2_NSS_GPIO_AF    GPIO_AF5_SPI2
@@ -188,10 +188,10 @@
 #endif
 
 // SPI3 configuration definitions
-#if (RTE_SPI3 == 1)
+#if (RTE_SPI3 == 1U)
   #define MX_SPI3
 
-  #if (RTE_SPI3_RX_DMA == 1)
+  #if (RTE_SPI3_RX_DMA == 1U)
     #define MX_SPI3_RX_DMA_Instance DMAx_STREAMy(RTE_SPI3_RX_DMA_NUMBER, RTE_SPI3_RX_DMA_STREAM)
     #define MX_SPI3_RX_DMA_IRQn     DMAx_STREAMy_IRQn(RTE_SPI3_RX_DMA_NUMBER, RTE_SPI3_RX_DMA_STREAM)
     #define MX_SPI3_RX_DMA_Channel  DMA_CHANNEL_x(RTE_SPI3_RX_DMA_CHANNEL)
@@ -199,7 +199,7 @@
 
     #define SPI3_RX_DMA_Handler     DMAx_STREAMy_IRQ(RTE_SPI3_RX_DMA_NUMBER, RTE_SPI3_RX_DMA_STREAM)
   #endif
-  #if (RTE_SPI3_TX_DMA == 1)
+  #if (RTE_SPI3_TX_DMA == 1U)
     #define MX_SPI3_TX_DMA_Instance DMAx_STREAMy(RTE_SPI3_TX_DMA_NUMBER, RTE_SPI3_TX_DMA_STREAM)
     #define MX_SPI3_TX_DMA_IRQn     DMAx_STREAMy_IRQn(RTE_SPI3_TX_DMA_NUMBER, RTE_SPI3_TX_DMA_STREAM)
     #define MX_SPI3_TX_DMA_Channel  DMA_CHANNEL_x(RTE_SPI3_TX_DMA_CHANNEL)
@@ -208,7 +208,7 @@
     #define SPI3_TX_DMA_Handler     DMAx_STREAMy_IRQ(RTE_SPI3_TX_DMA_NUMBER, RTE_SPI3_TX_DMA_STREAM)
   #endif
 
-#define MX_SPI3_MISO_Pin       1
+#define MX_SPI3_MISO_Pin         1U
   #define MX_SPI3_MISO_GPIOx     RTE_SPI3_MISO_PORT
   #define MX_SPI3_MISO_GPIO_Pin  (1U << RTE_SPI3_MISO_BIT)
   #define MX_SPI3_MISO_GPIO_PuPd GPIO_NOPULL
@@ -217,11 +217,11 @@
   #if defined(STM32F405xx) || defined(STM32F407xx) || \
       defined(STM32F415xx) || defined(STM32F417xx)
     // PD6 as SPI3 MOSI not available on STM32F405xx, STM32F407xx, STM32F415xx and STM32F417xx
-    #if (RTE_SPI3_MOSI_PORT_ID == 2)
+    #if (RTE_SPI3_MOSI_PORT_ID == 2U)
       #error "PD6 can not be configured as SPI3 MOSI on selected device!"
     #endif
   #endif
-  #define MX_SPI3_MOSI_Pin       1
+  #define MX_SPI3_MOSI_Pin       1U
   #define MX_SPI3_MOSI_GPIOx     RTE_SPI3_MOSI_PORT
   #define MX_SPI3_MOSI_GPIO_Pin  (1U << RTE_SPI3_MOSI_BIT)
   #define MX_SPI3_MOSI_GPIO_PuPd GPIO_NOPULL
@@ -229,18 +229,18 @@
 
   #ifndef STM32F411xE
     // PB12 as SPI3 SCK only available on STM32F411xx
-    #if (RTE_SPI3_SCL_PORT_ID == 1)
+    #if (RTE_SPI3_SCL_PORT_ID == 1U)
       #error "PB12 can not be configured as SPI3 SCK on selected device!"
     #endif
   #endif
-  #define MX_SPI3_SCK_Pin       1
+  #define MX_SPI3_SCK_Pin       1U
   #define MX_SPI3_SCK_GPIOx     RTE_SPI3_SCL_PORT
   #define MX_SPI3_SCK_GPIO_Pin  (1U << RTE_SPI3_SCL_BIT)
   #define MX_SPI3_SCK_GPIO_PuPd GPIO_NOPULL
   #define MX_SPI3_SCK_GPIO_AF   GPIO_AF6_SPI3
 
   #if (RTE_SPI3_NSS_PIN == 1)
-    #define MX_SPI3_NSS_Pin        1
+    #define MX_SPI3_NSS_Pin        1U
     #define MX_SPI3_NSS_GPIOx      RTE_SPI3_NSS_PORT
     #define MX_SPI3_NSS_GPIO_Pin  (1U << RTE_SPI3_NSS_BIT)
     #define MX_SPI3_NSS_GPIO_AF    GPIO_AF6_SPI3
@@ -257,7 +257,7 @@
   
   #define MX_SPI4
 
-  #if (RTE_SPI4_RX_DMA == 1)
+  #if (RTE_SPI4_RX_DMA == 1U)
     #define MX_SPI4_RX_DMA_Instance DMAx_STREAMy(RTE_SPI4_RX_DMA_NUMBER, RTE_SPI4_RX_DMA_STREAM)
     #define MX_SPI4_RX_DMA_IRQn     DMAx_STREAMy_IRQn(RTE_SPI4_RX_DMA_NUMBER, RTE_SPI4_RX_DMA_STREAM)
     #define MX_SPI4_RX_DMA_Channel  DMA_CHANNEL_x(RTE_SPI4_RX_DMA_CHANNEL)
@@ -265,7 +265,7 @@
 
     #define SPI4_RX_DMA_Handler     DMAx_STREAMy_IRQ(RTE_SPI4_RX_DMA_NUMBER, RTE_SPI4_RX_DMA_STREAM)
   #endif
-  #if (RTE_SPI4_TX_DMA == 1)
+  #if (RTE_SPI4_TX_DMA == 1U)
     #define MX_SPI4_TX_DMA_Instance DMAx_STREAMy(RTE_SPI4_TX_DMA_NUMBER, RTE_SPI4_TX_DMA_STREAM)
     #define MX_SPI4_TX_DMA_IRQn     DMAx_STREAMy_IRQn(RTE_SPI4_TX_DMA_NUMBER, RTE_SPI4_TX_DMA_STREAM)
     #define MX_SPI4_TX_DMA_Channel  DMA_CHANNEL_x(RTE_SPI4_TX_DMA_CHANNEL)
@@ -276,11 +276,11 @@
 
   #ifndef STM32F411xE
     // PA11 as SPI4 MISO only available on STM32F411xx
-    #if (RTE_SPI4_MISO_PORT_ID == 0)
+    #if (RTE_SPI4_MISO_PORT_ID == 0U)
       #error "PA11 can not be configured as SPI4 MISO on selected device!"
     #endif
   #endif
-  #define MX_SPI4_MISO_Pin       1
+  #define MX_SPI4_MISO_Pin       1U
   #define MX_SPI4_MISO_GPIOx     RTE_SPI4_MISO_PORT
   #define MX_SPI4_MISO_GPIO_Pin  (1U << RTE_SPI4_MISO_BIT)
   #define MX_SPI4_MISO_GPIO_PuPd GPIO_NOPULL
@@ -288,11 +288,11 @@
 
   #ifndef STM32F411xE
     // PA1 as SPI4 MOSI only available on STM32F411xx
-    #if (RTE_SPI4_MOSI_PORT_ID == 0)
+    #if (RTE_SPI4_MOSI_PORT_ID == 0U)
       #error "PA1 can not be configured as SPI4 MOSI on selected device!"
     #endif
   #endif
-  #define MX_SPI4_MOSI_Pin       1
+  #define MX_SPI4_MOSI_Pin       1U
   #define MX_SPI4_MOSI_GPIOx     RTE_SPI4_MOSI_PORT
   #define MX_SPI4_MOSI_GPIO_Pin  (1U << RTE_SPI4_MOSI_BIT)
   #define MX_SPI4_MOSI_GPIO_PuPd GPIO_NOPULL
@@ -300,24 +300,24 @@
 
   #ifndef STM32F411xE
     // PB13 as SPI4 SCK only available on STM32F411xx
-    #if (RTE_SPI4_SCL_PORT_ID == 0)
+    #if (RTE_SPI4_SCL_PORT_ID == 0U)
       #error "PB13 can not be configured as SPI4 SCK on selected device!"
     #endif
   #endif
-  #define MX_SPI4_SCK_Pin       1
+  #define MX_SPI4_SCK_Pin       1U
   #define MX_SPI4_SCK_GPIOx     RTE_SPI4_SCL_PORT
   #define MX_SPI4_SCK_GPIO_Pin  (1U << RTE_SPI4_SCL_BIT)
   #define MX_SPI4_SCK_GPIO_PuPd GPIO_NOPULL
   #define MX_SPI4_SCK_GPIO_AF   GPIO_AF5_SPI4
 
-  #if (RTE_SPI4_NSS_PIN == 1)
+  #if (RTE_SPI4_NSS_PIN == 1U)
     #ifndef STM32F411xE
       // PB12 as SPI4 NSS only available on STM32F411xx
-      #if (RTE_SPI4_NSS_PORT_ID == 1)
+      #if (RTE_SPI4_NSS_PORT_ID == 1U)
         #error "PB12 can not be configured as SPI4 NSS on selected device!"
       #endif
     #endif
-    #define MX_SPI4_NSS_Pin        1
+    #define MX_SPI4_NSS_Pin        1U
     #define MX_SPI4_NSS_GPIOx      RTE_SPI4_NSS_PORT
     #define MX_SPI4_NSS_GPIO_Pin  (1U << RTE_SPI4_NSS_BIT)
     #define MX_SPI4_NSS_GPIO_AF    GPIO_AF5_SPI4
@@ -325,7 +325,7 @@
 #endif
 
 // SPI5 configuration definitions
-#if (RTE_SPI5 == 1)
+#if (RTE_SPI5 == 1U)
   #if defined (STM32F405xx) || defined (STM32F407xx) || \
       defined (STM32F415xx) || defined (STM32F417xx) || \
       defined (STM32F401xC) || defined (STM32F401xE)
@@ -334,7 +334,7 @@
 
   #define MX_SPI5
 
-  #if (RTE_SPI5_RX_DMA == 1)
+  #if (RTE_SPI5_RX_DMA == 1U)
     #define MX_SPI5_RX_DMA_Instance DMAx_STREAMy(RTE_SPI5_RX_DMA_NUMBER, RTE_SPI5_RX_DMA_STREAM)
     #define MX_SPI5_RX_DMA_IRQn     DMAx_STREAMy_IRQn(RTE_SPI5_RX_DMA_NUMBER, RTE_SPI5_RX_DMA_STREAM)
     #define MX_SPI5_RX_DMA_Channel  DMA_CHANNEL_x(RTE_SPI5_RX_DMA_CHANNEL)
@@ -342,7 +342,7 @@
 
     #define SPI5_RX_DMA_Handler     DMAx_STREAMy_IRQ(RTE_SPI5_RX_DMA_NUMBER, RTE_SPI5_RX_DMA_STREAM)
   #endif
-  #if (RTE_SPI5_TX_DMA == 1)
+  #if (RTE_SPI5_TX_DMA == 1U)
     #define MX_SPI5_TX_DMA_Instance DMAx_STREAMy(RTE_SPI5_TX_DMA_NUMBER, RTE_SPI5_TX_DMA_STREAM)
     #define MX_SPI5_TX_DMA_IRQn     DMAx_STREAMy_IRQn(RTE_SPI5_TX_DMA_NUMBER, RTE_SPI5_TX_DMA_STREAM)
     #define MX_SPI5_TX_DMA_Channel  DMA_CHANNEL_x(RTE_SPI5_TX_DMA_CHANNEL)
@@ -353,31 +353,31 @@
 
   #ifndef STM32F411xE
     // PA12 as SPI5 MISO only available on STM32F411xx
-    #if (RTE_SPI5_MISO_PORT_ID == 0)
+    #if (RTE_SPI5_MISO_PORT_ID == 0U)
       #error "PA12 can not be configured as SPI5 MISO on selected device!"
     #endif
  
     // PE5 as SPI5 MISO only available on STM32F411xx
-    #if (RTE_SPI5_MISO_PORT_ID == 1)
+    #if (RTE_SPI5_MISO_PORT_ID == 1U)
       #error "PE5 can not be configured as SPI5 MISO on selected device!"
     #endif
 
     // PE13 as SPI5 MISO only available on STM32F411xx
-    #if (RTE_SPI5_MISO_PORT_ID == 2)
+    #if (RTE_SPI5_MISO_PORT_ID == 2U)
       #error "PE13 can not be configured as SPI5 MISO on selected device!"
     #endif
   #else
     // PF8 as SPI5 MISO only available on STM32F427xx, STM32F429xx, STM32F437xx and STM32F439xx
-    #if (RTE_SPI5_MISO_PORT_ID == 3)
+    #if (RTE_SPI5_MISO_PORT_ID == 3U)
       #error "PF8 can not be configured as SPI5 MISO on selected device!"
     #endif
 
     // PH7 as SPI5 MISO only available on STM32F427xx, STM32F429xx, STM32F437xx and STM32F439xx
-    #if (RTE_SPI5_MISO_PORT_ID == 4)
+    #if (RTE_SPI5_MISO_PORT_ID == 4U)
       #error "PH7 can not be configured as SPI5 MISO on selected device!"
     #endif
   #endif
-  #define MX_SPI5_MISO_Pin       1
+  #define MX_SPI5_MISO_Pin       1U
   #define MX_SPI5_MISO_GPIOx     RTE_SPI5_MISO_PORT
   #define MX_SPI5_MISO_GPIO_Pin  (1U << RTE_SPI5_MISO_BIT)
   #define MX_SPI5_MISO_GPIO_PuPd GPIO_NOPULL
@@ -385,36 +385,36 @@
 
   #ifndef STM32F411xE
     // PA10 as SPI5 MOSI only available on STM32F411xx
-    #if (RTE_SPI5_MOSI_PORT_ID == 0)
+    #if (RTE_SPI5_MOSI_PORT_ID == 0U)
       #error "PA10 can not be configured as SPI5 MOSI on selected device!"
     #endif
  
     // PB8 as SPI5 MOSI only available on STM32F411xx
-    #if (RTE_SPI5_MOSI_PORT_ID == 1)
+    #if (RTE_SPI5_MOSI_PORT_ID == 1U)
       #error "PB8 can not be configured as SPI5 MOSI on selected device!"
     #endif
 
     // PE6 as SPI5 MOSI only available on STM32F411xx
-    #if (RTE_SPI5_MOSI_PORT_ID == 2)
+    #if (RTE_SPI5_MOSI_PORT_ID == 2U)
       #error "PE6 can not be configured as SPI5 MOSI on selected device!"
     #endif
 
     // PE14 as SPI5 MOSI only available on STM32F411xx
-    #if (RTE_SPI5_MOSI_PORT_ID == 3)
+    #if (RTE_SPI5_MOSI_PORT_ID == 3U)
       #error "PE14 can not be configured as SPI5 MOSI on selected device!"
     #endif
   #else
     // PF9 as SPI5 MOSI only available on STM32F427xx, STM32F429xx, STM32F437xx and STM32F439xx
-    #if (RTE_SPI5_MOSI_PORT_ID == 4)
+    #if (RTE_SPI5_MOSI_PORT_ID == 4U)
       #error "PF9 can not be configured as SPI5 MOSI on selected device!"
     #endif
 
     // PF11 as SPI5 MOSI only available on STM32F427xx, STM32F429xx, STM32F437xx and STM32F439xx
-    #if (RTE_SPI5_MOSI_PORT_ID == 5)
+    #if (RTE_SPI5_MOSI_PORT_ID == 5U)
       #error "PF11 can not be configured as SPI5 MOSI on selected device!"
     #endif
   #endif
-  #define MX_SPI5_MOSI_Pin       1
+  #define MX_SPI5_MOSI_Pin       1U
   #define MX_SPI5_MOSI_GPIOx     RTE_SPI5_MOSI_PORT
   #define MX_SPI5_MOSI_GPIO_Pin  (1U << RTE_SPI5_MOSI_BIT)
   #define MX_SPI5_MOSI_GPIO_PuPd GPIO_NOPULL
@@ -422,65 +422,65 @@
 
   #ifndef STM32F411xE
     // PB0 as SPI5 SCK only available on STM32F411xx
-    #if (RTE_SPI5_SCL_PORT_ID == 0)
+    #if (RTE_SPI5_SCL_PORT_ID == 0U)
       #error "PB0 can not be configured as SPI5 SCK on selected device!"
     #endif
  
     // PE2 as SPI5 SCK only available on STM32F411xx
-    #if (RTE_SPI5_SCL_PORT_ID == 1)
+    #if (RTE_SPI5_SCL_PORT_ID == 1U)
       #error "PE2 can not be configured as SPI5 SCK on selected device!"
     #endif
 
     // PE12 as SPI5 SCK only available on STM32F411xx
-    #if (RTE_SPI5_SCL_PORT_ID == 2)
+    #if (RTE_SPI5_SCL_PORT_ID == 2U)
       #error "PE12 can not be configured as SPI5 SCK on selected device!"
     #endif
   #else
     // PF7 as SPI5 SCK only available on STM32F427xx, STM32F429xx, STM32F437xx and STM32F439xx
-    #if (RTE_SPI5_SCL_PORT_ID == 3)
+    #if (RTE_SPI5_SCL_PORT_ID == 3U)
       #error "PF7 can not be configured as SPI5 SCK on selected device!"
     #endif
 
     // PH6 as SPI5 SCK only available on STM32F427xx, STM32F429xx, STM32F437xx and STM32F439xx
-    #if (RTE_SPI5_SCL_PORT_ID == 4)
+    #if (RTE_SPI5_SCL_PORT_ID == 4U)
       #error "PH6 can not be configured as SPI5 SCK on selected device!"
     #endif
   #endif
-  #define MX_SPI5_SCK_Pin       1
+  #define MX_SPI5_SCK_Pin       1U
   #define MX_SPI5_SCK_GPIOx     RTE_SPI5_SCL_PORT
   #define MX_SPI5_SCK_GPIO_Pin  (1U << RTE_SPI5_SCL_BIT)
   #define MX_SPI5_SCK_GPIO_PuPd GPIO_NOPULL
   #define MX_SPI5_SCK_GPIO_AF   GPIO_AF5_SPI5
 
 
-  #if (RTE_SPI5_NSS_PIN == 1)
+  #if (RTE_SPI5_NSS_PIN == 1U)
     #ifndef STM32F411xE
       // PB1 as SPI5 NSS only available on STM32F411xx
-      #if (RTE_SPI5_NSS_PORT_ID == 0)
+      #if (RTE_SPI5_NSS_PORT_ID == 0U)
         #error "PB1 can not be configured as SPI5 NSS on selected device!"
       #endif
  
       // PE4 as SPI5 NSS only available on STM32F411xx
-      #if (RTE_SPI5_NSS_PORT_ID == 1)
+      #if (RTE_SPI5_NSS_PORT_ID == 1U)
         #error "PE4 can not be configured as SPI5 NSS on selected device!"
       #endif
 
       // PE11 as SPI5 NSS only available on STM32F411xx
-      #if (RTE_SPI5_NSS_PORT_ID == 2)
+      #if (RTE_SPI5_NSS_PORT_ID == 2U)
         #error "PE11 can not be configured as SPI5 NSS on selected device!"
       #endif
     #else
       // PF6 as SPI5 NSS only available on STM32F427xx, STM32F429xx, STM32F437xx and STM32F439xx
-      #if (RTE_SPI5_NSS_PORT_ID == 3)
+      #if (RTE_SPI5_NSS_PORT_ID == 3U)
         #error "PF6 can not be configured as SPI5 NSS on selected device!"
       #endif
 
       // PH5 as SPI5 NSS only available on STM32F427xx, STM32F429xx, STM32F437xx and STM32F439xx
-      #if (RTE_SPI5_NSS_PORT_ID == 4)
+      #if (RTE_SPI5_NSS_PORT_ID == 4U)
         #error "PH5 can not be configured as SPI5 NSS on selected device!"
       #endif
     #endif
-    #define MX_SPI5_NSS_Pin        1
+    #define MX_SPI5_NSS_Pin        1U
     #define MX_SPI5_NSS_GPIOx      RTE_SPI5_NSS_PORT
     #define MX_SPI5_NSS_GPIO_Pin  (1U << RTE_SPI5_NSS_BIT)
     #define MX_SPI5_NSS_GPIO_AF    GPIO_AF5_SPI5
@@ -488,7 +488,7 @@
 #endif
 
 // SPI6 configuration definitions
-#if (RTE_SPI6 == 1)
+#if (RTE_SPI6 == 1U)
   #if defined (STM32F401xC) || defined (STM32F401xE) || \
       defined (STM32F411xE) || defined (STM32F405xx) || \
       defined (STM32F407xx) || defined (STM32F415xx) || \
@@ -498,7 +498,7 @@
 
   #define MX_SPI6
 
-  #if (RTE_SPI6_RX_DMA == 1)
+  #if (RTE_SPI6_RX_DMA == 1U)
     #define MX_SPI6_RX_DMA_Instance DMAx_STREAMy(RTE_SPI6_RX_DMA_NUMBER, RTE_SPI6_RX_DMA_STREAM)
     #define MX_SPI6_RX_DMA_IRQn     DMAx_STREAMy_IRQn(RTE_SPI6_RX_DMA_NUMBER, RTE_SPI6_RX_DMA_STREAM)
     #define MX_SPI6_RX_DMA_Channel  DMA_CHANNEL_x(RTE_SPI6_RX_DMA_CHANNEL)
@@ -506,7 +506,7 @@
 
     #define SPI6_RX_DMA_Handler     DMAx_STREAMy_IRQ(RTE_SPI6_RX_DMA_NUMBER, RTE_SPI6_RX_DMA_STREAM)
   #endif
-  #if (RTE_SPI6_TX_DMA == 1)
+  #if (RTE_SPI6_TX_DMA == 1U)
     #define MX_SPI6_TX_DMA_Instance DMAx_STREAMy(RTE_SPI6_TX_DMA_NUMBER, RTE_SPI6_TX_DMA_STREAM)
     #define MX_SPI6_TX_DMA_IRQn     DMAx_STREAMy_IRQn(RTE_SPI6_TX_DMA_NUMBER, RTE_SPI6_TX_DMA_STREAM)
     #define MX_SPI6_TX_DMA_Channel  DMA_CHANNEL_x(RTE_SPI6_TX_DMA_CHANNEL)
@@ -515,26 +515,26 @@
     #define SPI6_TX_DMA_Handler     DMAx_STREAMy_IRQ(RTE_SPI6_TX_DMA_NUMBER, RTE_SPI6_TX_DMA_STREAM)
   #endif
 
-  #define MX_SPI6_SCK_Pin       1
+  #define MX_SPI6_SCK_Pin       1U
   #define MX_SPI6_SCK_GPIOx     RTE_SPI6_SCL_PORT
   #define MX_SPI6_SCK_GPIO_Pin  (1U << RTE_SPI6_SCL_BIT)
   #define MX_SPI6_SCK_GPIO_PuPd GPIO_NOPULL
   #define MX_SPI6_SCK_GPIO_AF   GPIO_AF5_SPI6
 
-  #define MX_SPI6_MISO_Pin       1
+  #define MX_SPI6_MISO_Pin       1U
   #define MX_SPI6_MISO_GPIOx     RTE_SPI6_MISO_PORT
   #define MX_SPI6_MISO_GPIO_Pin  (1U << RTE_SPI6_MISO_BIT)
   #define MX_SPI6_MISO_GPIO_PuPd GPIO_NOPULL
   #define MX_SPI6_MISO_GPIO_AF   GPIO_AF5_SPI6
 
-  #define MX_SPI6_MOSI_Pin       1
+  #define MX_SPI6_MOSI_Pin       1U
   #define MX_SPI6_MOSI_GPIOx     RTE_SPI6_MOSI_PORT
   #define MX_SPI6_MOSI_GPIO_Pin  (1U << RTE_SPI6_MOSI_BIT)
   #define MX_SPI6_MOSI_GPIO_PuPd GPIO_NOPULL
   #define MX_SPI6_MOSI_GPIO_AF   GPIO_AF5_SPI6
 
-  #if (RTE_SPI6_NSS_PIN == 1)
-    #define MX_SPI6_NSS_Pin        1
+  #if (RTE_SPI6_NSS_PIN == 1U)
+    #define MX_SPI6_NSS_Pin        1U
     #define MX_SPI6_NSS_GPIOx      RTE_SPI6_NSS_PORT
     #define MX_SPI6_NSS_GPIO_Pin  (1U << RTE_SPI6_NSS_BIT)
     #define MX_SPI6_NSS_GPIO_AF    GPIO_AF5_SPI6
@@ -667,11 +667,12 @@
 
 
 // Current driver status flag definition
-#define SPI_INITIALIZED           (1  << 0)     // SPI initialized
-#define SPI_POWERED               (1  << 1)     // SPI powered on
-#define SPI_CONFIGURED            (1  << 2)     // SPI configured
-#define SPI_DATA_LOST             (1  << 3)     // SPI data lost occurred
-#define SPI_MODE_FAULT            (1  << 4)     // SPI mode fault occurred
+#define SPI_INITIALIZED           ((uint8_t)(1U))           // SPI initialized
+#define SPI_POWERED               ((uint8_t)(1U << 1))     // SPI powered on
+#define SPI_CONFIGURED            ((uint8_t)(1U << 2))     // SPI configured
+#define SPI_DATA_LOST             ((uint8_t)(1U << 3))     // SPI data lost occurred
+#define SPI_MODE_FAULT            ((uint8_t)(1U << 4))     // SPI mode fault occurred
+
 
 // DMA Callback functions
 typedef void (*DMA_Callback_t) (DMA_HandleTypeDef *hdma);
@@ -680,11 +681,13 @@ typedef void (*DMA_Callback_t) (DMA_HandleTypeDef *hdma);
 // SPI DMA
 typedef struct _SPI_DMA {
   DMA_HandleTypeDef    *hdma;           // DMA handle
-  DMA_Stream_TypeDef   *stream;         // Stream register interface
   DMA_Callback_t        cb_complete;    // DMA complete callback
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+  DMA_Stream_TypeDef   *stream;         // Stream register interface
   uint32_t              channel;        // DMA channel
   uint32_t              priority;       // DMA channel priority
   IRQn_Type             irq_num;        // Stream IRQ number
+#endif
 } SPI_DMA;
 
 // SPI pin
@@ -725,6 +728,9 @@ typedef struct _SPI_TRANSFER_INFO {
 
 // SPI Resources definition
 typedef struct {
+#ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
+  SPI_HandleTypeDef    *h;                    // SPI Handle
+#endif
   SPI_TypeDef          *reg;                  // SPI peripheral pointer
   uint32_t            (*periph_clock)(void);  // Peripheral bus clock
   SPI_IO                io;                   // SPI Input/Output pins
