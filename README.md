@@ -64,5 +64,6 @@ startup_stm32f427xx.s -> vectors_stm32f427xx.c
 startup_stm32f429xx.s -> vectors_stm32f429xx.c
 startup_stm32f437xx.s -> vectors_stm32f437xx.c
 startup_stm32f439xx.s -> vectors_stm32f439xx.c
+startup_stm32f446xx.s -> vectors_stm32f446xx.c
 ```
 
