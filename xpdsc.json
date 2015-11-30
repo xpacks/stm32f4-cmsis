@@ -7,8 +7,8 @@
 	"vendorName": "Keil",
 	"name": "STM32F4xx_DFP",
 	"description": "STMicroelectronics STM32F4 Series Device Support, Drivers and Examples",
-	"version": "2.3.0",
-	"date": "2014-12-11",
+	"version": "2.4.0",
+	"date": "2015-03-20",
 	"devices": [
 		{
 			"name": "STM32F4 Series",
@@ -1005,17 +1005,6 @@
 								}
 							],
 							"children": [
-								{
-									"name": "STM32F411CCUx",
-									"type": "variant",
-									"features": [
-										{
-											"name": "QFP",
-											"type": "package",
-											"n": 48
-										}
-									]
-								},
 								{
 									"name": "STM32F411CCYx",
 									"type": "variant",
@@ -5153,6 +5142,375 @@
 											"name": "BGA",
 											"type": "package",
 											"n": 216
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "STM32F446",
+					"type": "subfamily",
+					"compile": {
+						"header": "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h",
+						"define": "STM32F446xx"
+					},
+					"processor": {
+						"clock": 180000000
+					},
+					"features": [
+						{
+							"name": "Timer",
+							"n": 12,
+							"m": 16
+						},
+						{
+							"name": "Timer",
+							"n": 2,
+							"m": 32
+						},
+						{
+							"name": "DAC",
+							"n": 2,
+							"m": 12
+						},
+						{
+							"name": "SPI",
+							"type": "interface",
+							"n": 4,
+							"m": 45000000
+						},
+						{
+							"name": "ComOther",
+							"description": "SAI Interface",
+							"n": 2
+						},
+						{
+							"name": "I2C",
+							"type": "interface",
+							"n": 3
+						},
+						{
+							"name": "USART",
+							"type": "interface",
+							"n": 4,
+							"m": 11250000
+						},
+						{
+							"name": "UART",
+							"type": "interface",
+							"n": 2,
+							"m": 11250000
+						},
+						{
+							"name": "USBOTG",
+							"type": "interface",
+							"n": 1
+						},
+						{
+							"name": "CAN",
+							"type": "interface",
+							"n": 2
+						},
+						{
+							"name": "SDIO",
+							"type": "interface",
+							"description": "Secure Digital IO",
+							"n": 1,
+							"m": 8
+						},
+						{
+							"name": "SPI",
+							"type": "interface",
+							"description": "Queued Serial Peripheral Interface",
+							"n": 1,
+							"m": 42000000
+						},
+						{
+							"name": "VCC",
+							"n": 1.8,
+							"m": 3.6
+						},
+						{
+							"name": "Camera",
+							"n": 1,
+							"m": 14
+						},
+						{
+							"name": "VCC",
+							"n": 1.8,
+							"m": 3.6
+						}
+					],
+					"debugOptions": [
+						{
+							"svd": "CMSIS/SVD/STM32F446x.svd"
+						}
+					],
+					"children": [
+						{
+							"name": "STM32F446MC",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x40000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x20000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F446MCYx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 100
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F446RC",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x40000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x20000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F446RCTx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 100
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F446VC",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x40000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x20000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F446VCTx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 100
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F446ZC",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x40000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x20000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F446ZCTx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 100
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F446ME",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x80000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x20000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F446MEYx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 100
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F446RE",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x80000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x20000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F446RETx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 100
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F446VE",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x80000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x20000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F446VETx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 100
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F446ZE",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x80000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x20000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F446ZETx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 100
+										}
+									]
+								},
+								{
+									"name": "STM32F446ZEHx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 100
 										}
 									]
 								}
