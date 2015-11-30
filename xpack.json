@@ -1,0 +1,60 @@
+{
+	"$schema": "http://xcdl.github.io/schemas/xpack-1-1.json",
+	"name": "ilg-stm32f4-cmsis",
+	"description": "STM32F4 CMSIS CORE, CMSIS Driver and vectors files.",
+	"xcdlFile": ".xcdl.json",
+	"repository": 
+	{
+		"type": "git",
+		"url": "https://github.com/xpacks/stm32f4-cmsis.git"
+	},
+
+	"version": "0.1.0",
+	"releases": [
+		
+	],
+
+	"keywords": [
+		"arm",
+		"cmsis",
+		"cortex-m",
+		"stm32",
+		"stm32f4"
+	],
+
+	"homepage": "https://github.com/xpacks/stm32f4-cmsis",
+	"bugs": [
+		{
+			"description": "All issues.",
+			"url": "https://github.com/xpacks/stm32f4-cmsis/issues"
+		}
+	],
+
+	"license": "LicenseRef-LICENSE.txt",
+	"maintainers": [
+		{
+			"name": "Liviu Ionescu",
+			"email": "ilg@livius.net",
+			"url": "http://liviusdotnet.worldpress.com"
+		}
+	],
+
+	"contributors": [
+		{
+			"name": "STMicroelectronics"
+		},
+
+		{
+			"name": "Liviu Ionescu",
+			"email": "ilg@livius.net",
+			"url": "http://liviusdotnet.worldpress.com"
+		}
+	],
+
+	"dependencies": [
+		{
+			"name": "ilg_arm_cmsis",
+			"version": ">=1.0.0"
+		}
+	]
+}

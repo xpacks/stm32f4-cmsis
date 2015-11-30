@@ -1,0 +1,81 @@
+{
+	"$schema": "http://xcdl.github.io/schemas/xcdl-1-1.json",
+	"nodes": [
+		{
+			"name": "core",
+			"type": "component",
+			"description": "CMSIS CORE headers and vectors for STM32F4xx devices.",
+			"nodes": [
+				{
+					"name": "stm32f401",
+					"type": "component",
+					"description": "CMSIS headers and vectors for STM32F401xx devices.",
+					"activeIf": "cmsis.subFamily === 'STM32F401'"
+				},
+
+				{
+					"name": "stm32f405",
+					"type": "component",
+					"description": "CMSIS headers and vectors for STM32F405xx devices.",
+					"activeIf": "cmsis.subFamily === 'STM32F405'"
+				},
+
+				{
+					"name": "stm32f407",
+					"type": "component",
+					"description": "CMSIS headers and vectors for STM32F407xx devices.",
+					"activeIf": "cmsis.subFamily === 'STM32F407'"
+				},
+
+				{
+					"name": "stm32f411",
+					"type": "component",
+					"description": "CMSIS headers and vectors for STM32F411xx devices.",
+					"activeIf": "cmsis.subFamily === 'STM32F411'"
+				},
+
+				{
+					"name": "stm32f415",
+					"type": "component",
+					"description": "CMSIS headers and vectors for STM32F415xx devices.",
+					"activeIf": "cmsis.subFamily === 'STM32F415'"
+				},
+
+				{
+					"name": "stm32f417",
+					"type": "component",
+					"description": "CMSIS headers and vectors for STM32F417xx devices.",
+					"activeIf": "cmsis.subFamily === 'STM32F417'"
+				},
+
+				{
+					"name": "stm32f427",
+					"type": "component",
+					"description": "CMSIS headers and vectors for STM32F427xx devices.",
+					"activeIf": "cmsis.subFamily === 'STM32F427'"
+				},
+
+				{
+					"name": "stm32f429",
+					"type": "component",
+					"description": "CMSIS headers and vectors for STM32F429xx devices.",
+					"activeIf": "cmsis.subFamily === 'STM32F429'"
+				},
+
+				{
+					"name": "stm32f437",
+					"type": "component",
+					"description": "CMSIS headers and vectors for STM32F437xx devices.",
+					"activeIf": "cmsis.subFamily === 'STM32F437'"
+				},
+
+				{
+					"name": "stm32f439",
+					"type": "component",
+					"description": "CMSIS headers and vectors for STM32F439xx devices.",
+					"activeIf": "cmsis.subFamily === 'STM32F439'"
+				}
+			]
+		}
+	]
+}
