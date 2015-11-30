@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        9. June 2015
- * $Revision:    V2.6
+ * $Date:        04. September 2015
+ * $Revision:    V2.7
  *
  * Driver:       Driver_SPI1, Driver_SPI2, Driver_SPI3,
  *               Driver_SPI4, Driver_SPI5, Driver_SPI6
@@ -40,9 +40,11 @@
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.7
+ *    Added support for STM32F410xx
  *  Version 2.6
- *    - PowerControl for Power OFF and Uninitialize functions made unconditional.
- *    - Corrected status bit-field handling, to prevent race conditions.
+ *    PowerControl for Power OFF and Uninitialize functions made unconditional.
+ *    Corrected status bit-field handling, to prevent race conditions.
  *  Version 2.5
  *    Added support for STM32F446xx
  *  Version 2.4
@@ -68,28 +70,79 @@
  *  Version 1.0
  *    Initial release
  */
+ 
+  /*! \page stm32f4_spi CMSIS-Driver SPI Setup 
 
-/* STM32CubeMX configuration:
- *
- * Pinout tab:
- *   - Select SPIx peripheral and enable mode
- * Clock Configuration tab:
- *   - Configure clock (APB2 is used for SPIx)
- * Configuration tab:
- *   - Select SPIx under Connectivity section which opens SPIx Configuration window:
- *       - Parameter Settings tab: settings are unused by this driver
- *       - NVIC Settings: enable SPIx global interrupt
- *       - GPIO Settings: configure as needed
- *       - DMA Settings:  to enable DMA transfers you need to
- *           - add SPIx_RX and SPIx_TX DMA Request
- *           - select Normal DMA mode (for RX and TX)
- *           - deselect Use Fifo option (for RX and TX)
- *           - go to NVIC Settings tab and enable RX and TX stream global interrupt
- */
+The CMSIS-Driver SPI requires:
+  - Setup of SPIx input clock
+  - Setup of SPIx in Full-Duplex Master/Slave mode with optional DMA for Rx and Tx transfers
+
+Valid settings for various evaluation boards are listed in the table below:
+
+Peripheral Resource | MCBSTM32F400                  | STM32F4-Discovery             | 32F401C-Discovery             | 32F429I-Discovery
+:-------------------|:------------------------------|:------------------------------|:------------------------------|:------------------
+SPI Mode            |SPI2: <b>Full-Duplex Master</b>|SPI1: <b>Full-Duplex Master</b>|SPI1: <b>Full-Duplex Master</b>|SPI5: <b>Full-Duplex Master</b>
+MOSI pin            |PB15                           |PA7                            |PA7                            |PF9
+MISO pin            |PB14                           |PA6                            |PA6                            |PF8
+SCK pin             |PB10                           |PA5                            |PA5                            |PF7
+NSS pin             |PB12                           |PE3                            |PE3                            |PC1
+
+For different boards, refer to the hardware schematics to reflect correct setup values.
+
+The STM32CubeMX configuration for MCBSTM32F400 with steps for Pinout, Clock, and System Configuration are 
+listed below. Enter the values that are marked \b bold.
+
+Pinout tab
+----------
+  1. Configure mode
+    - Peripherals \b SPI2: Mode=<b>Full-Duplex Master</b>, Hardware NSS Signal=<b>ON</b>
+
+  2. Configure pins PB15, PB14, PB10 and pin PB12 as SPI2 peripheral alternative pins
+    - Click in chip diagram on pin \b PB15 and select \b SPI2_MOSI
+    - Click in chip diagram on pin \b PB14 and select \b SPI2_MISO
+    - Click in chip diagram on pin \b PB10 and select \b SPI2_SCK
+    - Click in chip diagram on pin \b PB12 and select \b SPI2_NSS
+
+Clock Configuration tab
+-----------------------
+  1. Configure APB2 clock
+    - Setup "APB2 peripheral clocks (MHz)" to match application requirements
+
+Configuration tab
+-----------------
+  1. Under Connectivity open \b SPI2 Configuration:
+     - \e optional <b>DMA Settings</b>: setup DMA transfers for Rx and Tx\n
+       \b Add - Select \b SPI2_RX: Stream=DMA1 Stream 3, Direction=Peripheral to Memory, Priority=Low,
+          DMA Request Settings: not used\n
+       \b Add - Select \b SPI2_TX: Stream=DMA1 Stream 4, Direction=Memory to Peripheral, Priority=Low,
+          DMA Request Settings: not used
+
+     - <b>GPIO Settings</b>: review settings, no changes required
+          Pin Name | Signal on Pin | GPIO mode | GPIO Pull-up/Pull..| Maximum out | User Label
+          :--------|:--------------|:----------|:-------------------|:------------|:----------
+          PB10     | SPI2_SCK      | Alternate | No pull-up and no..| High        |.
+          PB12     | SPI2_NSS      | Alternate | No pull-up and no..| High        |.
+          PB14     | SPI2_MISO     | Alternate | No pull-up and no..| High        |.
+          PB15     | SPI2_MOSI     | Alternate | No pull-up and no..| High        |.
+
+     - <b>NVIC Settings</b>: enable interrupts
+          Interrupt Table                      | Enable | Preemption Priority | Sub Priority
+          :------------------------------------|:-------|:--------------------|:--------------
+          DMA1 stream3 global interrupt        |   ON   | 0                   | 0
+          DMA1 stream4 global interrupt        |   ON   | 0                   | 0
+          SPI2 global interrupt                |\b ON   | 0                   | 0
+
+     - Parameter Settings: not used
+     - User Constants: not used
+   
+     Click \b OK to close the SPI2 Configuration dialog
+*/
+
+/*! \cond */
 
 #include "SPI_STM32F4xx.h"
 
-#define ARM_SPI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,6)
+#define ARM_SPI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,7)
 
 // Driver Version
 static const ARM_DRIVER_VERSION DriverVersion = { ARM_SPI_API_VERSION, ARM_SPI_DRV_VERSION };
@@ -111,7 +164,7 @@ extern SPI_HandleTypeDef hspi1;
 
 // SPI1 Run-Time Information
 static SPI_INFO          SPI1_Info = {0};
-static SPI_TRANSFER_INFO SPI1_TransfefInfo = {0};
+static SPI_TRANSFER_INFO SPI1_TransferInfo = {0};
 
 
 #ifdef MX_SPI1_MOSI_Pin
@@ -215,7 +268,7 @@ static const SPI_RESOURCES SPI1_Resources = {
 #endif
 
   &SPI1_Info,
-  &SPI1_TransfefInfo
+  &SPI1_TransferInfo
 };
 #endif /* MX_SPI1 */
 
@@ -227,7 +280,7 @@ extern SPI_HandleTypeDef hspi2;
 
 // SPI2 Run-Time Information
 static SPI_INFO          SPI2_Info = {0};
-static SPI_TRANSFER_INFO SPI2_TransfefInfo = {0};
+static SPI_TRANSFER_INFO SPI2_TransferInfo = {0};
 
 
 #ifdef MX_SPI2_MOSI_Pin
@@ -331,7 +384,7 @@ static const SPI_RESOURCES SPI2_Resources = {
 #endif
 
   &SPI2_Info,
-  &SPI2_TransfefInfo
+  &SPI2_TransferInfo
 };
 #endif /* MX_SPI2 */
 
@@ -343,7 +396,7 @@ extern SPI_HandleTypeDef hspi3;
 
 // SPI3 Run-Time Information
 static SPI_INFO          SPI3_Info = {0};
-static SPI_TRANSFER_INFO SPI3_TransfefInfo = {0};
+static SPI_TRANSFER_INFO SPI3_TransferInfo = {0};
 
 
 #ifdef MX_SPI3_MOSI_Pin
@@ -447,7 +500,7 @@ static const SPI_RESOURCES SPI3_Resources = {
 #endif
 
   &SPI3_Info,
-  &SPI3_TransfefInfo
+  &SPI3_TransferInfo
 };
 #endif /* MX_SPI3 */
 
@@ -459,7 +512,7 @@ extern SPI_HandleTypeDef hspi4;
 
 // SPI4 Run-Time Information
 static SPI_INFO          SPI4_Info = {0};
-static SPI_TRANSFER_INFO SPI4_TransfefInfo = {0};
+static SPI_TRANSFER_INFO SPI4_TransferInfo = {0};
 
 
 #ifdef MX_SPI4_MOSI_Pin
@@ -563,7 +616,7 @@ static const SPI_RESOURCES SPI4_Resources = {
 #endif
 
   &SPI4_Info,
-  &SPI4_TransfefInfo
+  &SPI4_TransferInfo
 };
 #endif /* MX_SPI4 */
 
@@ -575,7 +628,7 @@ extern SPI_HandleTypeDef hspi5;
 
 // SPI5 Run-Time Information
 static SPI_INFO          SPI5_Info = {0};
-static SPI_TRANSFER_INFO SPI5_TransfefInfo = {0};
+static SPI_TRANSFER_INFO SPI5_TransferInfo = {0};
 
 
 #ifdef MX_SPI5_MOSI_Pin
@@ -679,7 +732,7 @@ static const SPI_RESOURCES SPI5_Resources = {
 #endif
 
   &SPI5_Info,
-  &SPI5_TransfefInfo
+  &SPI5_TransferInfo
 };
 #endif /* MX_SPI5 */
 
@@ -691,7 +744,7 @@ extern SPI_HandleTypeDef hspi6;
 
 // SPI6 Run-Time Information
 static SPI_INFO          SPI6_Info = {0};
-static SPI_TRANSFER_INFO SPI6_TransfefInfo = {0};
+static SPI_TRANSFER_INFO SPI6_TransferInfo = {0};
 
 
 #ifdef MX_SPI6_MOSI_Pin
@@ -795,7 +848,7 @@ static const SPI_RESOURCES SPI6_Resources = {
 #endif
 
   &SPI6_Info,
-  &SPI6_TransfefInfo
+  &SPI6_TransferInfo
 };
 #endif /* MX_SPI6 */
 
@@ -808,51 +861,55 @@ void SPI_TX_DMA_Complete(const SPI_RESOURCES *spi);
 void SPI_RX_DMA_Complete(const SPI_RESOURCES *spi);
 #endif
 
-#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+#if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
 /**
-  \fn          void Enable_GPIO_Clock (GPIO_TypeDef *port)
+  \fn          void Enable_GPIO_Clock (const GPIO_TypeDef *port)
   \brief       Enable GPIO clock
 */
-static void Enable_GPIO_Clock (GPIO_TypeDef *GPIOx) {
-#ifdef GPIOA
-  if (GPIOx == GPIOA) __GPIOA_CLK_ENABLE();
-#endif 
-#ifdef GPIOB
-  if (GPIOx == GPIOB) __GPIOB_CLK_ENABLE();
+static void Enable_GPIO_Clock (const GPIO_TypeDef *GPIOx) {
+  if      (GPIOx == GPIOA) { __HAL_RCC_GPIOA_CLK_ENABLE(); }
+  else if (GPIOx == GPIOB) { __HAL_RCC_GPIOB_CLK_ENABLE(); }
+  else if (GPIOx == GPIOC) { __HAL_RCC_GPIOC_CLK_ENABLE(); }
+#if defined(GPIOD)
+  else if (GPIOx == GPIOD) { __HAL_RCC_GPIOD_CLK_ENABLE(); }
 #endif
-#ifdef GPIOC
-  if (GPIOx == GPIOC) __GPIOC_CLK_ENABLE();
+#if defined(GPIOE)
+  else if (GPIOx == GPIOE) { __HAL_RCC_GPIOE_CLK_ENABLE(); }
 #endif
-#ifdef GPIOD
-  if (GPIOx == GPIOD) __GPIOD_CLK_ENABLE();
+#if defined(GPIOF)
+  else if (GPIOx == GPIOF) { __HAL_RCC_GPIOF_CLK_ENABLE(); }
 #endif
-#ifdef GPIOE
-  if (GPIOx == GPIOE) __GPIOE_CLK_ENABLE();
+#if defined(GPIOG)
+  else if (GPIOx == GPIOG) { __HAL_RCC_GPIOG_CLK_ENABLE(); }
 #endif
-#ifdef GPIOF
-  if (GPIOx == GPIOF) __GPIOF_CLK_ENABLE();
+#if defined(GPIOH)
+  else if (GPIOx == GPIOH) { __HAL_RCC_GPIOH_CLK_ENABLE(); }
 #endif
-#ifdef GPIOG
-  if (GPIOx == GPIOG) __GPIOG_CLK_ENABLE();
+#if defined(GPIOI)
+  else if (GPIOx == GPIOI) { __HAL_RCC_GPIOI_CLK_ENABLE(); }
 #endif
-#ifdef GPIOH
-  if (GPIOx == GPIOH) __GPIOH_CLK_ENABLE();
+#if defined(GPIOJ)
+  else if (GPIOx == GPIOJ) { __HAL_RCC_GPIOJ_CLK_ENABLE(); }
 #endif
-#ifdef GPIOI
-  if (GPIOx == GPIOI) __GPIOI_CLK_ENABLE();
+#if defined(GPIOK)
+  else if (GPIOx == GPIOK) { __HAL_RCC_GPIOK_CLK_ENABLE(); }
 #endif
 }
 #endif
 
 /**
-  \fn          void SPI_PeripheralReset (SPI_TypeDef *spi)
+  \fn          void SPI_PeripheralReset (const SPI_TypeDef *spi)
   \brief       SPI Reset
 */
-static void SPI_PeripheralReset (SPI_TypeDef *spi) {
+static void SPI_PeripheralReset (const SPI_TypeDef *spi) {
 
   if      (spi == SPI1) { __HAL_RCC_SPI1_FORCE_RESET(); }
+#ifdef SPI2
   else if (spi == SPI2) { __HAL_RCC_SPI2_FORCE_RESET(); }
+#endif
+#ifdef SPI3
   else if (spi == SPI3) { __HAL_RCC_SPI3_FORCE_RESET(); }
+#endif
 #ifdef SPI4
   else if (spi == SPI4) { __HAL_RCC_SPI4_FORCE_RESET(); }
 #endif
@@ -866,8 +923,12 @@ static void SPI_PeripheralReset (SPI_TypeDef *spi) {
   __NOP(); __NOP(); __NOP(); __NOP(); 
 
   if      (spi == SPI1) { __HAL_RCC_SPI1_RELEASE_RESET(); }
+#ifdef SPI2
   else if (spi == SPI2) { __HAL_RCC_SPI2_RELEASE_RESET(); }
+#endif
+#ifdef SPI3
   else if (spi == SPI3) { __HAL_RCC_SPI3_RELEASE_RESET(); }
+#endif
 #ifdef SPI4
   else if (spi == SPI4) { __HAL_RCC_SPI4_RELEASE_RESET(); }
 #endif
@@ -992,10 +1053,10 @@ static int32_t SPI_Initialize (ARM_SPI_SignalEvent_t cb_event, const SPI_RESOURC
     // Enable DMA clock
     if ((spi->reg == SPI2) || (spi->reg == SPI3)) {
       // DMA1 used for SPI2 and SPI3
-      __DMA1_CLK_ENABLE();
+      __HAL_RCC_DMA1_CLK_ENABLE();
     } else {
       // DMA2 used for SPI1, SPI4, SPI5 and SPI6
-      __DMA2_CLK_ENABLE();
+      __HAL_RCC_DMA2_CLK_ENABLE();
     }
   }
 #endif
@@ -1077,8 +1138,12 @@ static int32_t SPI_PowerControl (ARM_POWER_STATE state, const SPI_RESOURCES *spi
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
       // Disable SPI clock
       if      (spi->reg == SPI1) { __HAL_RCC_SPI1_CLK_DISABLE(); }
+    #ifdef SPI2
       else if (spi->reg == SPI2) { __HAL_RCC_SPI2_CLK_DISABLE(); }
+    #endif
+    #ifdef SPI3
       else if (spi->reg == SPI3) { __HAL_RCC_SPI3_CLK_DISABLE(); }
+    #endif
     #ifdef SPI4
       else if (spi->reg == SPI4) { __HAL_RCC_SPI4_CLK_DISABLE(); }
     #endif
@@ -1116,8 +1181,12 @@ static int32_t SPI_PowerControl (ARM_POWER_STATE state, const SPI_RESOURCES *spi
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
       // Enable SPI clock
       if      (spi->reg == SPI1) { __HAL_RCC_SPI1_CLK_ENABLE(); }
+    #ifdef SPI2
       else if (spi->reg == SPI2) { __HAL_RCC_SPI2_CLK_ENABLE(); }
+    #endif
+    #ifdef SPI3
       else if (spi->reg == SPI3) { __HAL_RCC_SPI3_CLK_ENABLE(); }
+    #endif
     #ifdef SPI4
       else if (spi->reg == SPI4) { __HAL_RCC_SPI4_CLK_ENABLE(); }
     #endif
@@ -1556,7 +1625,7 @@ static int32_t SPI_Control (uint32_t control, uint32_t arg, const SPI_RESOURCES 
       return ARM_DRIVER_OK;
 
     case ARM_SPI_CONTROL_SS:
-      val = (spi->info->mode & ARM_SPI_CONTROL_Msk); 
+      val = (spi->info->mode & ARM_SPI_CONTROL_Msk);
       // Master modes
       if (val == ARM_SPI_MODE_MASTER) {
         val = spi->info->mode & ARM_SPI_SS_MASTER_MODE_Msk;
@@ -2199,3 +2268,5 @@ ARM_DRIVER_SPI Driver_SPI6 = {
   SPI6_GetStatus
 };
 #endif
+
+/*! \endcond */

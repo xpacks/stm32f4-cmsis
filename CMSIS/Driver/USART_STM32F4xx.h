@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        9. June 2015
- * $Revision:    V2.3
+ * $Date:        1. September 2015
+ * $Revision:    V2.4
  *
  * Project:      USART Driver definitions for ST STM32F4xx
  * -------------------------------------------------------------------------- */
@@ -38,15 +38,18 @@
 
 #ifdef   RTE_DEVICE_FRAMEWORK_CUBE_MX
 #define  VM_ASYNC                        (1UL)
-#define  VM_ASYNC_SINGLE_WIRE            (2UL)
-#define  VM_ASYNC_MULTI_PROCESSOR        (3UL)
-#define  VM_ASYNC_LIN                    (4UL)
-#define  VM_SYNC                         (5UL)
-#define  VM_IRDA                         (6UL)
-#define  VM_SMARTCARD                    (7UL)
+#define  VM_SYNC                         (2UL)
+#define  VM_IRDA                         (3UL)
+#define  VM_SMARTCARD                    (4UL)
 #define  Asynchronous                    VM_ASYNC
 #define  IrDA                            VM_IRDA
 #include "MX_Device.h"
+
+#ifdef USART6
+  #ifndef RCC_APB2RSTR_USART6RST
+    #define  RCC_APB2RSTR_USART6RST ((uint32_t)0x00000020)
+  #endif
+#endif
 
 // MX macros
 #ifdef MX_USART1
@@ -68,14 +71,8 @@
 #define USART_SMARTCARD                  (1UL)
 #endif
 #endif
+#endif
 
-#ifdef MX_USART1_MULTI_PROCESSOR
-  #error "USART multiprocessor mode is not supported. Please select USART proper mode in Cube MX."
-#endif
-#ifdef MX_USART1_LIN
-  #error "USART LIN mode is not supported. Please select proper USART mode in Cube MX."
-#endif
-#endif
 
 #ifdef MX_USART2
 
@@ -96,14 +93,8 @@
 #define USART_SMARTCARD                  (1UL)
 #endif
 #endif
+#endif
 
-#ifdef MX_USART2_MULTI_PROCESSOR
-  #error "USART multiprocessor mode is not supported. Please select USART proper mode in Cube MX."
-#endif
-#ifdef MX_USART2_LIN
-  #error "USART LIN mode is not supported. Please select proper USART mode in Cube MX."
-#endif
-#endif
 
 #ifdef MX_USART3
 
@@ -124,14 +115,8 @@
 #define USART_SMARTCARD                  (1UL)
 #endif
 #endif
+#endif
 
-#ifdef MX_USART3_MULTI_PROCESSOR
-  #error "USART multiprocessor mode is not supported. Please select USART proper mode in Cube MX."
-#endif
-#ifdef MX_USART3_LIN
-  #error "USART LIN mode is not supported. Please select proper USART mode in Cube MX."
-#endif
-#endif
 
 #ifdef MX_UART4
 
@@ -144,14 +129,8 @@
 #define USART_IRDA                       (1UL)
 #endif
 #endif
+#endif
 
-#ifdef MX_UART4_MULTI_PROCESSOR
-  #error "USART multiprocessor mode is not supported. Please select USART proper mode in Cube MX."
-#endif
-#ifdef MX_UART4_LIN
-  #error "USART LIN mode is not supported. Please select proper USART mode in Cube MX."
-#endif
-#endif
 
 #ifdef MX_UART5
 
@@ -164,14 +143,8 @@
 #define USART_IRDA                       (1UL)
 #endif
 #endif
+#endif
 
-#ifdef MX_UART5_MULTI_PROCESSOR
-  #error "USART multiprocessor mode is not supported. Please select USART proper mode in Cube MX."
-#endif
-#ifdef MX_UART5_LIN
-  #error "USART LIN mode is not supported. Please select proper USART mode in Cube MX."
-#endif
-#endif
 
 #ifdef MX_USART6
 
@@ -192,14 +165,8 @@
 #define USART_SMARTCARD                  (1UL)
 #endif
 #endif
+#endif
 
-#ifdef MX_USART6_MULTI_PROCESSOR
-  #error "USART multiprocessor mode is not supported. Please select USART proper mode in Cube MX."
-#endif
-#ifdef MX_USART6_LIN
-  #error "USART LIN mode is not supported. Please select proper USART mode in Cube MX."
-#endif
-#endif
 
 #ifdef MX_UART7
 
@@ -212,14 +179,8 @@
 #define USART_IRDA                       (1UL)
 #endif
 #endif
+#endif
 
-#ifdef MX_UART7_MULTI_PROCESSOR
-  #error "USART multiprocessor mode is not supported. Please select USART proper mode in Cube MX."
-#endif
-#ifdef MX_UART7_LIN
-  #error "USART LIN mode is not supported. Please select proper USART mode in Cube MX."
-#endif
-#endif
 
 #ifdef MX_UART8
 
@@ -232,18 +193,26 @@
 #define USART_IRDA                       (1UL)
 #endif
 #endif
-
-#ifdef MX_UART8_MULTI_PROCESSOR
-  #error "USART multiprocessor mode is not supported. Please select USART proper mode in Cube MX."
-#endif
-#ifdef MX_UART8_LIN
-  #error "USART LIN mode is not supported. Please select proper USART mode in Cube MX."
-#endif
 #endif
 
 
 #else
 #include "RTE_Device.h"
+
+#if ((defined(RTE_Drivers_USART1) || defined(RTE_Drivers_USART2) || \
+      defined(RTE_Drivers_USART3) || defined(RTE_Drivers_USART4) || \
+      defined(RTE_Drivers_USART5) || defined(RTE_Drivers_USART6) || \
+      defined(RTE_Drivers_USART7) || defined(RTE_Drivers_USART8))   \
+     && (RTE_USART1 == 0)   \
+     && (RTE_USART2 == 0)   \
+     && (RTE_USART3 == 0)   \
+     && (RTE_USART4 == 0)   \
+     && (RTE_USART5 == 0)   \
+     && (RTE_USART6 == 0)   \
+     && (RTE_USART7 == 0)   \
+     && (RTE_USART8 == 0))
+  #error "USART not configured in RTE_Device.h!"
+#endif
 
 // RTE macros
 #define _DMA_CHANNEL_x(x)               DMA_CHANNEL_##x
@@ -284,7 +253,12 @@
     #define USART1_TX_DMA_Handler     DMAx_STREAMy_IRQ(RTE_USART1_TX_DMA_NUMBER, RTE_USART1_TX_DMA_STREAM)
   #endif
 
-  #ifndef STM32F411xE
+  #if defined (STM32F410Tx)
+    // USART1 TX available on pins: PA15, PB6
+    #if ((RTE_USART1_TX_ID != 1) && (RTE_USART1_TX_ID != 2))
+      #error "Only PA15 and PB6 can be configured as USART TX on selected device!"
+    #endif
+  #elif !defined (STM32F411xE)
     // PA15 as USART1 TX only available on STM32F411xx
     #if (RTE_USART1_TX_ID == 1)
       #error "PA15 can not be configured as USART1 TX on selected device!"
@@ -297,7 +271,12 @@
   #define MX_USART1_TX_GPIO_PuPd GPIO_NOPULL
   #define MX_USART1_TX_GPIO_AF   GPIO_AF7_USART1
 
-  #ifndef STM32F411xE
+  #if defined (STM32F410Tx)
+    // USART1 RX available on pins: PB3, PB7
+    #if ((RTE_USART1_RX_ID != 1) && (RTE_USART1_RX_ID != 2))
+      #error "Only PB3 and PB7 can be configured as USART1 RX on selected device!"
+    #endif
+  #elif !defined (STM32F411xE)
     // PB3 as USART1 RX only available on STM32F411xx
     #if (RTE_USART1_RX_ID == 1)
       #error "PB3 can not be configured as USART1 RX on selected device!"
@@ -320,6 +299,11 @@
 
 
   #if (RTE_USART1_CTS == 1)
+    #if defined (STM32F410Tx)
+      // USART1 CTS pin is not available
+      #error "USART1 CTS pin is not available on selected device!"
+    #endif
+
     #define MX_USART1_RTS_Pin       1
     #define MX_USART1_RTS_GPIOx     RTE_USART1_RTS_PORT
     #define MX_USART1_RTS_GPIO_Pin  (1U << RTE_USART1_RTS_BIT)
@@ -357,11 +341,25 @@
     #define USART2_TX_DMA_Handler     DMAx_STREAMy_IRQ(RTE_USART2_TX_DMA_NUMBER, RTE_USART2_TX_DMA_STREAM)
   #endif
 
+  #if defined(STM32F410Tx) || defined(STM32F410Cx) || defined(STM32F410Rx)
+    // USART2 TX available on pin: PA2
+    #if (RTE_USART2_TX_ID != 0)
+      #error "Only PA2 can be configured as USART2 TX on selected device!"
+    #endif
+  #endif
+
   #define MX_USART2_TX_Pin       1
   #define MX_USART2_TX_GPIOx     RTE_USART2_TX_PORT
   #define MX_USART2_TX_GPIO_Pin  (1U << RTE_USART2_TX_BIT)
   #define MX_USART2_TX_GPIO_PuPd GPIO_NOPULL
   #define MX_USART2_TX_GPIO_AF   GPIO_AF7_USART2
+
+  #if defined(STM32F410Tx) || defined(STM32F410Cx) || defined(STM32F410Rx)
+    // USART2 RX available on pin: PA3
+    #if (RTE_USART2_RX_ID != 0)
+      #error "Only PA3 can be configured as USART2 RX on selected device!"
+    #endif
+  #endif
 
   #define MX_USART2_RX_Pin       1
   #define MX_USART2_RX_GPIOx     RTE_USART2_RX_PORT
@@ -370,6 +368,16 @@
   #define MX_USART2_RX_GPIO_AF   GPIO_AF7_USART2
 
   #if (RTE_USART2_CK == 1)
+    #if defined(STM32F410Tx)
+      // USART2 CK is not available
+      #error "USART2 CK pin is not available on selected device!"
+    #elif defined(STM32F410Cx) || defined(STM32F410Rx)
+      // USART2 CK available on pin: PA4
+      #if ((RTE_USART2_CK_ID != 0) && (RTE_USART2_CK_ID != 1))
+        #error "Only PA4 can be configured as USART2 CK on selected device!"
+      #endif
+    #endif
+
     #define MX_USART2_CK_Pin       1
     #define MX_USART2_CK_GPIOx     RTE_USART2_CK_PORT
     #define MX_USART2_CK_GPIO_Pin  (1U << RTE_USART2_CK_BIT)
@@ -379,6 +387,13 @@
 
 
   #if (RTE_USART2_CTS == 1)
+    #if defined(STM32F410Tx) || defined(STM32F410Cx) || defined(STM32F410Rx)
+      // USART2 CTS available on pin: PA0
+      #if ((RTE_USART2_CTS_ID != 0) && (RTE_USART2_CTS_ID != 1))
+        #error "Only PA0 can be configured as USART2 CTS on selected device!"
+      #endif
+    #endif
+
     #define MX_USART2_RTS_Pin       1
     #define MX_USART2_RTS_GPIOx     RTE_USART2_RTS_PORT
     #define MX_USART2_RTS_GPIO_Pin  (1U << RTE_USART2_RTS_BIT)
@@ -387,6 +402,16 @@
   #endif
 
   #if (RTE_USART2_RTS == 1)
+    #if defined(STM32F410Tx)
+      // USART2 RTS is not available
+      #error "USART2 RTS pin is not available on selected device!"
+    #elif defined(STM32F410Cx) || defined(STM32F410Rx)
+      // USART2 RTS available on pin: PA1
+      #if ((RTE_USART2_RTS_ID != 0) && (RTE_USART2_RTS_ID != 1))
+        #error "Only PA1 can be configured as USART2 RTS on selected device!"
+      #endif
+    #endif
+
     #define MX_USART2_CTS_Pin       1
     #define MX_USART2_CTS_GPIOx     RTE_USART2_CTS_PORT
     #define MX_USART2_CTS_GPIO_Pin  (1U << RTE_USART2_CTS_BIT)
@@ -538,8 +563,17 @@
 #endif
 
 // USART6 configuration definitions
+#if defined (STM32F410Tx) && defined (USART6)
+  // USART6 not available on WLCSP36 package
+  #undef USART6
+#endif
+
 #if (RTE_USART6 == 1)
   #define MX_USART6
+
+  #ifndef USART6
+    #error "USART6 not available for selected device!"
+  #endif
 
   #if (RTE_USART6_RX_DMA == 1)
     #define MX_USART6_RX_DMA_Instance DMAx_STREAMy(RTE_USART6_RX_DMA_NUMBER, RTE_USART6_RX_DMA_STREAM)
@@ -558,7 +592,17 @@
     #define USART6_TX_DMA_Handler     DMAx_STREAMy_IRQ(RTE_USART6_TX_DMA_NUMBER, RTE_USART6_TX_DMA_STREAM)
   #endif
 
-  #if defined (STM32F401xC) || defined (STM32F401xE) || defined (STM32F411xE)
+  #if defined (STM32F410Cx)
+    // USART6 TX available on pin: PA11
+    #if ((RTE_USART6_TX_ID != 0)
+      #error "Only PA11 can be configured as USART6 TX on selected device!"
+    #endif
+  #elif defined (STM32F410Rx)
+    // USART6 TX available on pins: PA11, PC6
+    #if ((RTE_USART6_TX_ID != 0) && (RTE_USART6_TX_ID != 1))
+      #error "Only PA11 and PC6 can be configured as USART6 TX on selected device!"
+    #endif
+  #elif defined (STM32F401xC) || defined (STM32F401xE) || defined (STM32F411xE)
     // PG14 as USART6 TX not available on STM32F401xx and STM32F411xx
     #if (RTE_USART6_TX_ID == 2)
       #error "PG14 can not be configured as USART6 TX on selected device!"
@@ -576,7 +620,17 @@
   #define MX_USART6_TX_GPIO_PuPd GPIO_NOPULL
   #define MX_USART6_TX_GPIO_AF   GPIO_AF8_USART6
 
-  #if defined (STM32F401xC) || defined (STM32F401xE) || defined (STM32F411xE)
+  #if defined (STM32F410Cx)
+    // USART6 RX available on pin: PA12
+    #if ((RTE_USART6_RX_ID != 0)
+      #error "Only PA12 can be configured as USART6 RX on selected device!"
+    #endif
+  #elif defined (STM32F410Rx)
+    // USART6 RX available on pins: PA12, PC7
+    #if ((RTE_USART6_RX_ID != 0) && (RTE_USART6_RX_ID != 1))
+      #error "Only PA12 and PC7 can be configured as USART6 RX on selected device!"
+    #endif
+  #elif defined (STM32F401xC) || defined (STM32F401xE) || defined (STM32F411xE)
     // PG9 as USART6 RX not available on STM32F401xx and STM32F411xx
     #if (RTE_USART6_RX_ID == 2)
       #error "PG9 can not be configured as USART6 RX on selected device!"
@@ -595,7 +649,15 @@
   #define MX_USART6_RX_GPIO_AF   GPIO_AF8_USART6
 
   #if (RTE_USART6_CK == 1)
-    #if defined (STM32F401xC) || defined (STM32F401xE) || defined (STM32F411xE)
+    #if defined (STM32F410Cx)
+      // USART6 CK pin is not available
+      #error "USART2 CK pin is not available on selected device!"
+    #elif defined (STM32F410Rx)
+      // USART6 CK available on pin: PC8
+      #if ((RTE_USART6_CK_ID != 0) && (RTE_USART6_CK_ID != 1)
+        #error "Only PC8 can be configured as USART6 CK on selected device!"
+      #endif
+    #elif defined (STM32F401xC) || defined (STM32F401xE) || defined (STM32F411xE)
       // PG7 as USART6 CK not available on STM32F401xx and STM32F411xx
       #if (RTE_USART6_CK_ID == 2)
         #error "PG7 can not be configured as USART6 CK on selected device!"
@@ -610,7 +672,8 @@
   #endif
 
   #if (RTE_USART6_CTS == 1)
-    #if defined (STM32F401xC) || defined (STM32F401xE) || defined (STM32F411xE)
+    #if defined (STM32F401xC) || defined (STM32F401xE) || defined (STM32F411xE) || \
+        defined (STM32F410Cx) || defined (STM32F410Rx)
       #error "CTS line not available on selected device!"
     #endif
     #define MX_USART6_RTS_Pin       1
@@ -621,7 +684,8 @@
   #endif
 
   #if (RTE_USART6_RTS == 1)
-    #if defined (STM32F401xC) || defined (STM32F401xE) || defined (STM32F411xE)
+    #if defined (STM32F401xC) || defined (STM32F401xE) || defined (STM32F411xE) || \
+        defined (STM32F410Cx) || defined (STM32F410Rx)
       #error "RTS line not available on selected device!"
     #endif
     #define MX_USART6_CTS_Pin       1
@@ -848,7 +912,7 @@
 typedef void (*DMA_Callback_t) (DMA_HandleTypeDef *hdma);
 
 // USART DMA
-typedef struct _USART_DMA {
+typedef const struct _USART_DMA {
   DMA_HandleTypeDef    *hdma;           // DMA handle
   DMA_Callback_t        cb_complete;    // DMA complete callback
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
@@ -910,7 +974,7 @@ typedef struct _USART_INFO {
 } USART_INFO;
 
 // USART Resources definition
-typedef struct {
+typedef const struct {
 #ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
   void                   *h;                   // USART Handle
   uint8_t                 vmode;               // Virtual mode

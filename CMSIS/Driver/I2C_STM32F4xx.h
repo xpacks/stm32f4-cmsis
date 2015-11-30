@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        02. June 2015
- * $Revision:    V2.3
+ * $Date:        04. September 2015
+ * $Revision:    V2.4
  *
  * Project:      I2C Driver definitions for ST STM32F4xx
  * -------------------------------------------------------------------------- */
@@ -110,6 +110,11 @@
 
 /* I2C2 configuration definitions */
 #if defined (RTE_I2C2) && (RTE_I2C2 == 1)
+
+  #if !defined(I2C2)
+    #error "I2C2 not available for selected device!"
+  #endif
+
   #if (((RTE_I2C2_RX_DMA != 0) && (RTE_I2C2_TX_DMA == 0)) || \
        ((RTE_I2C2_RX_DMA == 0) && (RTE_I2C2_TX_DMA != 0)))
     #error "I2C2 using DMA requires Rx and Tx DMA channel enabled in RTE_Device.h!"
@@ -120,6 +125,35 @@
     #if (RTE_I2C2_SDA_PORT_ID != 2 && RTE_I2C2_SDA_PORT_ID != 0 && RTE_I2C2_SDA_PORT_ID != 1)
       #error "Only PB11, PF0 and PH5 can be configured as I2C2 SDA on selected device!"
     #endif
+  #endif
+
+  #if defined (STM32F410Rx) || defined (STM32F410Cx) || defined (STM32F410Tx)
+    /* SCL available on pin: PB10 */
+    #if (RTE_I2C2_SCL_PORT_ID != 2)
+      #error "Only PB10 can be configured as I2C2 SCL on selected device!"
+    #endif
+
+    #if defined (STM32F410Rx)
+      /* SDA available on pin: PB3 */
+      #if (RTE_I2C2_SDA_PORT_ID != 3)
+        #error "Only PB3 can be configured as I2C2 SDA on selected device!"
+      #endif
+    #endif
+
+    #if defined (STM32F410Cx)
+      /* SDA available on pins: PB3, PB9 */
+      #if ((RTE_I2C2_SDA_PORT_ID != 3) && (RTE_I2C2_SDA_PORT_ID != 4))
+        #error "Only PB3 and PB9 can be configured as I2C2 SDA on selected device!"
+      #endif
+    #endif
+
+    #if defined (STM32F410Tx)
+      /* SDA available on pins: PB3, PB9, PB11 */
+      #if ((RTE_I2C2_SDA_PORT_ID != 2) && (RTE_I2C2_SDA_PORT_ID != 3) && (RTE_I2C2_SDA_PORT_ID != 4))
+        #error "Only PB3, PB9 and PB11 can be configured as I2C2 SDA on selected device!"
+      #endif
+    #endif
+
   #endif
 
   #if defined (STM32F411xE)
@@ -186,6 +220,11 @@
 
 /* I2C3 configuration definitions */
 #if defined (RTE_I2C3) && (RTE_I2C3 == 1)
+
+  #if !defined(I2C3)
+    #error "I2C3 not available for selected device!"
+  #endif
+
   #if (((RTE_I2C3_RX_DMA != 0) && (RTE_I2C3_TX_DMA == 0)) || \
        ((RTE_I2C3_RX_DMA == 0) && (RTE_I2C3_TX_DMA != 0)))
     #error "I2C3 using DMA requires Rx and Tx DMA channel enabled in RTE_Device.h!"

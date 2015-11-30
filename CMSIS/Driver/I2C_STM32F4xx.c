@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        02. June 2015
- * $Revision:    V2.3
+ * $Date:        04. September 2015
+ * $Revision:    V2.4
  *
  * Driver:       Driver_I2C1, Driver_I2C2, Driver_I2C3
  * Configured:   via RTE_Device.h configuration file
@@ -36,6 +36,10 @@
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.4
+ *    Added support for STM32F410xx
+ *    Corrected 3 byte reception and POS bit handling in master mode 
+ *    Corrected acknowledge handling in slave mode
  *  Version 2.3
  *    Updated initialization, uninitialization and power procedures
  *    Added support for STM32F446xx
@@ -57,30 +61,77 @@
  *    Initial release
  */
 
-/* STM32CubeMX configuration:
- *
- * Pinout tab:
- *   - Select I2Cx peripheral and enable I2C mode
- * Clock Configuration tab:
- *   - Ensure that APB1 peripheral clock frequency is between 2MHz and 42MHz
- * Configuration tab:
- *   - Select I2Cx under Connectivity section which opens I2Cx Configuration window:
- *       - Parameter Settings tab: settings are unused by this driver
- *       - NVIC Settings: enable I2Cx event and error interrupt
- *       - GPIO Settings: configure as needed
- *       - DMA Settings:  to enable DMA transfers you need to
- *           - add I2Cx_RX and I2Cx_TX DMA Request
- *           - select Normal DMA mode (for RX and TX)
- *           - deselect Peripheral Increment Address (for RX and TX)
- *           - select Memory Increment Address (for RX and TX)
- *           - deselect Use Fifo option (for RX and TX)
- *           - select Byte Data Width (for RX and TX)
- *           - go to NVIC Settings tab and enable RX and TX stream global interrupt
- */
+/*! \page stm32f4_i2c CMSIS-Driver I2C Setup 
+
+The CMSIS-Driver I2C requires:
+  - Setup of I2Cx input clock
+  - Setup of I2Cx in I2C mode with optional DMA for Rx and Tx transfers
+ 
+Valid settings for various evaluation boards are listed in the table below:
+
+Peripheral Resource | MCBSTM32F400      | STM32F4-Discovery | 32F401C-Discovery | 32F429I-Discovery
+:-------------------|:------------------|:------------------|:------------------|:------------------
+I2C Mode            | I2C1: <b>I2C</b>  | I2C1: <b>I2C</b>  | I2C1: <b>I2C</b>  | I2C3: <b>I2C</b>
+SCL pin             | PB8               | PB6               | PB6               | PA8
+SDA pin             | PB9               | PB9               | PB9               | PC9
+
+For different boards, refer to the hardware schematics to reflect correct setup values.
+
+The STM32CubeMX configuration for MCBSTM32F400 with steps for Pinout, Clock, and System Configuration are 
+listed below. Enter the values that are marked \b bold.
+   
+Pinout tab
+----------
+  1. Configure mode
+    - Peripherals \b I2C1: Mode=<b>I2C</b>
+
+Clock Configuration tab
+-----------------------
+  1. Configure APB1 clock
+    - Setup "APB1 peripheral clocks (MHz)" to match application requirements
+
+Configuration tab
+-----------------
+  1. Under Connectivity open \b I2C1 Configuration:
+     - \e optional <b>DMA Settings</b>: setup DMA transfers for Rx and Tx\n
+       \b Add - Select \b I2C1_RX: Stream=DMA1 Stream 0, Direction=Peripheral to Memory, Priority=Low
+          DMA Request Settings         | Label             | Peripheral | Memory
+          :----------------------------|:------------------|:-----------|:-------------
+          Mode: Normal                 | Increment Address | OFF        |\b ON
+          Use Fifo OFF Threshold: Full | Data Width        |\b Byte     | Byte
+          .                            | Burst Size        | Single     | Single
+       \b Add - Select \b I2C1_TX: Stream=DMA1 Stream 6, Direction=Memory to Peripheral, Priority=Low
+          DMA Request Settings         | Label             | Peripheral | Memory
+          :----------------------------|:------------------|:-----------|:-------------
+          Mode: Normal                 | Increment Address | OFF        |\b ON
+          Use Fifo OFF Threshold: Full | Data Width        |\b Byte     | Byte
+          .                            | Burst Size        | Single     | Single
+
+     - <b>GPIO Settings</b>: review settings, no changes required
+          Pin Name | Signal on Pin | GPIO mode | GPIO Pull-up/Pull..| Maximum out | User Label
+          :--------|:--------------|:----------|:-------------------|:------------|:----------
+          PB8      | I2C1_SCL      | Alternate | Pull-up            | High        |.
+          PB9      | I2C1_SDA      | Alternate | Pull-up            | High        |.
+
+     - <b>NVIC Settings</b>: enable interrupts
+          Interrupt Table                      | Enable | Preemption Priority | Sub Priority
+          :------------------------------------|:-------|:--------------------|:--------------
+          DMA1 stream0 global interrupt        |   ON   | 0                   | 0
+          DMA1 stream6 global interrupt        |   ON   | 0                   | 0
+          I2C1 event interrupt                 |\b ON   | 0                   | 0
+          I2C1 error interrupt                 |\b ON   | 0                   | 0
+
+     - Parameter Settings: not used
+     - User Constants: not used
+   
+     Click \b OK to close the I2C1 Configuration dialog
+*/
+
+/*! \cond */
 
 #include "I2C_STM32F4xx.h"
 
-#define ARM_I2C_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,3)    /* driver version */
+#define ARM_I2C_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,4)    /* driver version */
 
 
 #if defined(MX_I2C1_RX_DMA_Instance) && defined(MX_I2C1_TX_DMA_Instance)
@@ -356,28 +407,32 @@ static I2C_RESOURCES I2C3_Resources = {
   \brief       Enable GPIO clock
 */
 static void Enable_GPIO_Clock (const GPIO_TypeDef *GPIOx) {
-  if      (GPIOx == GPIOA) { __GPIOA_CLK_ENABLE(); }
-  else if (GPIOx == GPIOB) { __GPIOB_CLK_ENABLE(); }
-  else if (GPIOx == GPIOC) { __GPIOC_CLK_ENABLE(); }
-  else if (GPIOx == GPIOD) { __GPIOD_CLK_ENABLE(); }
-  else if (GPIOx == GPIOE) { __GPIOE_CLK_ENABLE(); }
+  if      (GPIOx == GPIOA) { __HAL_RCC_GPIOA_CLK_ENABLE(); }
+  else if (GPIOx == GPIOB) { __HAL_RCC_GPIOB_CLK_ENABLE(); }
+  else if (GPIOx == GPIOC) { __HAL_RCC_GPIOC_CLK_ENABLE(); }
+#if defined(GPIOD)
+  else if (GPIOx == GPIOD) { __HAL_RCC_GPIOD_CLK_ENABLE(); }
+#endif
+#if defined(GPIOE)
+  else if (GPIOx == GPIOE) { __HAL_RCC_GPIOE_CLK_ENABLE(); }
+#endif
 #if defined(GPIOF)
-  else if (GPIOx == GPIOF) { __GPIOF_CLK_ENABLE(); }
+  else if (GPIOx == GPIOF) { __HAL_RCC_GPIOF_CLK_ENABLE(); }
 #endif
 #if defined(GPIOG)
-  else if (GPIOx == GPIOG) { __GPIOG_CLK_ENABLE(); }
+  else if (GPIOx == GPIOG) { __HAL_RCC_GPIOG_CLK_ENABLE(); }
 #endif
 #if defined(GPIOH)
-  else if (GPIOx == GPIOH) { __GPIOH_CLK_ENABLE(); }
+  else if (GPIOx == GPIOH) { __HAL_RCC_GPIOH_CLK_ENABLE(); }
 #endif
 #if defined(GPIOI)
-  else if (GPIOx == GPIOI) { __GPIOI_CLK_ENABLE(); }
+  else if (GPIOx == GPIOI) { __HAL_RCC_GPIOI_CLK_ENABLE(); }
 #endif
 #if defined(GPIOJ)
-  else if (GPIOx == GPIOJ) { __GPIOJ_CLK_ENABLE(); }
+  else if (GPIOx == GPIOJ) { __HAL_RCC_GPIOJ_CLK_ENABLE(); }
 #endif
 #if defined(GPIOK)
-  else if (GPIOx == GPIOK) { __GPIOK_CLK_ENABLE(); }
+  else if (GPIOx == GPIOK) { __HAL_RCC_GPIOK_CLK_ENABLE(); }
 #endif
 }
 #endif
@@ -445,7 +500,7 @@ static int32_t I2C_Initialize (ARM_I2C_SignalEvent_t cb_event, I2C_RESOURCES *i2
       i2c->dma_tx->h->Instance = i2c->dma_tx->stream;
 
       /* DMA controller clock enable */
-      __DMA1_CLK_ENABLE();
+      __HAL_RCC_DMA1_CLK_ENABLE();
 
       /* Configure DMA receive stream */
       i2c->dma_rx->h->Init.Channel             = i2c->dma_rx->channel;
@@ -538,27 +593,37 @@ static int32_t I2C_PowerControl (ARM_POWER_STATE state, I2C_RESOURCES *i2c) {
 
   switch (state) {
     case ARM_POWER_OFF:
+      /* Disable I2C peripheral */
+      i2c->reg->CR1 = 0;
+
+      if ((i2c->dma_tx != NULL) && (i2c->dma_rx != NULL)) {
+        /* Abort DMA streams */
+        HAL_DMA_Abort (i2c->dma_tx->h);
+        HAL_DMA_Abort (i2c->dma_rx->h);
+      }
+
       #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
         /* Disable I2C IRQ */
         HAL_NVIC_DisableIRQ(i2c->ev_irq_num);
         HAL_NVIC_DisableIRQ(i2c->er_irq_num);
 
-        if ((i2c->dma_rx != 0) && (i2c->dma_tx != 0)) {
+        if ((i2c->dma_rx != NULL) && (i2c->dma_tx != NULL)) {
           /* Disable DMA stream IRQ in NVIC */
           HAL_NVIC_DisableIRQ (i2c->dma_rx->irq_num);
           HAL_NVIC_DisableIRQ (i2c->dma_tx->irq_num);
         }
+        /* Disable peripheral clock */
+        if (i2c->reg == I2C1)      { __HAL_RCC_I2C1_CLK_DISABLE(); }
+        #if (defined (I2C2) && (RTE_I2C2 != 0))
+        else if (i2c->reg == I2C2) { __HAL_RCC_I2C2_CLK_DISABLE(); }
+        #endif
+        #if (defined (I2C3) && (RTE_I2C3 != 0))
+        else if (i2c->reg == I2C3) { __HAL_RCC_I2C3_CLK_DISABLE(); }
+        #endif
+        else { return ARM_DRIVER_ERROR; }
       #else
         HAL_I2C_MspDeInit (i2c->h);
       #endif
-
-      /* Abort DMA streams */
-      if ((i2c->dma_tx != NULL) && (i2c->dma_rx != NULL)) {
-        HAL_DMA_Abort (i2c->dma_tx->h);
-        HAL_DMA_Abort (i2c->dma_rx->h);
-      }
-
-      i2c->info->flags = I2C_INIT;
 
       i2c->info->status.busy             = 0U;
       i2c->info->status.mode             = 0U;
@@ -567,33 +632,7 @@ static int32_t I2C_PowerControl (ARM_POWER_STATE state, I2C_RESOURCES *i2c) {
       i2c->info->status.arbitration_lost = 0U;
       i2c->info->status.bus_error        = 0U;
 
-      /* Disable I2C peripheral */
-      i2c->reg->CR1 &= ~I2C_CR1_PE;
-
-      #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
-        /* Reset the peripheral and disable its clock */
-        if (i2c->reg == I2C1) {
-          __I2C1_FORCE_RESET();
-          __NOP(); __NOP(); __NOP(); __NOP(); 
-          __I2C1_RELEASE_RESET();
-
-          __I2C1_CLK_DISABLE();
-        }
-        else if (i2c->reg == I2C2) {
-          __I2C2_FORCE_RESET();
-          __NOP(); __NOP(); __NOP(); __NOP(); 
-          __I2C2_RELEASE_RESET();
-
-          __I2C2_CLK_DISABLE();
-        }
-        else {
-          __I2C3_FORCE_RESET();
-          __NOP(); __NOP(); __NOP(); __NOP(); 
-          __I2C3_RELEASE_RESET();
-
-          __I2C3_CLK_DISABLE();
-        }
-      #endif
+      i2c->info->flags = I2C_INIT;
       break;
 
     case ARM_POWER_LOW:
@@ -602,6 +641,16 @@ static int32_t I2C_PowerControl (ARM_POWER_STATE state, I2C_RESOURCES *i2c) {
     case ARM_POWER_FULL:
       if ((i2c->info->flags & I2C_POWER) == 0U) {
         #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
+          /* Enable I2C clock */
+          if (i2c->reg == I2C1)      { __HAL_RCC_I2C1_CLK_ENABLE(); }
+          #if (defined (I2C2) && (RTE_I2C2 != 0))
+          else if (i2c->reg == I2C2) { __HAL_RCC_I2C2_CLK_ENABLE(); }
+          #endif
+          #if (defined (I2C3) && (RTE_I2C3 != 0))
+          else if (i2c->reg == I2C3) { __HAL_RCC_I2C3_CLK_ENABLE(); }
+          #endif
+          else { return ARM_DRIVER_ERROR; }
+
           if ((i2c->dma_rx != 0) && (i2c->dma_tx != 0)) {
             /* Enable DMA IRQ in NVIC */
             HAL_NVIC_EnableIRQ (i2c->dma_rx->irq_num);
@@ -617,30 +666,27 @@ static int32_t I2C_PowerControl (ARM_POWER_STATE state, I2C_RESOURCES *i2c) {
           HAL_I2C_MspInit (i2c->h);
         #endif
 
-        #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
-          /* Enable I2C clock and reset the peripheral */
-          if (i2c->reg == I2C1) {
-            __I2C1_CLK_ENABLE();
-
-            __I2C1_FORCE_RESET();
-            __NOP(); __NOP(); __NOP(); __NOP(); 
-            __I2C1_RELEASE_RESET();
-          }
-          else if (i2c->reg == I2C2) {
-            __I2C2_CLK_ENABLE();
-
-            __I2C2_FORCE_RESET();
-            __NOP(); __NOP(); __NOP(); __NOP(); 
-            __I2C2_RELEASE_RESET();
-          }
-          else {
-            __I2C3_CLK_ENABLE();
-
-            __I2C3_FORCE_RESET();
-            __NOP(); __NOP(); __NOP(); __NOP(); 
-            __I2C3_RELEASE_RESET();
-          }
+        /* Reset the peripheral */
+        if (i2c->reg == I2C1) {
+          __HAL_RCC_I2C1_FORCE_RESET();
+          __NOP(); __NOP(); __NOP(); __NOP(); 
+          __HAL_RCC_I2C1_RELEASE_RESET();
+        }
+        #if defined (I2C2)
+        else if (i2c->reg == I2C2) {
+          __HAL_RCC_I2C2_FORCE_RESET();
+          __NOP(); __NOP(); __NOP(); __NOP(); 
+          __HAL_RCC_I2C2_RELEASE_RESET();
+        }
         #endif
+        #if defined (I2C3)
+        else {
+          __HAL_RCC_I2C3_FORCE_RESET();
+          __NOP(); __NOP(); __NOP(); __NOP(); 
+          __HAL_RCC_I2C3_RELEASE_RESET();
+        }
+        #endif
+
         /* Enable event and error interrupts */
         i2c->reg->CR2 |= I2C_CR2_ITEVTEN | I2C_CR2_ITERREN;
         /* Disable buffer interrupts */
@@ -649,9 +695,11 @@ static int32_t I2C_PowerControl (ARM_POWER_STATE state, I2C_RESOURCES *i2c) {
         /* Enable clock stretching */
         i2c->reg->CR1 &= ~I2C_CR1_NOSTRETCH;
 
-        /* Enable general call and I2C peripheral */
-        i2c->reg->CR1 |= I2C_CR1_ENGC;
+        /* Enable I2C peripheral */
         i2c->reg->CR1 |= I2C_CR1_PE;
+        
+        /* Enable acknowledge */
+        i2c->reg->CR1 |= I2C_CR1_ACK;
 
         /* Ready for operation */
         i2c->info->flags |= I2C_POWER;
@@ -927,6 +975,13 @@ static int32_t I2C_Control (uint32_t control, uint32_t arg, I2C_RESOURCES *i2c) 
 
   switch (control) {
     case ARM_I2C_OWN_ADDRESS:
+      /* Enable/Disable General call */
+      if (arg & ARM_I2C_ADDRESS_GC) {
+        i2c->reg->CR1 |=  I2C_CR1_ENGC;
+      } else {
+        i2c->reg->CR1 &= ~I2C_CR1_ENGC;
+      }
+      /* Set own address and its length */
       i2c->reg->OAR1 = ((arg << 1) & 0x03FFU) |
                        (1U << 14)             |
                        ((arg & ARM_I2C_ADDRESS_10BIT) ? (1U << 15) : (0U));
@@ -963,6 +1018,7 @@ static int32_t I2C_Control (uint32_t control, uint32_t arg, I2C_RESOURCES *i2c) 
       i2c->reg->CCR    =  ccr;
       i2c->reg->TRISE  =  trise;
       i2c->reg->CR1   |=  I2C_CR1_PE;           /* Enable I2C peripheral */
+      i2c->reg->CR1   |=  I2C_CR1_ACK;          /* Enable acknowledge    */
       break;
 
     case ARM_I2C_BUS_CLEAR:
@@ -1051,6 +1107,8 @@ static int32_t I2C_Control (uint32_t control, uint32_t arg, I2C_RESOURCES *i2c) 
       /* Disable and reenable peripheral to clear some flags */
       i2c->reg->CR1 &= ~I2C_CR1_PE;
       i2c->reg->CR1 |=  I2C_CR1_PE;
+      /* Enable acknowledge */
+      i2c->reg->CR1 |=  I2C_CR1_ACK;
       break;
 
     default: return ARM_DRIVER_ERROR;
@@ -1148,11 +1206,15 @@ static void I2C_EV_IRQHandler (I2C_RESOURCES *i2c) {
             i2c->reg->CR1 |= I2C_CR1_STOP;
           }
         }
-        else {
-          if (tr->num == 2U) {
-            i2c->reg->CR1 &= ~I2C_CR1_ACK;
-            i2c->reg->CR1 |= I2C_CR1_POS;
+        else if (tr->num == 2U) {
+          i2c->reg->CR1 &= ~I2C_CR1_ACK;
+          i2c->reg->CR1 |= I2C_CR1_POS;
 
+          /* Wait until BTF == 1 */
+          tr->ctrl |= XFER_CTRL_WAIT_BTF;
+        }
+        else {
+          if (tr->num == 3U) {
             /* Wait until BTF == 1 */
             tr->ctrl |= XFER_CTRL_WAIT_BTF;
           }
@@ -1341,6 +1403,8 @@ static void I2C_EV_IRQHandler (I2C_RESOURCES *i2c) {
 
               i2c->info->status.busy = 0U;
               i2c->info->status.mode = 0U;
+
+              i2c->reg->CR1 &= ~I2C_CR1_POS;
 
               if (i2c->info->cb_event) {
                 i2c->info->cb_event (ARM_I2C_EVENT_TRANSFER_DONE);
@@ -1813,3 +1877,5 @@ ARM_DRIVER_I2C Driver_I2C3 = {
   I2C3_GetStatus
 };
 #endif
+
+/*! \endcond */

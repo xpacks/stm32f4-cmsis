@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        02. June 2015
- * $Revision:    V2.3
+ * $Date:        04. September 2015
+ * $Revision:    V2.4
  *
  * Driver:       Driver_MCI0
  * Configured:   via RTE_Device.h configuration file
@@ -34,6 +34,9 @@
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.4
+ *    Interrupt handler optimized
+ *    Corrected clock divider bypass (SDIO_CLKCR_BYPASS) handling in Control function 
  *  Version 2.3
  *    Updated initialization, uninitialization and power procedures
  *    Corrected data timeout handling, which is now set only with
@@ -55,45 +58,100 @@
  *  Version 1.0
  *    Initial release
  */
+ 
+ /*! \page stm32f4_mci CMSIS-Driver MCI Setup 
 
-/* STM32CubeMX configuration:
- *
- * Pinout tab:
- *   - Select SDIO peripheral and select mode
- *   - To configure Card Detect and Write Protect pins:
- *       - Select desired pins and select GPIO_Input mode
- * Clock Configuration tab:
- *   - Ensure that PLLQ output is at 48MHz
- * Configuration tab:
- *   - Select SDIO under Connectivity section which opens SDIO Configuration window:
- *       - Parameter Settings tab: settings are unused by this driver
- *       - NVIC Settings: enable SDIO global interrupt
- *       - GPIO Settings: configure as needed
- *       - DMA Settings:  Rx and Tx DMA transfers are mandatory by this driver:
- *           - add SDIO_RX and SDIO_TX DMA Request
- *           - select Normal DMA mode (for RX and TX)
- *           - deselect Peripheral Increment Address (for RX and TX)
- *           - select Memory Increment Address (for RX and TX)
- *           - select Use Fifo option (for RX and TX)
- *           - select Full Threshold
- *           - select Word Data Width (for RX and TX)
- *           - select 4 Increment Burst Size (for RX and TX)
- *           - go to NVIC Settings tab and enable RX and TX stream global interrupt
- *
- *   - Select GPIO under System section to configure Card Detect and Write Protect pins:
- *       - Select pin used for Card Detect and add User Label: MemoryCard_CD
- *       - Select pin used for Write Protect and add User Label: MemoryCard_WP
- */
+The CMSIS-Driver MCI requires:
+  - Setup of SDIO with DMA for Rx and Tx DMA transfers.
+  - Optional Configuration for Card Detect Pin:
+    - Configure arbitrary pin in GPIO_Input mode and add User Label: MemoryCard_CD
+  - Optional Configuration for Write Protect Pin:
+    - Configure arbitrary pin in GPIO_Input mode and add User Label: MemoryCard_WP
+
+\note The User Label name is used to connect the CMSIS-Driver to the GPIO pin.
+
+Valid settings for various evaluation boards are listed in the table below:
+
+Peripheral Resource     | MCBSTM32F400       | STM32F4-Discovery | 32F401C-Discovery | 32F429I-Discovery
+:-----------------------|:-------------------|:------------------|:------------------|:------------------
+SDIO Mode               | <b>SD 4 bits</b>   | n/a               | n/a               | n/a
+Card Detect Input pin   | PH15               | n/a               | n/a               | n/a
+Write Protect Input pin | n/a                | n/a               | n/a               | n/a
+
+For different boards, refer to the hardware schematics to reflect correct setup values.
+
+The STM32CubeMX configuration for MCBSTM32F400 with steps for Pinout, Clock, and System Configuration are 
+listed below. Enter the values that are marked \b bold.
+   
+Pinout tab
+----------
+  1. Configure SDIO mode
+     - Peripherals \b SDIO: Mode=<b>SD 4 bits Wide bus</b>
+  2. Configure Card Detect pin:
+     - Click in chip diagram on pin \b PH15 and select \b GPIO_Input. 
+          
+Clock Configuration tab
+-----------------------
+  1. Configure SDIO Clock: "48MHz clocks (MHz)": 48
+  
+Configuration tab
+-----------------
+  1. Under Connectivity open \b SDIO Configuration:
+     - <b>DMA Settings</b>: setup DMA transfers for Rx and Tx\n
+       \b Add - Select \b SDIO_RX: Stream=DMA2 Stream 3, Direction=Peripheral to Memory, Priority=Low
+          DMA Request Settings                  | Label             | Peripheral  | Memory
+          :-------------------------------------|:------------------|:------------|:-------------
+          Mode: <b>Peripheral Flow Control</b>  | Increment Address | off         |\b ON
+          Use Fifo \b ON  Threshold: Full       | Data Width        |\b WORD      |\b WORD
+          .                                     | Burst Size        |\b 4 Increm..|\b 4 Increm..
+       \b Add - Select \b SDIO_TX: Stream=DMA2 Stream 6, Direction=Memory to Peripheral, Priority=Low
+          DMA Request Settings                  | Label             | Peripheral  | Memory
+          :-------------------------------------|:------------------|:------------|:-------------
+          Mode: <b>Peripheral Flow Control</b>  | Increment Address | off         |\b ON
+          Use Fifo \b ON  Threshold: Full       | Data Width        |\b WORD      |\b WORD
+          .                                     | Burst Size        |\b 4 Increm..|\b 4 Increm..
+
+     - <b>GPIO Settings</b>: review settings, no changes required
+          Pin Name | Signal on Pin | GPIO mode | GPIO Pull-up/Pull..| Maximum out | User Label
+          :--------|:--------------|:----------|:-------------------|:------------|:----------
+          PC8      | SDMMC1_D0     | Alternate | No pull-up and no..| High        |.
+          PC9      | SDMMC1_D1     | Alternate | No pull-up and no..| High        |.
+          PC10     | SDMMC1_D2     | Alternate | No pull-up and no..| High        |.
+          PC11     | SDMMC1_D3     | Alternate | No pull-up and no..| High        |.
+          PC12     | SDMMC1_CK     | Alternate | No pull-up and no..| High        |.
+          PD2      | SDMMC1_CMD    | Alternate | No pull-up and no..| High        |.
+
+     - <b>NVIC Settings</b>: enable interrupts
+          Interrupt Table                      | Enable | Preemption Priority | Sub Priority
+          :------------------------------------|:-------|:--------------------|:--------------
+          SDIO global interrupt                |\b ON   | 0                   | 0
+          DMA2 stream3 global interrupt        |   ON   | 0                   | 0
+          DMA2 stream6 global interrupt        |   ON   | 0                   | 0
+
+     - Parameter Settings: not used
+     - User Constants: not used
+
+     Click \b OK to close the SDIO Configuration dialog
+  2. Under System open \b GPIO Pin Configuration
+     - Enter user label for Card Detect pin
+          Pin Name | Signal on Pin | GPIO mode | GPIO Pull-up/Pull..| Maximum out | User Label
+          :--------|:--------------|:----------|:-------------------|:------------|:----------
+          PH15     | n/a           | Input mode| No pull-up and no..| n/a         |\b MemoryCard_CD
+
+     Click \b OK to close the Pin Configuration dialog
+*/
+
+/*! \cond */
 
 #include "MCI_STM32F4xx.h"
 
-#define ARM_MCI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,3)  /* driver version */
+#define ARM_MCI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,4)  /* driver version */
 
 /* Enable High Speed bus mode */
 #if defined(MemoryCard_Bus_Mode_HS_Enable)
-  #define SDIO_BUS_MODE_HS    1U
+  #define MCI_BUS_MODE_HS     1U
 #else
-  #define SDIO_BUS_MODE_HS    0U
+  #define MCI_BUS_MODE_HS     0U
 #endif
 
 /* Define Card Detect pin active state */
@@ -136,19 +194,19 @@ static const ARM_DRIVER_VERSION DriverVersion = {
 
 /* Driver Capabilities */
 static const ARM_MCI_CAPABILITIES DriverCapabilities = {
-  SDIO_CD_PIN,                                    /* cd_state          */
+  MCI_CD_PIN,                                     /* cd_state          */
   0U,                                             /* cd_event          */
-  SDIO_WP_PIN,                                    /* wp_state          */
+  MCI_WP_PIN,                                     /* wp_state          */
   0U,                                             /* vdd               */
   0U,                                             /* vdd_1v8           */
   0U,                                             /* vccq              */
   0U,                                             /* vccq_1v8          */
   0U,                                             /* vccq_1v2          */
-  SDIO_BUS_WIDTH_4,                               /* data_width_4      */
-  SDIO_BUS_WIDTH_8,                               /* data_width_8      */
+  MCI_BUS_WIDTH_4,                                /* data_width_4      */
+  MCI_BUS_WIDTH_8,                                /* data_width_8      */
   0U,                                             /* data_width_4_ddr  */
   0U,                                             /* data_width_8_ddr  */
-  SDIO_BUS_MODE_HS,                               /* high_speed        */
+  MCI_BUS_MODE_HS,                                /* high_speed        */
   0U,                                             /* uhs_signaling     */
   0U,                                             /* uhs_tuning        */
   0U,                                             /* uhs_sdr50         */
@@ -174,28 +232,32 @@ static const ARM_MCI_CAPABILITIES DriverCapabilities = {
   \brief       Enable GPIO clock
 */
 static void Enable_GPIO_Clock (const GPIO_TypeDef *GPIOx) {
-  if      (GPIOx == GPIOA) { __GPIOA_CLK_ENABLE(); }
-  else if (GPIOx == GPIOB) { __GPIOB_CLK_ENABLE(); }
-  else if (GPIOx == GPIOC) { __GPIOC_CLK_ENABLE(); }
-  else if (GPIOx == GPIOD) { __GPIOD_CLK_ENABLE(); }
-  else if (GPIOx == GPIOE) { __GPIOE_CLK_ENABLE(); }
+  if      (GPIOx == GPIOA) { __HAL_RCC_GPIOA_CLK_ENABLE(); }
+  else if (GPIOx == GPIOB) { __HAL_RCC_GPIOB_CLK_ENABLE(); }
+  else if (GPIOx == GPIOC) { __HAL_RCC_GPIOC_CLK_ENABLE(); }
+#if defined(GPIOD)
+  else if (GPIOx == GPIOD) { __HAL_RCC_GPIOD_CLK_ENABLE(); }
+#endif
+#if defined(GPIOE)
+  else if (GPIOx == GPIOE) { __HAL_RCC_GPIOE_CLK_ENABLE(); }
+#endif
 #if defined(GPIOF)
-  else if (GPIOx == GPIOF) { __GPIOF_CLK_ENABLE(); }
+  else if (GPIOx == GPIOF) { __HAL_RCC_GPIOF_CLK_ENABLE(); }
 #endif
 #if defined(GPIOG)
-  else if (GPIOx == GPIOG) { __GPIOG_CLK_ENABLE(); }
+  else if (GPIOx == GPIOG) { __HAL_RCC_GPIOG_CLK_ENABLE(); }
 #endif
 #if defined(GPIOH)
-  else if (GPIOx == GPIOH) { __GPIOH_CLK_ENABLE(); }
+  else if (GPIOx == GPIOH) { __HAL_RCC_GPIOH_CLK_ENABLE(); }
 #endif
 #if defined(GPIOI)
-  else if (GPIOx == GPIOI) { __GPIOI_CLK_ENABLE(); }
+  else if (GPIOx == GPIOI) { __HAL_RCC_GPIOI_CLK_ENABLE(); }
 #endif
 #if defined(GPIOJ)
-  else if (GPIOx == GPIOJ) { __GPIOJ_CLK_ENABLE(); }
+  else if (GPIOx == GPIOJ) { __HAL_RCC_GPIOJ_CLK_ENABLE(); }
 #endif
 #if defined(GPIOK)
-  else if (GPIOx == GPIOK) { __GPIOK_CLK_ENABLE(); }
+  else if (GPIOx == GPIOK) { __HAL_RCC_GPIOK_CLK_ENABLE(); }
 #endif
 }
 #endif
@@ -238,11 +300,11 @@ static int32_t Initialize (ARM_MCI_SignalEvent_t cb_event) {
     /* GPIO Ports Clock Enable */
     Enable_GPIO_Clock (GPIOC);
     Enable_GPIO_Clock (GPIOD);
-    
+
     /* Configure CMD, CK and D0 pins */
     GPIO_InitStruct.Pin = GPIO_PIN_2;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
     GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF12_SDIO;
     HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
@@ -261,7 +323,7 @@ static int32_t Initialize (ARM_MCI_SignalEvent_t cb_event) {
     GPIO_InitStruct.Alternate = GPIO_AF12_SDIO;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-    #if (SDIO_BUS_WIDTH_4)
+    #if (MCI_BUS_WIDTH_4)
       GPIO_InitStruct.Pin = GPIO_PIN_11|GPIO_PIN_10|GPIO_PIN_9;
       GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
       GPIO_InitStruct.Pull = GPIO_PULLUP;
@@ -270,7 +332,7 @@ static int32_t Initialize (ARM_MCI_SignalEvent_t cb_event) {
       HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
     #endif
 
-    #if (SDIO_BUS_WIDTH_8)
+    #if (MCI_BUS_WIDTH_8)
       Enable_GPIO_Clock (GPIOB);
 
       GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9;
@@ -316,8 +378,8 @@ static int32_t Initialize (ARM_MCI_SignalEvent_t cb_event) {
     }
 
     /* Enable DMA peripheral clock */
-    __DMA2_CLK_ENABLE();
-    
+    __HAL_RCC_DMA2_CLK_ENABLE();
+
     /* Configure DMA receive stream */
     hdma_sdio_rx.Instance                 = MX_SDIO_RX_DMA_Instance;
     hdma_sdio_rx.Init.Channel             = MX_SDIO_RX_DMA_Channel;
@@ -386,12 +448,12 @@ static int32_t Uninitialize (void) {
     HAL_GPIO_DeInit(GPIOD, GPIO_PIN_2);
     HAL_GPIO_DeInit(GPIOC, GPIO_PIN_12|GPIO_PIN_8);
 
-    #if (SDIO_BUS_WIDTH_4)
+    #if (MCI_BUS_WIDTH_4)
       /* SDIO_D[3..1] */
       HAL_GPIO_DeInit(GPIOC, GPIO_PIN_11|GPIO_PIN_10|GPIO_PIN_9);
     #endif
 
-    #if (SDIO_BUS_WIDTH_8)
+    #if (MCI_BUS_WIDTH_8)
       /* SDIO_D[7..4] */
       HAL_GPIO_DeInit(GPIOB, GPIO_PIN_8|GPIO_PIN_9);
       HAL_GPIO_DeInit(GPIOC, GPIO_PIN_7|GPIO_PIN_6);
@@ -425,6 +487,11 @@ static int32_t PowerControl (ARM_POWER_STATE state) {
 
   switch (state) {
     case ARM_POWER_OFF:
+      /* Reset/Dereset SDIO peripheral */
+      __HAL_RCC_SDIO_FORCE_RESET();
+      __NOP(); __NOP(); __NOP(); __NOP(); 
+      __HAL_RCC_SDIO_RELEASE_RESET();
+
       #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
         /* Disable SDIO interrupts in NVIC */
         HAL_NVIC_DisableIRQ (SDIO_IRQn);
@@ -440,11 +507,12 @@ static int32_t PowerControl (ARM_POWER_STATE state) {
         if (HAL_DMA_DeInit (&hdma_sdio_tx) != HAL_OK) {
           status = ARM_DRIVER_ERROR;
         }
+
+        /* SDIO peripheral clock disable */
+        __HAL_RCC_SDIO_CLK_DISABLE();
       #else
         HAL_SD_MspDeInit (&hsd);
       #endif
-
-      MCI.flags = MCI_INIT;
 
       /* Clear status */
       MCI.status.command_active   = 0U;
@@ -456,27 +524,21 @@ static int32_t PowerControl (ARM_POWER_STATE state) {
       MCI.status.sdio_interrupt   = 0U;
       MCI.status.ccs              = 0U;
 
-      /* Reset/Dereset SDIO peripheral */
-      __SDIO_FORCE_RESET();
-      __NOP(); __NOP(); __NOP(); __NOP(); 
-      __SDIO_RELEASE_RESET();
-
-      /* SDIO peripheral clock disable */
-      __SDIO_CLK_DISABLE();
+      MCI.flags = MCI_INIT;
       break;
 
     case ARM_POWER_FULL:
       if ((MCI.flags & MCI_POWER) == 0) {
         #if defined(RTE_DEVICE_FRAMEWORK_CUBE_MX)
           HAL_SD_MspInit (&hsd);
+        #else
+          /* Enable SDIO peripheral clock */
+          __HAL_RCC_SDIO_CLK_ENABLE();
         #endif
 
         /* Clear response and transfer variables */
         MCI.response = NULL;
         MCI.xfer.cnt = 0U;
-
-        /* Enable SDIO peripheral clock */
-        __SDIO_CLK_ENABLE();
 
         /* Enable SDIO peripheral interrupts */
         SDIO->MASK = SDIO_MASK_DATAENDIE  |
@@ -494,12 +556,14 @@ static int32_t PowerControl (ARM_POWER_STATE state) {
         /* Enable clock to the card (SDIO_CK) */
         SDIO->POWER = SDIO_POWER_PWRCTRL_1 | SDIO_POWER_PWRCTRL_0;
 
-        /* Enable DMA stream interrupts in NVIC */
-        HAL_NVIC_EnableIRQ(SDIO_RX_DMA_IRQn);
-        HAL_NVIC_EnableIRQ(SDIO_TX_DMA_IRQn);
+        #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
+          /* Enable DMA stream interrupts in NVIC */
+          HAL_NVIC_EnableIRQ(SDIO_RX_DMA_IRQn);
+          HAL_NVIC_EnableIRQ(SDIO_TX_DMA_IRQn);
 
-        HAL_NVIC_ClearPendingIRQ(SDIO_IRQn);
-        HAL_NVIC_EnableIRQ(SDIO_IRQn);
+          HAL_NVIC_ClearPendingIRQ(SDIO_IRQn);
+          HAL_NVIC_EnableIRQ(SDIO_IRQn);
+        #endif
 
         MCI.flags |= MCI_POWER;
       }
@@ -599,6 +663,7 @@ static int32_t SendCommand (uint32_t cmd, uint32_t arg, uint32_t flags, uint32_t
 
   if (flags & ARM_MCI_CARD_INITIALIZE) {
     clkcr = SDIO->CLKCR;
+
     if (((clkcr & SDIO_CLKCR_CLKEN) == 0) || ((clkcr & SDIO_CLKCR_PWRSAV) != 0)) {
       SDIO->CLKCR = (SDIO->CLKCR & ~SDIO_CLKCR_PWRSAV) | SDIO_CLKCR_CLKEN;
 
@@ -704,7 +769,7 @@ static int32_t SetupTransfer (uint8_t *data, uint32_t block_count, uint32_t bloc
     /* Stream or SDIO multibyte data transfer enable */
     dctrl |= SDIO_DCTRL_DTMODE;
   }
-  
+
   /* Set data block size */
   if (block_size == 512U) {
     sz = 9U;
@@ -805,7 +870,7 @@ static int32_t Control (uint32_t control, uint32_t arg) {
       /* Determine clock divider and set bus speed */
       bps = arg;
 
-      if ((bps < SDIOCLK) || (SDIO_BUS_MODE_HS == 0U)) {
+      if ((bps < SDIOCLK) || (MCI_BUS_MODE_HS == 0U)) {
         /* bps = SDIOCLK / (clkdiv + 2) */
         clkdiv = (SDIOCLK + bps - 1U) / bps;
 
@@ -816,13 +881,13 @@ static int32_t Control (uint32_t control, uint32_t arg) {
           clkdiv  = SDIO_CLKCR_CLKDIV;
         }
 
-        SDIO->CLKCR = (SDIO->CLKCR & ~SDIO_CLKCR_CLKDIV)   |
-                      SDIO_CLKCR_PWRSAV | SDIO_CLKCR_CLKEN | clkdiv;
+        SDIO->CLKCR = (SDIO->CLKCR & ~(SDIO_CLKCR_CLKDIV | SDIO_CLKCR_BYPASS)) |
+                       SDIO_CLKCR_CLKEN | clkdiv;
         bps = SDIOCLK / (clkdiv + 2U);
       }
       else {
         /* Max output clock is SDIOCLK */
-        SDIO->CLKCR |= SDIO_CLKCR_BYPASS | SDIO_CLKCR_PWRSAV | SDIO_CLKCR_CLKEN;
+        SDIO->CLKCR |= SDIO_CLKCR_BYPASS | SDIO_CLKCR_CLKEN;
 
         bps = SDIOCLK;
       }
@@ -938,49 +1003,59 @@ static ARM_MCI_STATUS GetStatus (void) {
 
 /* SDIO IRQ Handler */
 void SDIO_IRQHandler (void) {
-  uint32_t sta, event, mask;
+  uint32_t sta, icr, event, mask;
 
   event = 0U;
+  icr   = 0U;
 
   /* Read SDIO interrupt status */
   sta = SDIO->STA;
 
-  if (sta & SDIO_STA_CCRCFAIL) {
-    SDIO->ICR = SDIO_ICR_CCRCFAILC;
-    /* Command response CRC check failed */
-    if (MCI.flags & MCI_RESP_CRC) {
-      MCI.status.command_error = 1;
+  if (sta & SDIO_STA_ERR_BIT_Msk) {
+    /* Check error interrupts */
+    if (sta & SDIO_STA_CCRCFAIL) {
+      icr |= SDIO_ICR_CCRCFAILC;
+      /* Command response CRC check failed */
+      if (MCI.flags & MCI_RESP_CRC) {
+        MCI.status.command_error = 1U;
 
-      event |= ARM_MCI_EVENT_COMMAND_ERROR;
+        event |= ARM_MCI_EVENT_COMMAND_ERROR;
+      }
+      else {
+        /* Ignore CRC error and read the response */
+        sta |= SDIO_STA_CMDREND;
+      }
     }
-    else {
-      /* Ignore CRC error and read the response */
-      sta |= SDIO_STA_CMDREND;
+    if (sta & SDIO_STA_DCRCFAIL) {
+      icr |= SDIO_ICR_DCRCFAILC;
+      /* Data block CRC check failed */
+      MCI.status.transfer_error = 1U;
+
+      event |= ARM_MCI_EVENT_TRANSFER_ERROR;
+    }
+    if (sta & SDIO_STA_CTIMEOUT) {
+      icr |= SDIO_ICR_CTIMEOUTC;
+      /* Command response timeout */
+      MCI.status.command_timeout = 1U;
+
+      event |= ARM_MCI_EVENT_COMMAND_TIMEOUT;
+    }
+    if (sta & SDIO_STA_DTIMEOUT) {
+      icr |= SDIO_ICR_DTIMEOUTC;
+      /* Data timeout */
+      MCI.status.transfer_timeout = 1U;
+
+      event |= ARM_MCI_EVENT_TRANSFER_TIMEOUT;
+    }
+    if (sta & SDIO_STA_STBITERR) {
+      icr |= SDIO_ICR_STBITERRC;
+      /* Start bit not detected on all data signals */
+      event |= ARM_MCI_EVENT_TRANSFER_ERROR;
     }
   }
-  if (sta & SDIO_STA_DCRCFAIL) {
-    SDIO->ICR = SDIO_ICR_DCRCFAILC;
-    /* Data block CRC check failed */
-    MCI.status.transfer_error = 1;
 
-    event |= ARM_MCI_EVENT_TRANSFER_ERROR;
-  }
-  if (sta & SDIO_STA_CTIMEOUT) {
-    SDIO->ICR = SDIO_ICR_CTIMEOUTC;
-    /* Command response timeout */
-    MCI.status.command_timeout = 1;
-
-    event |= ARM_MCI_EVENT_COMMAND_TIMEOUT;
-  }
-  if (sta & SDIO_STA_DTIMEOUT) {
-    SDIO->ICR = SDIO_ICR_DTIMEOUTC;
-    /* Data timeout */
-    MCI.status.transfer_timeout = 1;
-
-    event |= ARM_MCI_EVENT_TRANSFER_TIMEOUT;
-  }
   if (sta & SDIO_STA_CMDREND) {
-    SDIO->ICR = SDIO_ICR_CMDRENDC;
+    icr |= SDIO_ICR_CMDRENDC;
     /* Command response received */
     event |= ARM_MCI_EVENT_COMMAND_COMPLETE;
 
@@ -1011,25 +1086,20 @@ void SDIO_IRQHandler (void) {
     }
   }
   if (sta & SDIO_STA_CMDSENT) {
-    SDIO->ICR = SDIO_ICR_CMDSENTC;
+    icr |= SDIO_ICR_CMDSENTC;
     /* Command sent (no response required) */
     event |= ARM_MCI_EVENT_COMMAND_COMPLETE;
   }
   if (sta & SDIO_STA_DATAEND) {
-    SDIO->ICR = SDIO_ICR_DATAENDC;
+    icr |= SDIO_ICR_DATAENDC;
     /* Data end (DCOUNT is zero) */
     if ((MCI.flags & MCI_DATA_READ) == 0) {
     /* Write transfer */
       SDIO->MASK |= SDIO_MASK_DBCKENDIE;
     }
   }
-  if (sta & SDIO_STA_STBITERR) {
-    SDIO->ICR = SDIO_ICR_STBITERRC;
-    /* Start bit not detected on all data signals */
-    event |= ARM_MCI_EVENT_TRANSFER_ERROR;
-  }
   if (sta & SDIO_STA_DBCKEND) {
-    SDIO->ICR = SDIO_ICR_DBCKENDC;
+    icr |= SDIO_ICR_DBCKENDC;
     /* Data block sent/received (CRC check passed) */
     if ((MCI.flags & MCI_DATA_READ) == 0) {
       /* Write transfer */
@@ -1040,12 +1110,15 @@ void SDIO_IRQHandler (void) {
     SDIO->MASK &= ~SDIO_MASK_DBCKENDIE;
   }
   if (sta & SDIO_STA_SDIOIT) {
-    SDIO->ICR = SDIO_ICR_SDIOITC;
+    icr |= SDIO_ICR_SDIOITC;
     /* Disable interrupt (must be re-enabled using Control) */
     SDIO->MASK &= SDIO_MASK_SDIOITIE;
 
     event |= ARM_MCI_EVENT_SDIO_INTERRUPT;
   }
+
+  /* Clear processed interrupts */
+  SDIO->ICR = icr;
 
   if (event) {
     /* Check for transfer events */
@@ -1141,3 +1214,5 @@ ARM_DRIVER_MCI Driver_MCI0 = {
   Control,
   GetStatus
 };
+
+/*! \endcond */

@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        02. June 2015
- * $Revision:    V2.3
+ * $Date:        04. September 2015
+ * $Revision:    V2.4
  *
  * Project:      MCI Driver Definitions for ST STM32F4xx
  * -------------------------------------------------------------------------- */
@@ -123,7 +123,7 @@
 #define EXPAND_SYMBOL(pin, ext)         MX_##pin##_##ext
 #define MX_SYM(pin, ext)                EXPAND_SYMBOL(pin, ext)
 
-  #if defined(MX_MX_MemoryCard_CD)
+  #if defined(MX_MemoryCard_CD)
     #define MX_MemoryCard_CD_Pin        1
     #define MX_MemoryCard_CD_GPIOx      MX_SYM(MX_MemoryCard_CD, GPIOx)
     #define MX_MemoryCard_CD_GPIO_Pin   MX_SYM(MX_MemoryCard_CD, GPIO_Pin)
@@ -131,7 +131,7 @@
     #define MX_MemoryCard_CD_GPIO_Mode  MX_SYM(MX_MemoryCard_CD, GPIO_Mode)
   #endif
 
-  #if defined(MX_MX_MemoryCard_WP)
+  #if defined(MX_MemoryCard_WP)
     #define MX_MemoryCard_WP_Pin        1
     #define MX_MemoryCard_WP_GPIOx      MX_SYM(MX_MemoryCard_WP, GPIOx)
     #define MX_MemoryCard_WP_GPIO_Pin   MX_SYM(MX_MemoryCard_WP, GPIO_Pin)
@@ -143,35 +143,35 @@
 
 /* Define 4-bit data bus width */
 #if defined(MX_SDIO_D0_Pin) && defined(MX_SDIO_D1_Pin) && defined(MX_SDIO_D2_Pin) && defined(MX_SDIO_D3_Pin)
-  #define SDIO_BUS_WIDTH_4 1U
+  #define MCI_BUS_WIDTH_4   1U
 #else
-  #define SDIO_BUS_WIDTH_4 0U
+  #define MCI_BUS_WIDTH_4   0U
 #endif
 
 /* Define 8-bit data bus width */
 #if defined(MX_SDIO_D0_Pin) && defined(MX_SDIO_D1_Pin) && defined(MX_SDIO_D2_Pin) && defined(MX_SDIO_D3_Pin) && \
     defined(MX_SDIO_D4_Pin) && defined(MX_SDIO_D5_Pin) && defined(MX_SDIO_D6_Pin) && defined(MX_SDIO_D7_Pin)
-  #define SDIO_BUS_WIDTH_8 1U
+  #define MCI_BUS_WIDTH_8   1U
 #else
-  #define SDIO_BUS_WIDTH_8 0U
+  #define MCI_BUS_WIDTH_8   0U
 #endif
 
 /* Define Card Detect pin existence */
 #if defined(MX_MemoryCard_CD_Pin)
-  #define SDIO_CD_PIN 1U
+  #define MCI_CD_PIN        1U
 #else
-  #define SDIO_CD_PIN 0U
+  #define MCI_CD_PIN        0U
 #endif
 
 /* Define Write Protect pin existence */
 #if defined(MX_MemoryCard_WP_Pin)
-  #define SDIO_WP_PIN 1U
+  #define MCI_WP_PIN        1U
 #else
-  #define SDIO_WP_PIN 0U
+  #define MCI_WP_PIN        0U
 #endif
 
 /* SDIO Adapter Clock definition */
-#define SDIOCLK            48000000U    /* SDIO adapter clock */
+#define SDIOCLK             48000000U    /* SDIO adapter clock */
 
 #ifndef SDIO_MASK_STBITERRIE
 #define SDIO_MASK_STBITERRIE    0U
@@ -196,6 +196,13 @@
                                 SDIO_ICR_STBITERRC | \
                                 SDIO_ICR_DBCKENDC  | \
                                 SDIO_ICR_SDIOITC)
+
+/* Error interrupt mask */
+#define SDIO_STA_ERR_BIT_Msk   (SDIO_STA_CCRCFAIL | \
+                                SDIO_STA_DCRCFAIL | \
+                                SDIO_STA_CTIMEOUT | \
+                                SDIO_STA_DTIMEOUT | \
+                                SDIO_STA_STBITERR)
 
 /* Driver flag definitions */
 #define MCI_INIT      ((uint8_t)0x01)   /* MCI initialized           */

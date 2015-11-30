@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        10. June 2015
- * $Revision:    V2.8
+ * $Date:        27. August 2015
+ * $Revision:    V2.10
  *
  * Driver:       Driver_USBD0
  * Configured:   via RTE_Device.h configuration file
@@ -45,22 +45,13 @@
  *                           VBUS change because of combination of B340A and
  *                           USBLC6-4 prevents VBUS to go low when board
  *                           is externally powered and USB is not connected)
- * --------------------------------------------------------------------------
- * STM32CubeMX configuration:
- *
- * Pinout tab:
- *   - Select USB_OTG_FS peripheral and enable Device mode for proper PHY
- * Clock Configuration tab:
- *   - Configure clock
- * Configuration tab:
- *   - Select USB_FS under Connectivity section which opens USB_FS
- *     Configuration window:
- *       - Parameter Settings tab: settings are unused by this driver
- *       - NVIC Settings: enable USB On The Go FS global interrupt
- *       - GPIO Settings: configure as needed
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.10
+ *    STM32CubeMX generated code can also be used to configure the driver.
+ *  Version 2.9
+ *    Removed global variable otg_fs_state
  *  Version 2.8
  *    PowerControl for Power OFF and Uninitialize functions made unconditional
  *  Version 2.7
@@ -90,6 +81,51 @@
  *    Initial release
  */
 
+/*! \page stm32f4_usbd_fs CMSIS-Driver USBD_FS Setup
+
+The CMSIS-Driver USBD_FS requires:
+  - Setup of USB clk to 48MHz
+  - Configuration of USB_OTG_FS
+ 
+Valid settings for various evaluation boards are listed in the table below:
+
+Peripheral Resource | MCBSTM32F400       | STM32F4-Discovery  | 32F401C-Discovery  | 32F429I-Discovery
+:-------------------|:-------------------|:-------------------|:-------------------|:------------------
+USB_OTG_FS Mode     | <b>Device_only</b> | <b>Device_only</b> | <b>Device_only</b> | <b>Device_only</b>
+
+For different boards, refer to the hardware schematics to reflect correct setup values.
+ 
+The STM32CubeMX configuration for MCBSTM32F400 with steps for Pinout, Clock, and System Configuration are 
+listed below. Enter the values that are marked \b bold.
+ 
+Pinout tab
+----------
+  1. Configure USBD mode
+     - Peripherals \b USB_OTG_FS: Mode=<b>Device_Only</b>
+ 
+Clock Configuration tab
+-----------------------
+  1. Configure USB Clock: "48MHz clocks (MHz)": 48
+ 
+Configuration tab
+-----------------
+  1. Under Connectivity open \b USB_OTG_FS Configuration:
+     - DMA Settings: not used
+     - <b>GPIO Settings</b>: review settings, no changes required
+          Pin Name | Signal on Pin | GPIO mode | GPIO Pull-up/Pull..| Maximum out | User Label
+          :--------|:--------------|:----------|:-------------------|:------------|:----------
+          PA11     | USB_OTG_FS_DM | Alternate | No pull-up and no..| High        |.
+          PA12     | USB_OTG_FS_DP | Alternate | No pull-up and no..| High        |.
+     - <b>NVIC Settings</b>: enable interrupts
+          Interrupt Table                      | Enable | Preemption Priority | Sub Priority
+          :------------------------------------|:-------|:--------------------|:--------------
+          USB On The Go FS global interrupt    |\b ON   | 0                   | 0
+     - Parameter Settings: not used
+     - User Constants: not used
+     - Click \b OK to close the USB_OTG_FS Configuration dialog
+*/
+
+/*! \cond */
 
 #include <stdint.h>
 #include <string.h>
@@ -102,7 +138,7 @@
 #ifndef USBD_MAX_ENDPOINT_NUM
 #define USBD_MAX_ENDPOINT_NUM           3U
 #endif
-#if    (USBH_MAX_ENDPOINT_NUM > 3)
+#if    (USBD_MAX_ENDPOINT_NUM > 3)
 #error  Too many Endpoints, maximum IN/OUT Endpoint pairs that this driver supports is 3 !!!
 #endif
 
@@ -111,15 +147,20 @@
 #endif
 
 extern uint8_t otg_fs_role;
-extern uint8_t otg_fs_state;
 
 extern void OTG_FS_PinsConfigure   (uint8_t pins_mask);
 extern void OTG_FS_PinsUnconfigure (uint8_t pins_mask);
 
+#ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
+#ifdef MX_USB_OTG_FS_DEVICE
+extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
+#endif
+#endif
+
 
 // USBD Driver *****************************************************************
 
-#define ARM_USBD_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,8)
+#define ARM_USBD_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,10)
 
 // Driver Version
 static const ARM_DRIVER_VERSION usbd_driver_version = { ARM_USBD_API_VERSION, ARM_USBD_DRV_VERSION };
@@ -139,8 +180,8 @@ static const ARM_USBD_CAPABILITIES usbd_driver_capabilities = {
 
 #define OTG                     OTG_FS
 
-#define EP_NUM(ep_addr)         (ep_addr & ARM_USB_ENDPOINT_NUMBER_MASK)
-#define EP_ID(ep_addr)          ((EP_NUM(ep_addr) * 2U) + ((ep_addr >> 7U) & 1U))
+#define EP_NUM(ep_addr)         ((ep_addr) & ARM_USB_ENDPOINT_NUMBER_MASK)
+#define EP_ID(ep_addr)          ((EP_NUM(ep_addr) * 2U) + (((ep_addr) >> 7) & 1U))
 
 // FIFO sizes in bytes (total available memory for FIFOs is 1.25 kB)
 #define OTG_RX_FIFO_SIZE        640U
@@ -168,17 +209,17 @@ typedef struct {                        // Endpoint structure definition
   uint32_t  num;
   uint32_t  num_transferred_total;
   uint16_t  num_transferring;
+  uint16_t  max_packet_size;
+  uint8_t   active;
   uint8_t   in_nak;
   uint8_t   in_zlp;
-  uint8_t   active;
-  uint16_t  ep_max_packet_size;
 } ENDPOINT_t;
 
 static ARM_USBD_SignalDeviceEvent_t   SignalDeviceEvent;
 static ARM_USBD_SignalEndpointEvent_t SignalEndpointEvent;
 
+static bool                hw_powered = false;
 static ARM_USBD_STATE      usbd_state;
-
 static uint32_t            setup_packet[2];     // Setup packet data
 static volatile uint8_t    setup_received;      // Setup packet received
 
@@ -199,9 +240,9 @@ static uint16_t USBD_GetFrameNumber (void);
                 - ep_addr.7:    Direction
 */
 static void USBD_FlushInEpFifo (uint8_t ep_addr) {
-  OTG->GRSTCTL = (OTG->GRSTCTL & ~OTG_FS_GRSTCTL_TXFNUM_MSK)                    |
-                  OTG_FS_GRSTCTL_TXFNUM(ep_addr & ARM_USB_ENDPOINT_NUMBER_MASK) |
-                  OTG_FS_GRSTCTL_TXFFLSH                                        ;
+  OTG->GRSTCTL = (OTG->GRSTCTL & ~OTG_FS_GRSTCTL_TXFNUM_MSK)                              |
+                  OTG_FS_GRSTCTL_TXFNUM((uint32_t)ep_addr & ARM_USB_ENDPOINT_NUMBER_MASK) |
+                  OTG_FS_GRSTCTL_TXFFLSH                                                  ;
 }
 
 /**
@@ -295,8 +336,8 @@ static void USBD_EndpointReadSet (uint8_t ep_addr) {
   ep_num = EP_NUM(ep_addr);
 
   // Set packet count and transfer size
-  if  (ptr_ep->num > ptr_ep->ep_max_packet_size) { num = ptr_ep->ep_max_packet_size; }
-  else                                           { num = ptr_ep->num;                }
+  if  (ptr_ep->num > ptr_ep->max_packet_size) { num = ptr_ep->max_packet_size; }
+  else                                        { num = ptr_ep->num;             }
 
   if (ep_num != 0U) {
     OTG_DOEPTSIZ(ep_num) = (1U << OTG_FS_DOEPTSIZx_PKTCNT_POS ) |
@@ -370,8 +411,8 @@ static int32_t USBD_ReadFromFifo (uint8_t ep_addr, uint16_t num) {
     }
   }
 
-  if (num != ptr_ep->ep_max_packet_size) { ptr_ep->num  = 0U;  }
-  else                                   { ptr_ep->num -= num; }
+  if (num != ptr_ep->max_packet_size) { ptr_ep->num  = 0U;  }
+  else                                { ptr_ep->num -= num; }
 
   return num;
 }
@@ -393,8 +434,8 @@ static void USBD_WriteToFifo (uint8_t ep_addr) {
   ptr_ep = &ep[EP_ID(ep_addr)];
   ep_num = EP_NUM(ep_addr);
 
-  if (ptr_ep->num > ptr_ep->ep_max_packet_size) { num = ptr_ep->ep_max_packet_size; }
-  else                                          { num = ptr_ep->num;                }
+  if (ptr_ep->num > ptr_ep->max_packet_size) { num = ptr_ep->max_packet_size; }
+  else                                       { num = ptr_ep->num;             }
 
   // Check if enough space in FIFO
   if ((OTG_DTXFSTS(ep_num) * 4U) < num) { return; }
@@ -421,7 +462,7 @@ static void USBD_WriteToFifo (uint8_t ep_addr) {
   ptr_ep->in_zlp            = 0U;
 
   // Copy data to FIFO
-  i = (num + 3U) >> 2U;
+  i = (num + 3U) >> 2;
   while (i != 0U) {
     *ptr_dest = *ptr_src++;
     i--;
@@ -456,15 +497,17 @@ static ARM_USBD_CAPABILITIES USBD_GetCapabilities (void) { return usbd_driver_ca
 static int32_t USBD_Initialize (ARM_USBD_SignalDeviceEvent_t   cb_device_event,
                                 ARM_USBD_SignalEndpointEvent_t cb_endpoint_event) {
 
-  if ((otg_fs_state & OTG_FS_USBD_DRIVER_INITIALIZED) != 0U) { return ARM_DRIVER_OK; }
-
   SignalDeviceEvent   = cb_device_event;
   SignalEndpointEvent = cb_endpoint_event;
 
-  otg_fs_role   =  ARM_USB_ROLE_DEVICE;
+  otg_fs_role = ARM_USB_ROLE_DEVICE;
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
   OTG_FS_PinsConfigure (ARM_USB_PIN_DP | ARM_USB_PIN_DM);
+#endif
 
-  otg_fs_state  =  OTG_FS_USBD_DRIVER_INITIALIZED;
+#ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
+  hpcd_USB_OTG_FS.Instance = USB_OTG_FS;
+#endif
 
   return ARM_DRIVER_OK;
 }
@@ -476,9 +519,10 @@ static int32_t USBD_Initialize (ARM_USBD_SignalDeviceEvent_t   cb_device_event,
 */
 static int32_t USBD_Uninitialize (void) {
 
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
   OTG_FS_PinsUnconfigure (ARM_USB_PIN_DP | ARM_USB_PIN_DM);
-  otg_fs_role   =  ARM_USB_ROLE_NONE;
-  otg_fs_state &= ~OTG_FS_USBD_DRIVER_INITIALIZED;
+#endif
+  otg_fs_role = ARM_USB_ROLE_NONE;
 
   return ARM_DRIVER_OK;
 }
@@ -493,9 +537,11 @@ static int32_t USBD_PowerControl (ARM_POWER_STATE state) {
 
   switch (state) {
     case ARM_POWER_OFF:
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
       NVIC_DisableIRQ      (OTG_FS_IRQn);               // Disable interrupt
       NVIC_ClearPendingIRQ (OTG_FS_IRQn);               // Clear pending interrupt
-      otg_fs_state  &= ~OTG_FS_USBD_DRIVER_POWERED;     // Clear powered flag
+#endif
+      hw_powered     = false;                           // Clear powered flag
       OTG->GAHBCFG  &= ~OTG_FS_GAHBCFG_GINTMSK;         // Disable USB interrupts
       RCC->AHB2RSTR |=  RCC_AHB2RSTR_OTGFSRST;          // Reset OTG FS module
                                                         // Reset variables
@@ -507,13 +553,20 @@ static int32_t USBD_PowerControl (ARM_POWER_STATE state) {
       OTG->PCGCCTL  |=  OTG_FS_PCGCCTL_STPPCLK;         // Stop PHY clock
       OTG->DCTL     |=  OTG_FS_DCTL_SDIS;               // Soft disconnect enabled
       OTG->GCCFG     =  0U;                             // Reset core configuration
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
       RCC->AHB2ENR  &= ~RCC_AHB2ENR_OTGFSEN;            // Disable OTG FS clock
+#else
+      HAL_PCD_MspDeInit(&hpcd_USB_OTG_FS);
+#endif
       break;
 
     case ARM_POWER_FULL:
-      if ((otg_fs_state & OTG_FS_USBD_DRIVER_POWERED) != 0U) { return ARM_DRIVER_OK; }
-
+      if (hw_powered == true) { return ARM_DRIVER_OK; }
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
       RCC->AHB2ENR  |=  RCC_AHB2ENR_OTGFSEN;            // OTG FS clock enable
+#else
+      HAL_PCD_MspInit(&hpcd_USB_OTG_FS);
+#endif
       RCC->AHB2RSTR |=  RCC_AHB2RSTR_OTGFSRST;          // Reset OTG FS module
       osDelay(1U);
       RCC->AHB2RSTR &= ~RCC_AHB2RSTR_OTGFSRST;          // Clear reset of OTG FS module
@@ -524,6 +577,9 @@ static int32_t USBD_PowerControl (ARM_POWER_STATE state) {
       OTG->GCCFG    |=  OTG_FS_GCCFG_PWRDWN;            // Disable power down
       OTG->GUSBCFG  |=  OTG_FS_GUSBCFG_PHYSEL;          // Full-speed transceiver
 
+      // Wait until AHB Master state machine is in the idle condition
+      while ((OTG->GRSTCTL & OTG_FS_GRSTCTL_AHBIDL) == 0U);
+
       OTG->GRSTCTL  |=  OTG_FS_GRSTCTL_CSRST;           // Core soft reset
       while ((OTG->GRSTCTL & OTG_FS_GRSTCTL_CSRST) != 0U);
       osDelay (1U);
@@ -532,7 +588,6 @@ static int32_t USBD_PowerControl (ARM_POWER_STATE state) {
       while ((OTG->GRSTCTL & OTG_FS_GRSTCTL_AHBIDL) == 0U);
 
       USBD_Reset ();                                    // Reset variables and endpoint settings
-      osDelay (20U);
 
 #if ((USBD_VBUS_DETECT == 1) && defined(MX_USB_OTG_FS_VBUS_Pin))
       OTG->GCCFG    |=  OTG_FS_GCCFG_VBUSBSEN;          // Enable  VBUS sensing device "B"
@@ -544,10 +599,10 @@ static int32_t USBD_PowerControl (ARM_POWER_STATE state) {
       // Set turnaround time
       OTG->GUSBCFG   = ((OTG->GUSBCFG & ~OTG_FS_GUSBCFG_TRDT_MSK) |
                          OTG_FS_GUSBCFG_TRDT(9U))                 ;
-      if (((OTG->GUSBCFG & OTG_FS_GUSBCFG_FDMOD) == 0U) || ((OTG->GUSBCFG & OTG_FS_GUSBCFG_FHMOD) == 1U)) {
+      if (((OTG->GUSBCFG & OTG_FS_GUSBCFG_FDMOD) == 0U) || ((OTG->GUSBCFG & OTG_FS_GUSBCFG_FHMOD) != 0U)) {
         OTG->GUSBCFG &= ~OTG_FS_GUSBCFG_FHMOD;          // Clear force host mode
         OTG->GUSBCFG |=  OTG_FS_GUSBCFG_FDMOD;          // Force device mode
-        osDelay (50U);
+        osDelay (100U);
       }
 
       OTG->DCFG     |=  OTG_FS_DCFG_DSPD_MSK;           // Full Speed
@@ -567,8 +622,10 @@ static int32_t USBD_PowerControl (ARM_POWER_STATE state) {
       OTG->GAHBCFG  |= (OTG_FS_GAHBCFG_GINTMSK  |       // Enable interrupts
                         OTG_FS_GAHBCFG_TXFELVL) ;
 
-      otg_fs_state  |=  OTG_FS_USBD_DRIVER_POWERED;     // Set powered flag
+      hw_powered     = true;                            // Set powered flag
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
       NVIC_EnableIRQ   (OTG_FS_IRQn);                   // Enable interrupt
+#endif
       break;
 
     default:
@@ -585,7 +642,7 @@ static int32_t USBD_PowerControl (ARM_POWER_STATE state) {
 */
 static int32_t USBD_DeviceConnect (void) {
 
-  if ((otg_fs_state & OTG_FS_USBD_DRIVER_POWERED) == 0U) { return ARM_DRIVER_ERROR; }
+  if (hw_powered == false) { return ARM_DRIVER_ERROR; }
 
   OTG->DCTL    &= ~OTG_FS_DCTL_SDIS;    // Soft disconnect disabled
   OTG->GCCFG   |=  OTG_FS_GCCFG_PWRDWN; // Disable power down
@@ -600,7 +657,7 @@ static int32_t USBD_DeviceConnect (void) {
 */
 static int32_t USBD_DeviceDisconnect (void) {
 
-  if ((otg_fs_state & OTG_FS_USBD_DRIVER_POWERED) == 0U) { return ARM_DRIVER_ERROR; }
+  if (hw_powered == false) { return ARM_DRIVER_ERROR; }
 
   OTG->DCTL  |=  OTG_FS_DCTL_SDIS;      // Soft disconnect enabled
   OTG->GCCFG &= ~OTG_FS_GCCFG_PWRDWN;   // Enable power down
@@ -624,7 +681,7 @@ static ARM_USBD_STATE USBD_DeviceGetState (void) {
 */
 static int32_t USBD_DeviceRemoteWakeup (void) {
 
-  if ((otg_fs_state & OTG_FS_USBD_DRIVER_POWERED) == 0U) { return ARM_DRIVER_ERROR; }
+  if (hw_powered == false) { return ARM_DRIVER_ERROR; }
 
   OTG->DCTL |=   OTG_FS_DCTL_RWUSIG;    // Remote wakeup signalling
   osDelay(5U);
@@ -641,7 +698,7 @@ static int32_t USBD_DeviceRemoteWakeup (void) {
 */
 static int32_t USBD_DeviceSetAddress (uint8_t dev_addr) {
 
-  if ((otg_fs_state & OTG_FS_USBD_DRIVER_POWERED) == 0U) { return ARM_DRIVER_ERROR; }
+  if (hw_powered == false) { return ARM_DRIVER_ERROR; }
 
   OTG->DCFG = (OTG->DCFG & ~OTG_FS_DCFG_DAD_MSK) | OTG_FS_DCFG_DAD(dev_addr);
 
@@ -656,13 +713,13 @@ static int32_t USBD_DeviceSetAddress (uint8_t dev_addr) {
 */
 static int32_t USBD_ReadSetupPacket (uint8_t *setup) {
 
-  if ((otg_fs_state & OTG_FS_USBD_DRIVER_POWERED) == 0U) { return ARM_DRIVER_ERROR; }
-  if (setup_received                              == 0U) { return ARM_DRIVER_ERROR; }
+  if (hw_powered == false)  { return ARM_DRIVER_ERROR; }
+  if (setup_received == 0U) { return ARM_DRIVER_ERROR; }
 
   setup_received = 0U;
   memcpy(setup, setup_packet, 8);
 
-  if (setup_received != 0U) {           // IF new setup packet was received while this was being read
+  if (setup_received != 0U) {           // If new setup packet was received while this was being read
     return ARM_DRIVER_ERROR;
   }
 
@@ -690,11 +747,11 @@ static int32_t USBD_EndpointConfigure (uint8_t  ep_addr,
   bool                 ep_dir;
 
   ep_num = EP_NUM(ep_addr);
-  if (ep_num > USBD_MAX_ENDPOINT_NUM)                    { return ARM_DRIVER_ERROR; }
-  if ((otg_fs_state & OTG_FS_USBD_DRIVER_POWERED) == 0U) { return ARM_DRIVER_ERROR; }
+  if (ep_num > USBD_MAX_ENDPOINT_NUM) { return ARM_DRIVER_ERROR; }
+  if (hw_powered == false)            { return ARM_DRIVER_ERROR; }
 
   ptr_ep = &ep[EP_ID(ep_addr)];
-  if (ptr_ep->active != 0U)                              { return ARM_DRIVER_ERROR_BUSY; }
+  if (ptr_ep->active != 0U)           { return ARM_DRIVER_ERROR_BUSY; }
 
   ep_dir = (ep_addr & ARM_USB_ENDPOINT_DIRECTION_MASK) == ARM_USB_ENDPOINT_DIRECTION_MASK;
   ep_mps =  ep_max_packet_size & ARM_USB_ENDPOINT_MAX_PACKET_SIZE_MASK;
@@ -703,7 +760,7 @@ static int32_t USBD_EndpointConfigure (uint8_t  ep_addr,
   memset((void *)(ptr_ep), 0, sizeof (ENDPOINT_t));
 
   // Set maximum packet size to requested
-  ptr_ep->ep_max_packet_size = ep_mps;
+  ptr_ep->max_packet_size = ep_mps;
 
   if (ep_dir != 0U) {                                   // IN Endpoint
     ptr_ep->in_nak = 0U;                                // Clear IN Endpoint NAK flag
@@ -757,7 +814,7 @@ static int32_t USBD_EndpointConfigure (uint8_t  ep_addr,
     OTG_DOEPCTL(ep_num) |= OTG_FS_DOEPCTLx_USBAEP;      // Activate Endpoint
   }
 
-  OTG->DAINTMSK |= (1U << (ep_num + ((ep_dir ^ 1U) << 4U)));    // Enable Endpoint interrupt
+  OTG->DAINTMSK |= (1U << (ep_num + ((ep_dir ^ 1U) << 4)));     // Enable Endpoint interrupt
 
   return ARM_DRIVER_OK;
 }
@@ -776,16 +833,15 @@ static int32_t USBD_EndpointUnconfigure (uint8_t ep_addr) {
   bool                 ep_dir;
 
   ep_num = EP_NUM(ep_addr);
-  if (ep_num > USBD_MAX_ENDPOINT_NUM)                    { return ARM_DRIVER_ERROR; }
-  if ((otg_fs_state & OTG_FS_USBD_DRIVER_POWERED) == 0U) { return ARM_DRIVER_ERROR; }
+  if (ep_num > USBD_MAX_ENDPOINT_NUM) { return ARM_DRIVER_ERROR; }
+  if (hw_powered == false)            { return ARM_DRIVER_ERROR; }
 
   ptr_ep = &ep[EP_ID(ep_addr)];
-  if (ptr_ep->active != 0U)                              { return ARM_DRIVER_ERROR_BUSY; }
+  if (ptr_ep->active != 0U)           { return ARM_DRIVER_ERROR_BUSY; }
 
   ep_dir = (ep_addr & ARM_USB_ENDPOINT_DIRECTION_MASK) == ARM_USB_ENDPOINT_DIRECTION_MASK;
 
-  OTG->DAINTMSK &= ~(1U << (ep_num + ((ep_dir ^ 1U) << 4U)));           // Disable Endpoint interrupt
-
+  OTG->DAINTMSK &= ~(1U << (ep_num + ((ep_dir ^ 1U) << 4)));    // Disable Endpoint interrupt
 
   // Clear Endpoint transfer and configuration information
   memset((void *)(ptr_ep), 0, sizeof (ENDPOINT_t));
@@ -864,11 +920,11 @@ static int32_t USBD_EndpointStall (uint8_t ep_addr, bool stall) {
   bool                 ep_dir;
 
   ep_num = EP_NUM(ep_addr);
-  if (ep_num > USBD_MAX_ENDPOINT_NUM)                    { return ARM_DRIVER_ERROR; }
-  if ((otg_fs_state & OTG_FS_USBD_DRIVER_POWERED) == 0U) { return ARM_DRIVER_ERROR; }
+  if (ep_num > USBD_MAX_ENDPOINT_NUM) { return ARM_DRIVER_ERROR; }
+  if (hw_powered == false)            { return ARM_DRIVER_ERROR; }
 
   ptr_ep = &ep[EP_ID(ep_addr)];
-  if (ptr_ep->active != 0U)                              { return ARM_DRIVER_ERROR_BUSY; }
+  if (ptr_ep->active != 0U)           { return ARM_DRIVER_ERROR_BUSY; }
 
   ep_dir = (ep_addr & ARM_USB_ENDPOINT_DIRECTION_MASK) == ARM_USB_ENDPOINT_DIRECTION_MASK;
 
@@ -938,11 +994,11 @@ static int32_t USBD_EndpointTransfer (uint8_t ep_addr, uint8_t *data, uint32_t n
   bool                 ep_dir;
 
   ep_num = EP_NUM(ep_addr);
-  if (ep_num > USBD_MAX_ENDPOINT_NUM)                    { return ARM_DRIVER_ERROR; }
-  if ((otg_fs_state & OTG_FS_USBD_DRIVER_POWERED) == 0U) { return ARM_DRIVER_ERROR; }
+  if (ep_num > USBD_MAX_ENDPOINT_NUM) { return ARM_DRIVER_ERROR; }
+  if (hw_powered == false)            { return ARM_DRIVER_ERROR; }
 
   ptr_ep = &ep[EP_ID(ep_addr)];
-  if (ptr_ep->active != 0U)                              { return ARM_DRIVER_ERROR_BUSY; }
+  if (ptr_ep->active != 0U)           { return ARM_DRIVER_ERROR_BUSY; }
 
   ep_dir = (ep_addr & ARM_USB_ENDPOINT_DIRECTION_MASK) == ARM_USB_ENDPOINT_DIRECTION_MASK;
 
@@ -996,8 +1052,8 @@ static int32_t USBD_EndpointTransferAbort (uint8_t ep_addr) {
   uint8_t              ep_num;
 
   ep_num = EP_NUM(ep_addr);
-  if (ep_num > USBD_MAX_ENDPOINT_NUM)                    { return ARM_DRIVER_ERROR; }
-  if ((otg_fs_state & OTG_FS_USBD_DRIVER_POWERED) == 0U) { return ARM_DRIVER_ERROR; }
+  if (ep_num > USBD_MAX_ENDPOINT_NUM) { return ARM_DRIVER_ERROR; }
+  if (hw_powered == false)            { return ARM_DRIVER_ERROR; }
 
   ptr_ep = &ep[EP_ID(ep_addr)];
 
@@ -1033,7 +1089,7 @@ static int32_t USBD_EndpointTransferAbort (uint8_t ep_addr) {
 */
 static uint16_t USBD_GetFrameNumber (void) {
 
-  if ((otg_fs_state & OTG_FS_USBD_DRIVER_POWERED) == 0U) { return 0U; }
+  if (hw_powered == false) { return 0U; }
 
   return ((OTG->DSTS & OTG_FS_DSTS_FNSOF_MSK) >> OTG_FS_DSTS_FNSOF_POS);
 }
@@ -1056,14 +1112,14 @@ void USBD_FS_IRQ (uint32_t gintsts) {
   }
 
   if ((gintsts & OTG_FS_GINTSTS_USBSUSP) != 0U) {       // Suspend interrupt
-    usbd_state.active = false;
+    usbd_state.active = 0U;
     SignalDeviceEvent(ARM_USBD_EVENT_SUSPEND);
     OTG->PCGCCTL |=  OTG_FS_PCGCCTL_STPPCLK;            // Stop PHY clock
     OTG->GINTSTS  =  OTG_FS_GINTSTS_USBSUSP;
   }
 
   if ((gintsts & OTG_FS_GINTSTS_WKUPINT) != 0U) {       // Resume interrupt
-    usbd_state.active = true;
+    usbd_state.active = 1U;
     SignalDeviceEvent(ARM_USBD_EVENT_RESUME);
     OTG->PCGCCTL &= ~OTG_FS_PCGCCTL_STPPCLK;            // Start PHY clock
     OTG->GINTSTS  =  OTG_FS_GINTSTS_WKUPINT;
@@ -1071,17 +1127,17 @@ void USBD_FS_IRQ (uint32_t gintsts) {
 
   if ((gintsts & OTG_FS_GINTSTS_ENUMDNE) != 0U) {       // Speed enumeration completed
     usbd_state.speed  = ARM_USB_SPEED_FULL;
-    usbd_state.active = true;
+    usbd_state.active = 1U;
     OTG->DCTL    |= OTG_FS_DCTL_CGINAK;                 // Clear global IN NAK
     OTG->DCTL    |= OTG_FS_DCTL_CGONAK;                 // Clear global OUT NAK
     OTG->GINTSTS  = OTG_FS_GINTSTS_ENUMDNE;
   }
 
-  if ((gintsts & OTG_FS_GINTSTS_RXFLVL) != 0U) {
+  if ((gintsts & OTG_FS_GINTSTS_RXFLVL) != 0U) {        // Receive FIFO interrupt
     val    =  OTG->GRXSTSP;
     ep_num =  val & 0x0FU;
-    num    = (val >> 4U) & 0x7FFU;
-    switch ((val >> 17U) & 0x0FU) {
+    num    = (val >>  4) & 0x7FFU;
+    switch  ((val >> 17) & 0x0FU) {
       case 6:                                           // Setup packet
         // Read setup packet
         setup_packet[0] = OTG_RX_FIFO;
@@ -1105,7 +1161,7 @@ void USBD_FS_IRQ (uint32_t gintsts) {
   }
 
   if ((gintsts & OTG_FS_GINTSTS_OEPINT) != 0U) {        // If OUT Packet
-    msk    = (((OTG->DAINT & OTG->DAINTMSK) >> 16U) & 0xFFFFU);
+    msk    = (((OTG->DAINT & OTG->DAINTMSK) >> 16) & 0xFFFFU);
     ep_num = 0U;
     do {
       if (((msk >> ep_num) & 1U) != 0U) {
@@ -1115,7 +1171,7 @@ void USBD_FS_IRQ (uint32_t gintsts) {
           if (OTG_EP_OUT_TYPE(ep_num) == ARM_USB_ENDPOINT_ISOCHRONOUS) {
             // Set packet count and transfer size
             OTG_DOEPTSIZ(ep_num) = (1U << OTG_FS_DOEPTSIZx_PKTCNT_POS) |
-                                   (ptr_ep->ep_max_packet_size);
+                                   (ptr_ep->max_packet_size);
 
             // Set correct frame
             if ((USBD_GetFrameNumber() & 1U) != 0U) { OTG_DOEPCTL(ep_num) |= OTG_FS_DOEPCTLx_SEVNFRM; }
@@ -1279,3 +1335,5 @@ ARM_DRIVER_USBD Driver_USBD0 = {
   USBD_EndpointTransferAbort,
   USBD_GetFrameNumber
 };
+
+/*! \endcond */

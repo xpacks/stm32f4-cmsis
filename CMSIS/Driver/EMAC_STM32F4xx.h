@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        02. June 2015
- * $Revision:    V2.2
+ * $Date:        04. September 2015
+ * $Revision:    V2.3
  *
  * Project:      Ethernet Media Access (MAC) Definitions for STM32F4xx
  * -------------------------------------------------------------------------- */
@@ -33,10 +33,12 @@
 #include "stm32f4xx_hal.h"
 
 #include "RTE_Components.h"
-#ifdef    RTE_DEVICE_FRAMEWORK_CLASSIC
+#if   defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
 #include "RTE_Device.h"
-#else
+#elif defined(RTE_DEVICE_FRAMEWORK_CUBE_MX)
 #include "MX_Device.h"
+#else
+#error "::Device:STM32Cube Framework: not selected in RTE"
 #endif
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
@@ -110,9 +112,7 @@
 #else /* MX_Device.h */
   #if defined(MX_ETH_TXD2_Pin)   && defined(MX_ETH_TXD3_Pin)   && \
       defined(MX_ETH_RXD2_Pin)   && defined(MX_ETH_RXD3_Pin)   && \
-      defined(MX_ETH_TX_CLK_Pin) && defined(MX_ETH_RX_CLK_Pin) && \
-      defined(MX_ETH_CRS_Pin)    && defined(MX_ETH_COL_Pin)    && \
-      defined(MX_ETH_RX_DV_Pin)  && defined(MX_ETH_RX_ER_Pin)
+      defined(MX_ETH_TX_CLK_Pin) && defined(MX_ETH_RX_CLK_Pin)
     #define ETH_MII             1
   #else
     #define ETH_MII             0
