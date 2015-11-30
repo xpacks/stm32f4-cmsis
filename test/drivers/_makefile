@@ -1,0 +1,31 @@
+#
+# Copyright (c) 2015 Liviu Ionescu
+# This file is part of the xPacks project (https://xpacks.github.io).
+#
+# Cross compile the CMSIS Core files with GCC.
+#
+# Input: (must be set by the caller)
+#   PARENT=project root folder
+#   TEST_NAME=test name
+#
+
+include arm-none-eabi.mk
+
+INCLUDES+=-I"$(PARENT)/CMSIS/Driver/Config" 
+INCLUDES+=-I"$(PARENT)/../../arm/arm-cmsis-xpack/CMSIS/Driver/Include"
+DEFINES=-DSTM32F407xx
+
+
+all:			copy drivers
+
+copy:
+	cp -r "$(PARENT)/CMSIS/Driver"/* .
+
+drivers:	EMAC_STM32F4xx.o
+
+EMAC_STM32F4xx.o:	EMAC_STM32F4xx.c
+
+
+.PHONY:			all copy drivers
+
+	
