@@ -142,6 +142,10 @@ DMA2_Stream3_IRQHandler(void);
 void __attribute__ ((weak, alias ("Default_Handler")))
 DMA2_Stream4_IRQHandler(void);
 void __attribute__ ((weak, alias ("Default_Handler")))
+ETH_IRQHandler(void);
+void __attribute__ ((weak, alias ("Default_Handler")))
+ETH_WKUP_IRQHandler(void);
+void __attribute__ ((weak, alias ("Default_Handler")))
 CAN2_TX_IRQHandler(void);
 void __attribute__ ((weak, alias ("Default_Handler")))
 CAN2_RX0_IRQHandler(void);
@@ -174,23 +178,31 @@ OTG_HS_IRQHandler(void);
 void __attribute__ ((weak, alias ("Default_Handler")))
 DCMI_IRQHandler(void);
 void __attribute__ ((weak, alias ("Default_Handler")))
+HASH_RNG_IRQHandler(void);
+void __attribute__ ((weak, alias ("Default_Handler")))
 FPU_IRQHandler(void);
+void __attribute__ ((weak, alias ("Default_Handler")))
+UART7_IRQHandler(void);
+void __attribute__ ((weak, alias ("Default_Handler")))
+UART8_IRQHandler(void);
 void __attribute__ ((weak, alias ("Default_Handler")))
 SPI4_IRQHandler(void);
 void __attribute__ ((weak, alias ("Default_Handler")))
+SPI5_IRQHandler(void);
+void __attribute__ ((weak, alias ("Default_Handler")))
+SPI6_IRQHandler(void);
+void __attribute__ ((weak, alias ("Default_Handler")))
 SAI1_IRQHandler(void);
 void __attribute__ ((weak, alias ("Default_Handler")))
-SAI2_IRQHandler(void);
+LTDC_IRQHandler(void);
+void __attribute__ ((weak, alias ("Default_Handler")))
+LTDC_ER_IRQHandler(void);
+void __attribute__ ((weak, alias ("Default_Handler")))
+DMA2D_IRQHandler(void);
 void __attribute__ ((weak, alias ("Default_Handler")))
 QUADSPI_IRQHandler(void);
 void __attribute__ ((weak, alias ("Default_Handler")))
-CEC_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-SPDIF_RX_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-I2C4_Event_IRQHandler(void);
-void __attribute__ ((weak, alias ("Default_Handler")))
-I2C4_Error_IRQHandler(void);
+DSI_IRQHandler(void);
 
 // ----------------------------------------------------------------------------
 
@@ -301,8 +313,8 @@ pHandler __isr_vectors[] =
     DMA2_Stream2_IRQHandler,           // DMA2 Stream 2
     DMA2_Stream3_IRQHandler,           // DMA2 Stream 3
     DMA2_Stream4_IRQHandler,           // DMA2 Stream 4
-    0,                                 // Reserved
-    0,                                 // Reserved
+    ETH_IRQHandler,                    // Ethernet
+    ETH_WKUP_IRQHandler,               // Ethernet Wakeup through EXTI line
     CAN2_TX_IRQHandler,                // CAN2 TX
     CAN2_RX0_IRQHandler,               // CAN2 RX0
     CAN2_RX1_IRQHandler,               // CAN2 RX1
@@ -320,23 +332,19 @@ pHandler __isr_vectors[] =
     OTG_HS_IRQHandler,                 // USB OTG HS
     DCMI_IRQHandler,                   // DCMI
     0,                                 // Reserved
-    0,                                 // Reserved
+    HASH_RNG_IRQHandler,               // Hash and Rng
     FPU_IRQHandler,                    // FPU
-    0,                                 // Reserved
-    0,                                 // Reserved
+    UART7_IRQHandler,                  // UART7
+    UART8_IRQHandler,                  // UART8
     SPI4_IRQHandler,                   // SPI4
-    0,                                 // Reserved
-    0,                                 // Reserved
+    SPI5_IRQHandler,                   // SPI5
+    SPI6_IRQHandler,                   // SPI6
     SAI1_IRQHandler,                   // SAI1
-    0,                                 // Reserved
-    0,                                 // Reserved
-    0,                                 // Reserved
-    SAI2_IRQHandler,                   // SAI2
-    QUADSPI_IRQHandler,                // QuadSPI
-    CEC_IRQHandler,                    // CEC
-    SPDIF_RX_IRQHandler,               // SPDIF RX
-    I2C4_Event_IRQHandler,             // I2C 4 Event
-    I2C4_Error_IRQHandler,             // I2C 4 Error
+    LTDC_IRQHandler,                   // LTDC
+    LTDC_ER_IRQHandler,                // LTDC error
+    DMA2D_IRQHandler,                  // DMA2D
+    QUADSPI_IRQHandler,                // QUADSPI
+    DSI_IRQHandler,                    // DSI
 };
 
 // ----------------------------------------------------------------------------

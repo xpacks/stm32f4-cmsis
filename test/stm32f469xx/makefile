@@ -11,8 +11,8 @@
 
 include arm-none-eabi.mk
 
-SUBFAMILY=stm32f446xx
-DEFINES=-DSTM32F446xx
+SUBFAMILY=stm32f469xx
+DEFINES=-DSTM32F469xx
 
 all:			$(SUBFAMILY)
 

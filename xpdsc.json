@@ -7,8 +7,8 @@
 	"vendorName": "Keil",
 	"name": "STM32F4xx_DFP",
 	"description": "STMicroelectronics STM32F4 Series Device Support, Drivers and Examples",
-	"version": "2.5.0",
-	"date": "2015-06-12",
+	"version": "2.6.0",
+	"date": "2015-09-16",
 	"devices": [
 		{
 			"name": "STM32F4 Series",
@@ -84,11 +84,6 @@
 							"name": "USBOTG",
 							"type": "interface",
 							"n": 1
-						},
-						{
-							"name": "VCC",
-							"n": 1.7,
-							"m": 3.6
 						},
 						{
 							"name": "VCC",
@@ -914,6 +909,355 @@
 					]
 				},
 				{
+					"name": "STM32F410",
+					"type": "subfamily",
+					"processor": {
+						"clock": 100000000
+					},
+					"debugOptions": [
+						{
+							"svd": "CMSIS/SVD/STM32F410xx.svd"
+						}
+					],
+					"children": [
+						{
+							"name": "STM32F410CB",
+							"type": "device",
+							"compile": {
+								"header": "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h",
+								"define": "STM32F410Cx"
+							},
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x20000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x8000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F410CBUx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFN",
+											"type": "package",
+											"n": 48
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F410RB",
+							"type": "device",
+							"compile": {
+								"header": "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h",
+								"define": "STM32F410Rx"
+							},
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x20000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x8000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F410RBUx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFN",
+											"type": "package",
+											"n": 64
+										}
+									]
+								},
+								{
+									"name": "STM32F410RBTx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 64
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F410TB",
+							"type": "device",
+							"compile": {
+								"header": "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h",
+								"define": "STM32F410Tx"
+							},
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x20000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x8000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F410TBYx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "CSP",
+											"type": "package",
+											"n": 36
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F410CA",
+							"type": "device",
+							"compile": {
+								"header": "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h",
+								"define": "STM32F410Cx"
+							},
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x18000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x8000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F410CAUx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFN",
+											"type": "package",
+											"n": 48
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F410RA",
+							"type": "device",
+							"compile": {
+								"header": "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h",
+								"define": "STM32F410Rx"
+							},
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x18000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x8000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F410RATx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 64
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F410TA",
+							"type": "device",
+							"compile": {
+								"header": "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h",
+								"define": "STM32F410Tx"
+							},
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x18000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x8000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F410TAYx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "CSP",
+											"type": "package",
+											"n": 36
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F410C8",
+							"type": "device",
+							"compile": {
+								"header": "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h",
+								"define": "STM32F410Cx"
+							},
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x10000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x8000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F410C8Ux",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFN",
+											"type": "package",
+											"n": 48
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F410R8",
+							"type": "device",
+							"compile": {
+								"header": "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h",
+								"define": "STM32F410Rx"
+							},
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x10000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x8000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F410R8Tx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 64
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F410T8",
+							"type": "device",
+							"compile": {
+								"header": "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h",
+								"define": "STM32F410Tx"
+							},
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x10000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x8000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F410T8Yx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "CSP",
+											"type": "package",
+											"n": 36
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
 					"name": "STM32F411",
 					"type": "subfamily",
 					"compile": {
@@ -944,11 +1288,6 @@
 							"name": "USBOTG",
 							"type": "interface",
 							"n": 1
-						},
-						{
-							"name": "VCC",
-							"n": 1.7,
-							"m": 3.6
 						},
 						{
 							"name": "VCC",
@@ -1397,11 +1736,6 @@
 							"name": "VCC",
 							"n": 1.8,
 							"m": 3.6
-						},
-						{
-							"name": "VCC",
-							"n": 1.8,
-							"m": 3.6
 						}
 					],
 					"debugOptions": [
@@ -1723,11 +2057,6 @@
 							"name": "Camera",
 							"n": 1,
 							"m": 14
-						},
-						{
-							"name": "VCC",
-							"n": 1.8,
-							"m": 3.6
 						}
 					],
 					"debugOptions": [
@@ -2148,11 +2477,6 @@
 							"name": "VCC",
 							"n": 1.8,
 							"m": 3.6
-						},
-						{
-							"name": "VCC",
-							"n": 1.8,
-							"m": 3.6
 						}
 					],
 					"debugOptions": [
@@ -2431,11 +2755,6 @@
 							"name": "Camera",
 							"n": 1,
 							"m": 14
-						},
-						{
-							"name": "VCC",
-							"n": 1.8,
-							"m": 3.6
 						}
 					],
 					"debugOptions": [
@@ -2862,11 +3181,6 @@
 							"name": "Camera",
 							"n": 1,
 							"m": 14
-						},
-						{
-							"name": "VCC",
-							"n": 1.8,
-							"m": 3.6
 						}
 					],
 					"debugOptions": [
@@ -3290,11 +3604,6 @@
 							"name": "Camera",
 							"n": 1,
 							"m": 14
-						},
-						{
-							"name": "VCC",
-							"n": 1.8,
-							"m": 3.6
 						}
 					],
 					"debugOptions": [
@@ -4172,11 +4481,6 @@
 							"name": "Camera",
 							"n": 1,
 							"m": 14
-						},
-						{
-							"name": "VCC",
-							"n": 1.8,
-							"m": 3.6
 						}
 					],
 					"debugOptions": [
@@ -4610,11 +4914,6 @@
 							"name": "Camera",
 							"n": 1,
 							"m": 14
-						},
-						{
-							"name": "VCC",
-							"n": 1.8,
-							"m": 3.6
 						}
 					],
 					"debugOptions": [
@@ -5166,11 +5465,6 @@
 							"m": 16
 						},
 						{
-							"name": "Timer",
-							"n": 2,
-							"m": 32
-						},
-						{
 							"name": "DAC",
 							"n": 2,
 							"m": 12
@@ -5236,11 +5530,6 @@
 							"name": "Camera",
 							"n": 1,
 							"m": 14
-						},
-						{
-							"name": "VCC",
-							"n": 1.8,
-							"m": 3.6
 						}
 					],
 					"debugOptions": [
@@ -5511,6 +5800,893 @@
 											"name": "QFP",
 											"type": "package",
 											"n": 100
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "STM32F469",
+					"type": "subfamily",
+					"compile": {
+						"header": "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h",
+						"define": "STM32F469xx"
+					},
+					"processor": {
+						"clock": 180000000
+					},
+					"features": [
+						{
+							"name": "Timer",
+							"n": 12,
+							"m": 16
+						},
+						{
+							"name": "ADC",
+							"n": 3,
+							"m": 12
+						},
+						{
+							"name": "SPI",
+							"type": "interface",
+							"n": 6,
+							"m": 42000000
+						},
+						{
+							"name": "ComOther",
+							"description": "SAI Interface",
+							"n": 1
+						},
+						{
+							"name": "I2C",
+							"type": "interface",
+							"n": 3
+						},
+						{
+							"name": "USART",
+							"type": "interface",
+							"n": 4,
+							"m": 11250000
+						},
+						{
+							"name": "UART",
+							"type": "interface",
+							"n": 4,
+							"m": 11250000
+						},
+						{
+							"name": "USBOTG",
+							"type": "interface",
+							"n": 2
+						},
+						{
+							"name": "CAN",
+							"type": "interface",
+							"n": 2
+						},
+						{
+							"name": "SDIO",
+							"type": "interface",
+							"description": "Secure Digital IO",
+							"n": 1,
+							"m": 8
+						},
+						{
+							"name": "ETH",
+							"type": "interface",
+							"n": 1,
+							"m": 100000000
+						},
+						{
+							"name": "Crypto",
+							"description": "Hardware acceleration for AES 128, 192, 256, Triple DES, HASH (MD5, SHA-1, SHA-2) and HMAC",
+							"n": 1
+						},
+						{
+							"name": "Camera",
+							"n": 1,
+							"m": 14
+						},
+						{
+							"name": "VCC",
+							"n": 1.7,
+							"m": 3.6
+						}
+					],
+					"debugOptions": [
+						{
+							"svd": "CMSIS/SVD/STM32F46_79x.svd"
+						}
+					],
+					"children": [
+						{
+							"name": "STM32F469AG",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x100000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x50000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F469AGHx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "BGA",
+											"type": "package",
+											"n": 168
+										}
+									]
+								},
+								{
+									"name": "STM32F469AGYx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "CSP",
+											"type": "package",
+											"n": 168
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F469AE",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x80000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x50000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F469AEHx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "BGA",
+											"type": "package",
+											"n": 168
+										}
+									]
+								},
+								{
+									"name": "STM32F469AEYx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "CSP",
+											"type": "package",
+											"n": 168
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F469AI",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x200000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x50000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F469AIHx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "BGA",
+											"type": "package",
+											"n": 168
+										}
+									]
+								},
+								{
+									"name": "STM32F469AIYx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "CSP",
+											"type": "package",
+											"n": 168
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F469IE",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x80000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x50000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F469IETx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 176
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F469IG",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x100000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x50000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F469IGTx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 176
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F469II",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x200000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x50000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F469IITx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 176
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F469BE",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x80000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x50000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F469BETx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 208
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F469BG",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x100000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x50000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F469BGTx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 208
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F469BI",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x200000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x50000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F469BITx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 208
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F469NE",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x80000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x50000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F469NEHx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "BGA",
+											"type": "package",
+											"n": 216
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F469NG",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x100000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x50000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F469NGHx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "BGA",
+											"type": "package",
+											"n": 216
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F469NI",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x200000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x50000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F469NIHx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "BGA",
+											"type": "package",
+											"n": 216
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "STM32F479",
+					"type": "subfamily",
+					"compile": {
+						"header": "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h",
+						"define": "STM32F479xx"
+					},
+					"processor": {
+						"clock": 180000000
+					},
+					"features": [
+						{
+							"name": "Timer",
+							"n": 12,
+							"m": 16
+						},
+						{
+							"name": "ADC",
+							"n": 3,
+							"m": 12
+						},
+						{
+							"name": "SPI",
+							"type": "interface",
+							"n": 6,
+							"m": 42000000
+						},
+						{
+							"name": "ComOther",
+							"description": "SAI Interface",
+							"n": 1
+						},
+						{
+							"name": "I2C",
+							"type": "interface",
+							"n": 3
+						},
+						{
+							"name": "USART",
+							"type": "interface",
+							"n": 4,
+							"m": 11250000
+						},
+						{
+							"name": "UART",
+							"type": "interface",
+							"n": 4,
+							"m": 11250000
+						},
+						{
+							"name": "USBOTG",
+							"type": "interface",
+							"n": 2
+						},
+						{
+							"name": "CAN",
+							"type": "interface",
+							"n": 2
+						},
+						{
+							"name": "SDIO",
+							"type": "interface",
+							"description": "Secure Digital IO",
+							"n": 1,
+							"m": 8
+						},
+						{
+							"name": "ETH",
+							"type": "interface",
+							"n": 1,
+							"m": 100000000
+						},
+						{
+							"name": "Crypto",
+							"description": "Hardware acceleration for AES 128, 192, 256, Triple DES, HASH (MD5, SHA-1, SHA-2) and HMAC",
+							"n": 1
+						},
+						{
+							"name": "Camera",
+							"n": 1,
+							"m": 14
+						},
+						{
+							"name": "VCC",
+							"n": 1.7,
+							"m": 3.6
+						}
+					],
+					"debugOptions": [
+						{
+							"svd": "CMSIS/SVD/STM32F46_79x.svd"
+						}
+					],
+					"children": [
+						{
+							"name": "STM32F479AG",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x100000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x50000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F479AGHx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "BGA",
+											"type": "package",
+											"n": 168
+										}
+									]
+								},
+								{
+									"name": "STM32F479AGYx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "CSP",
+											"type": "package",
+											"n": 168
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F479AI",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x200000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x50000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F479AIHx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "BGA",
+											"type": "package",
+											"n": 168
+										}
+									]
+								},
+								{
+									"name": "STM32F479AIYx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "CSP",
+											"type": "package",
+											"n": 168
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F479IG",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x100000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x50000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F479IGTx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 176
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F479II",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x200000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x50000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F479IITx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 176
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F479BG",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x100000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x50000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F479BGTx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 208
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F479BI",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x200000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x50000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F479BITx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 208
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F479NG",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x100000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x50000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F479NGHx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "BGA",
+											"type": "package",
+											"n": 216
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F479NI",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x200000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x50000",
+									"default": true
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F479NIHx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "BGA",
+											"type": "package",
+											"n": 216
 										}
 									]
 								}
