@@ -5,7 +5,7 @@ includes the STM32F4 CMSIS files.
 
 ## Version
 
-* v2.4.0
+* v2.5.0
 
 ## Documentation
 
@@ -16,7 +16,7 @@ The latest CMSIS documentation is available from
 
 The original files are available from the `originals` branch.
 
-These files were extracted from `Keil.STM32F4xx_DFP.2.4.0.pack`.
+These files were extracted from `Keil.STM32F4xx_DFP.2.5.0.pack`.
 
 To save space, the following folders/files were removed:
 
@@ -29,7 +29,9 @@ To save space, the following folders/files were removed:
 * Drivers/CMSIS/index.html
 * Drivers/CMSIS/README.txt
 * Drivers/CMSIS/Documentation
+* Drivers/CMSIS/DSP_Lib
 * Drivers/CMSIS/Include
+* Drivers/CMSIS/Lib
 * Drivers/CMSIS/RTOS
 * Drivers/CMSIS/SVD
 * Drivers/STM32F?xx_HAL_Driver/

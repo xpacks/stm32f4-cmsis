@@ -1,24 +1,24 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013 - 2014 ARM Ltd.
- *  
- * This software is provided 'as-is', without any express or implied warranty. 
- * In no event will the authors be held liable for any damages arising from 
- * the use of this software. Permission is granted to anyone to use this 
- * software for any purpose, including commercial applications, and to alter 
+ * Copyright (c) 2013-2015 ARM Ltd.
+ *
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software. Permission is granted to anyone to use this
+ * software for any purpose, including commercial applications, and to alter
  * it and redistribute it freely, subject to the following restrictions:
- *  
- * 1. The origin of this software must not be misrepresented; you must not 
+ *
+ * 1. The origin of this software must not be misrepresented; you must not
  *    claim that you wrote the original software. If you use this software in
- *    a product, an acknowledgment in the product documentation would be 
- *    appreciated but is not required. 
- * 
- * 2. Altered source versions must be plainly marked as such, and must not be 
- *    misrepresented as being the original software. 
- * 
+ *    a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
+ *
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ *
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * $Date:        10. November 2014
- * $Revision:    V2.01
+ * $Date:        29. May 2015
+ * $Revision:    V2.2.0
  *
  * Project:      RTE Device Configuration for ST STM32F4xx
  * -------------------------------------------------------------------------- */
@@ -29,17 +29,19 @@
 #define __RTE_DEVICE_H
 
 
-#define GPIO_PORT(num) \
- ((num == 0) ? GPIOA : \
-  (num == 1) ? GPIOB : \
-  (num == 2) ? GPIOC : \
-  (num == 3) ? GPIOD : \
-  (num == 4) ? GPIOE : \
-  (num == 5) ? GPIOF : \
-  (num == 6) ? GPIOG : \
-  (num == 7) ? GPIOH : \
-  (num == 8) ? GPIOI : \
-  NULL)
+#define GPIO_PORT0      GPIOA
+#define GPIO_PORT1      GPIOB
+#define GPIO_PORT2      GPIOC
+#define GPIO_PORT3      GPIOD
+#define GPIO_PORT4      GPIOE
+#define GPIO_PORT5      GPIOF
+#define GPIO_PORT6      GPIOG
+#define GPIO_PORT7      GPIOH
+#define GPIO_PORT8      GPIOI
+#define GPIO_PORT9      GPIOJ
+#define GPIO_PORT10     GPIOK
+
+#define GPIO_PORT(num)  GPIO_PORT##num
 
 
 // <e> USART1 (Universal synchronous asynchronous receiver transmitter) [Driver_USART1]

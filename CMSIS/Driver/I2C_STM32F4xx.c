@@ -1,55 +1,59 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013 - 2014 ARM Ltd.
+ * Copyright (c) 2013-2015 ARM Ltd.
  *
- * This software is provided 'as-is', without any express or implied warranty. 
- * In no event will the authors be held liable for any damages arising from 
- * the use of this software. Permission is granted to anyone to use this 
- * software for any purpose, including commercial applications, and to alter 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software. Permission is granted to anyone to use this
+ * software for any purpose, including commercial applications, and to alter
  * it and redistribute it freely, subject to the following restrictions:
  *
- * 1. The origin of this software must not be misrepresented; you must not 
+ * 1. The origin of this software must not be misrepresented; you must not
  *    claim that you wrote the original software. If you use this software in
- *    a product, an acknowledgment in the product documentation would be 
- *    appreciated but is not required. 
- * 
- * 2. Altered source versions must be plainly marked as such, and must not be 
- *    misrepresented as being the original software. 
- * 
- * 3. This notice may not be removed or altered from any source distribution.
- *   
+ *    a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  *
- * $Date:        05. January 2015
- * $Revision:    V2.02
- *  
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ *
+ * 3. This notice may not be removed or altered from any source distribution.
+ *
+ *
+ * $Date:        02. June 2015
+ * $Revision:    V2.3
+ *
  * Driver:       Driver_I2C1, Driver_I2C2, Driver_I2C3
- * Configured:   via RTE_Device.h configuration file 
+ * Configured:   via RTE_Device.h configuration file
  * Project:      I2C Driver for ST STM32F4xx
- * ---------------------------------------------------------------------- 
+ * --------------------------------------------------------------------------
  * Use the following configuration settings in the middleware component
  * to connect to this driver.
- * 
- *   Configuration Setting               Value     I2C Interface
- *   ---------------------               -----     -------------
+ *
+ *   Configuration Setting                 Value   I2C Interface
+ *   ---------------------                 -----   -------------
  *   Connect to hardware via Driver_I2C# = 1       use I2C1
  *   Connect to hardware via Driver_I2C# = 2       use I2C2
  *   Connect to hardware via Driver_I2C# = 3       use I2C3
- * -------------------------------------------------------------------- */
+ * -------------------------------------------------------------------------- */
 
 /* History:
- *  Version 2.02
+ *  Version 2.3
+ *    Updated initialization, uninitialization and power procedures
+ *    Added support for STM32F446xx
+ *    Limitation of FREQ[5:0] bits in I2C->CR2 set to 50MHz
+ *  Version 2.2
  *    Corrected transfer issues after ARM_I2C_EVENT_ADDRESS_NACK.
  *    Corrected slave address parameter checking.
- *  Version 2.01
+ *  Version 2.1
  *    Corrected 10-bit addressing mode
  *    Slave operation mode issues fixed
  *    STM32CubeMX generated code can also be used to configure the driver.
- *  Version 2.00
+ *  Version 2.0
  *    Updated to the CMSIS Driver API V2.02
- *  Version 1.02
+ *  Version 1.2
  *    Bugfix (corrected I2C register access)
- *  Version 1.01
+ *  Version 1.1
  *    Based on API V1.10 (namespace prefix ARM_ added)
- *  Version 1.00
+ *  Version 1.0
  *    Initial release
  */
 
@@ -76,7 +80,7 @@
 
 #include "I2C_STM32F4xx.h"
 
-#define ARM_I2C_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,01)    /* driver version */
+#define ARM_I2C_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,3)    /* driver version */
 
 
 #if defined(MX_I2C1_RX_DMA_Instance) && defined(MX_I2C1_TX_DMA_Instance)
@@ -348,7 +352,7 @@ static I2C_RESOURCES I2C3_Resources = {
 
 #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
 /**
-  \fn          void Enable_GPIO_Clock (GPIO_TypeDef *port)
+  \fn          void Enable_GPIO_Clock (const GPIO_TypeDef *port)
   \brief       Enable GPIO clock
 */
 static void Enable_GPIO_Clock (const GPIO_TypeDef *GPIOx) {
@@ -356,17 +360,25 @@ static void Enable_GPIO_Clock (const GPIO_TypeDef *GPIOx) {
   else if (GPIOx == GPIOB) { __GPIOB_CLK_ENABLE(); }
   else if (GPIOx == GPIOC) { __GPIOC_CLK_ENABLE(); }
   else if (GPIOx == GPIOD) { __GPIOD_CLK_ENABLE(); }
-#if (!defined(STM32F401xC)) && (!defined(STM32F401xE)) && (!defined(STM32F411xE))
+  else if (GPIOx == GPIOE) { __GPIOE_CLK_ENABLE(); }
+#if defined(GPIOF)
   else if (GPIOx == GPIOF) { __GPIOF_CLK_ENABLE(); }
+#endif
+#if defined(GPIOG)
   else if (GPIOx == GPIOG) { __GPIOG_CLK_ENABLE(); }
 #endif
+#if defined(GPIOH)
   else if (GPIOx == GPIOH) { __GPIOH_CLK_ENABLE(); }
+#endif
+#if defined(GPIOI)
   else if (GPIOx == GPIOI) { __GPIOI_CLK_ENABLE(); }
-#if defined(STM32F427xx) || defined(STM32F437xx) || defined(STM32F429xx) || defined(STM32F439xx)
+#endif
+#if defined(GPIOJ)
   else if (GPIOx == GPIOJ) { __GPIOJ_CLK_ENABLE(); }
+#endif
+#if defined(GPIOK)
   else if (GPIOx == GPIOK) { __GPIOK_CLK_ENABLE(); }
 #endif
-  else /* GPIOx == GPIOE */{ __GPIOE_CLK_ENABLE(); }
 }
 #endif
 
@@ -403,12 +415,7 @@ static int32_t I2C_Initialize (ARM_I2C_SignalEvent_t cb_event, I2C_RESOURCES *i2
   GPIO_InitTypeDef GPIO_InitStruct;
 #endif
 
-  if (i2c->info->init++) {
-    /* Already initialized */
-    return ARM_DRIVER_OK;
-  }
-  /* Reset Run-Time information structure */
-  memset (i2c->info, 0x00, sizeof (I2C_INFO));
+  if (i2c->info->flags & I2C_INIT) { return ARM_DRIVER_OK; }
 
   #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
     /* Setup I2C pin configuration */
@@ -477,21 +484,9 @@ static int32_t I2C_Initialize (ARM_I2C_SignalEvent_t cb_event, I2C_RESOURCES *i2
       if (HAL_DMA_Init (i2c->dma_tx->h) != HAL_OK) {
         return ARM_DRIVER_ERROR;
       }
-
-      /* Enable DMA IRQ in NVIC */
-      HAL_NVIC_EnableIRQ (i2c->dma_rx->irq_num);
-      HAL_NVIC_EnableIRQ (i2c->dma_tx->irq_num);
     }
-
-    /* Clear and Enable I2C IRQ */
-    HAL_NVIC_ClearPendingIRQ(i2c->ev_irq_num);
-    HAL_NVIC_ClearPendingIRQ(i2c->er_irq_num);
-    HAL_NVIC_EnableIRQ(i2c->ev_irq_num);
-    HAL_NVIC_EnableIRQ(i2c->er_irq_num);
   #else
     i2c->h->Instance = i2c->reg;
-
-    HAL_I2C_MspInit (i2c->h);
   #endif
 
   if ((i2c->dma_rx != 0) && (i2c->dma_tx != 0)) {
@@ -502,9 +497,12 @@ static int32_t I2C_Initialize (ARM_I2C_SignalEvent_t cb_event, I2C_RESOURCES *i2
     i2c->dma_tx->h->XferErrorCallback = i2c->dma_tx->cb_error;
   }
 
+  /* Reset Run-Time information structure */
+  memset (i2c->info, 0x00, sizeof (I2C_INFO));
+
   i2c->info->cb_event = cb_event;
   i2c->info->flags    = I2C_INIT;
-  i2c->info->init     = 1U;
+
   return ARM_DRIVER_OK;
 }
 
@@ -517,27 +515,10 @@ static int32_t I2C_Initialize (ARM_I2C_SignalEvent_t cb_event, I2C_RESOURCES *i2
 */
 static int32_t I2C_Uninitialize (I2C_RESOURCES *i2c) {
 
-  if (i2c->info->init) {
-    if (--i2c->info->init) {
-      return ARM_DRIVER_OK;
-    }
-  }
   #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
-    /* Disable I2C IRQ */
-    HAL_NVIC_DisableIRQ(i2c->ev_irq_num);
-    HAL_NVIC_DisableIRQ(i2c->er_irq_num);
-
-    if ((i2c->dma_rx != 0) && (i2c->dma_tx != 0)) {
-      /* Disable DMA stream IRQ in NVIC */
-      HAL_NVIC_DisableIRQ (i2c->dma_rx->irq_num);
-      HAL_NVIC_DisableIRQ (i2c->dma_tx->irq_num);
-    }
-
     /* Unconfigure SCL and SDA Pins */
     HAL_GPIO_DeInit(i2c->io.scl_port, i2c->io.scl_pin);
     HAL_GPIO_DeInit(i2c->io.sda_port, i2c->io.sda_pin);
-  #else
-    HAL_I2C_MspDeInit (i2c->h);
   #endif
 
   i2c->info->flags = 0U;
@@ -555,69 +536,126 @@ static int32_t I2C_Uninitialize (I2C_RESOURCES *i2c) {
 */
 static int32_t I2C_PowerControl (ARM_POWER_STATE state, I2C_RESOURCES *i2c) {
 
-  if ((i2c->info->flags & I2C_INIT) == 0) {
-    /* Driver not initialized */
-    return (ARM_DRIVER_ERROR);
-  }
-
   switch (state) {
     case ARM_POWER_OFF:
-      if (i2c->info->flags & I2C_POWER) {
-        i2c->info->flags &= ~(I2C_POWER | I2C_SETUP);
+      #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
+        /* Disable I2C IRQ */
+        HAL_NVIC_DisableIRQ(i2c->ev_irq_num);
+        HAL_NVIC_DisableIRQ(i2c->er_irq_num);
 
-        /* Disable I2C */
-        i2c->reg->CR1 &= ~I2C_CR1_PE;
+        if ((i2c->dma_rx != 0) && (i2c->dma_tx != 0)) {
+          /* Disable DMA stream IRQ in NVIC */
+          HAL_NVIC_DisableIRQ (i2c->dma_rx->irq_num);
+          HAL_NVIC_DisableIRQ (i2c->dma_tx->irq_num);
+        }
+      #else
+        HAL_I2C_MspDeInit (i2c->h);
+      #endif
 
-        #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
-          /* Disable I2C Clock */
-          if (i2c->reg == I2C1)      { __I2C1_CLK_DISABLE(); }
-          else if (i2c->reg == I2C2) { __I2C2_CLK_DISABLE(); }
-          else                       { __I2C3_CLK_DISABLE(); }
-        #endif
+      /* Abort DMA streams */
+      if ((i2c->dma_tx != NULL) && (i2c->dma_rx != NULL)) {
+        HAL_DMA_Abort (i2c->dma_tx->h);
+        HAL_DMA_Abort (i2c->dma_rx->h);
       }
+
+      i2c->info->flags = I2C_INIT;
+
+      i2c->info->status.busy             = 0U;
+      i2c->info->status.mode             = 0U;
+      i2c->info->status.direction        = 0U;
+      i2c->info->status.general_call     = 0U;
+      i2c->info->status.arbitration_lost = 0U;
+      i2c->info->status.bus_error        = 0U;
+
+      /* Disable I2C peripheral */
+      i2c->reg->CR1 &= ~I2C_CR1_PE;
+
+      #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
+        /* Reset the peripheral and disable its clock */
+        if (i2c->reg == I2C1) {
+          __I2C1_FORCE_RESET();
+          __NOP(); __NOP(); __NOP(); __NOP(); 
+          __I2C1_RELEASE_RESET();
+
+          __I2C1_CLK_DISABLE();
+        }
+        else if (i2c->reg == I2C2) {
+          __I2C2_FORCE_RESET();
+          __NOP(); __NOP(); __NOP(); __NOP(); 
+          __I2C2_RELEASE_RESET();
+
+          __I2C2_CLK_DISABLE();
+        }
+        else {
+          __I2C3_FORCE_RESET();
+          __NOP(); __NOP(); __NOP(); __NOP(); 
+          __I2C3_RELEASE_RESET();
+
+          __I2C3_CLK_DISABLE();
+        }
+      #endif
       break;
 
     case ARM_POWER_LOW:
       return ARM_DRIVER_ERROR_UNSUPPORTED;
 
     case ARM_POWER_FULL:
-      #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
-        /* Enable I2C clock and reset the peripheral */
-        if (i2c->reg == I2C1) {
-          __I2C1_CLK_ENABLE();
+      if ((i2c->info->flags & I2C_POWER) == 0U) {
+        #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
+          if ((i2c->dma_rx != 0) && (i2c->dma_tx != 0)) {
+            /* Enable DMA IRQ in NVIC */
+            HAL_NVIC_EnableIRQ (i2c->dma_rx->irq_num);
+            HAL_NVIC_EnableIRQ (i2c->dma_tx->irq_num);
+          }
 
-          __I2C1_FORCE_RESET();
-          __NOP(); __NOP(); __NOP(); __NOP(); 
-          __I2C1_RELEASE_RESET();
-        }
-        else if (i2c->reg == I2C2) {
-          __I2C2_CLK_ENABLE();
+          /* Clear and Enable I2C IRQ */
+          HAL_NVIC_ClearPendingIRQ(i2c->ev_irq_num);
+          HAL_NVIC_ClearPendingIRQ(i2c->er_irq_num);
+          HAL_NVIC_EnableIRQ(i2c->ev_irq_num);
+          HAL_NVIC_EnableIRQ(i2c->er_irq_num);
+        #else
+          HAL_I2C_MspInit (i2c->h);
+        #endif
 
-          __I2C2_FORCE_RESET();
-          __NOP(); __NOP(); __NOP(); __NOP(); 
-          __I2C2_RELEASE_RESET();
-        }
-        else {
-          __I2C3_CLK_ENABLE();
+        #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
+          /* Enable I2C clock and reset the peripheral */
+          if (i2c->reg == I2C1) {
+            __I2C1_CLK_ENABLE();
 
-          __I2C3_FORCE_RESET();
-          __NOP(); __NOP(); __NOP(); __NOP(); 
-          __I2C3_RELEASE_RESET();
-        }
-      #endif
-      /* Enable event and error interrupts */
-      i2c->reg->CR2 |= I2C_CR2_ITEVTEN | I2C_CR2_ITERREN;
-      /* Disable buffer interrupts */
-      i2c->reg->CR2 &= ~I2C_CR2_ITBUFEN;
+            __I2C1_FORCE_RESET();
+            __NOP(); __NOP(); __NOP(); __NOP(); 
+            __I2C1_RELEASE_RESET();
+          }
+          else if (i2c->reg == I2C2) {
+            __I2C2_CLK_ENABLE();
 
-      /* Enable clock stretching */
-      i2c->reg->CR1 &= ~I2C_CR1_NOSTRETCH;
-      /* Enable general call and I2C peripheral */
-      i2c->reg->CR1 |= I2C_CR1_ENGC;
-      i2c->reg->CR1 |= I2C_CR1_PE;
+            __I2C2_FORCE_RESET();
+            __NOP(); __NOP(); __NOP(); __NOP(); 
+            __I2C2_RELEASE_RESET();
+          }
+          else {
+            __I2C3_CLK_ENABLE();
 
-      /* Ready for operation */
-      i2c->info->flags |= I2C_POWER;
+            __I2C3_FORCE_RESET();
+            __NOP(); __NOP(); __NOP(); __NOP(); 
+            __I2C3_RELEASE_RESET();
+          }
+        #endif
+        /* Enable event and error interrupts */
+        i2c->reg->CR2 |= I2C_CR2_ITEVTEN | I2C_CR2_ITERREN;
+        /* Disable buffer interrupts */
+        i2c->reg->CR2 &= ~I2C_CR2_ITBUFEN;
+
+        /* Enable clock stretching */
+        i2c->reg->CR1 &= ~I2C_CR1_NOSTRETCH;
+
+        /* Enable general call and I2C peripheral */
+        i2c->reg->CR1 |= I2C_CR1_ENGC;
+        i2c->reg->CR1 |= I2C_CR1_PE;
+
+        /* Ready for operation */
+        i2c->info->flags |= I2C_POWER;
+      }
       break;
   }
 
@@ -899,14 +937,14 @@ static int32_t I2C_Control (uint32_t control, uint32_t arg, I2C_RESOURCES *i2c) 
       switch (arg) {
         case ARM_I2C_BUS_SPEED_STANDARD:
           /* Clock = 100kHz,  Rise Time = 1000ns */
-          if (pclk > 42000000U) { return ARM_DRIVER_ERROR_UNSUPPORTED; }
+          if (pclk > 50000000U) { return ARM_DRIVER_ERROR_UNSUPPORTED; }
           if (pclk <  2000000U) { return ARM_DRIVER_ERROR_UNSUPPORTED; }
           ccr   = (pclk /  100000U) / 2U;
           trise = (pclk / 1000000U) + 1U;
           break;
         case ARM_I2C_BUS_SPEED_FAST:
           /* Clock = 400kHz,  Rise Time = 300ns */
-          if (pclk > 42000000U) { return ARM_DRIVER_ERROR_UNSUPPORTED; }
+          if (pclk > 50000000U) { return ARM_DRIVER_ERROR_UNSUPPORTED; }
           if (pclk <  4000000U) { return ARM_DRIVER_ERROR_UNSUPPORTED; }
           if ((pclk >= 10000000U) && ((pclk % 10000000U) == 0U)) {
             ccr = I2C_CCR_FS | I2C_CCR_DUTY | ((pclk / 400000U) / 25U);
@@ -1475,7 +1513,7 @@ static void I2C_ER_IRQHandler (I2C_RESOURCES *i2c) {
      defined(MX_I2C3_TX_DMA_Instance))
 /**
   \fn          void I2C_DMA_TxEvent (uint32_t event, I2C_RESOURCES *i2c)
-  \brief       I2C DMA Transmitt Event handler
+  \brief       I2C DMA Transmit Event handler
   \param[in]   i2c  Pointer to I2C resources
 */
 static void I2C_DMA_TxEvent (uint32_t event, I2C_RESOURCES *i2c) {

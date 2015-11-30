@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32f446xx.h
   * @author  MCD Application Team
-  * @version V2.2.0RC4
-  * @date    12-December-2014
+  * @version V2.3.1
+  * @date    03-April-2015
   * @brief   CMSIS STM32F446xx Device Peripheral Access Layer Header File.
   *
   *          This file contains:
@@ -14,7 +14,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -49,8 +49,8 @@
   * @{
   */
     
-#ifndef __STM32F427xx_H
-#define __STM32F427xx_H
+#ifndef __STM32F446xx_H
+#define __STM32F446xx_H
 
 #ifdef __cplusplus
  extern "C" {
@@ -136,10 +136,10 @@ typedef enum
   EXTI15_10_IRQn              = 40,     /*!< External Line[15:10] Interrupts                                   */
   RTC_Alarm_IRQn              = 41,     /*!< RTC Alarm (A and B) through EXTI Line Interrupt                   */
   OTG_FS_WKUP_IRQn            = 42,     /*!< USB OTG FS Wakeup through EXTI line interrupt                     */    
-  TIM8_BRK_IRQn               = 43,     /*!< TIM8 Break Interrupt                                              */
   TIM8_BRK_TIM12_IRQn         = 43,     /*!< TIM8 Break Interrupt and TIM12 global interrupt                   */
   TIM8_UP_TIM13_IRQn          = 44,     /*!< TIM8 Update Interrupt and TIM13 global interrupt                  */
   TIM8_TRG_COM_TIM14_IRQn     = 45,     /*!< TIM8 Trigger and Commutation Interrupt and TIM14 global interrupt */
+  TIM8_CC_IRQn                = 46,     /*!< TIM8 Capture Compare global interrupt                             */
   DMA1_Stream7_IRQn           = 47,     /*!< DMA1 Stream7 Interrupt                                            */
   FMC_IRQn                    = 48,     /*!< FMC global Interrupt                                              */
   SDIO_IRQn                   = 49,     /*!< SDIO global Interrupt                                             */
@@ -175,8 +175,8 @@ typedef enum
   SAI1_IRQn                   = 87,     /*!< SAI1 global Interrupt                                             */
   SAI2_IRQn                   = 91,     /*!< SAI2 global Interrupt                                             */
   QUADSPI_IRQn                = 92,     /*!< QuadSPI global Interrupt                                          */
-  CEC_IRQn                    = 93,     /*!< QuadSPI global Interrupt                                          */
-  SPDIF_RX_IRQn               = 94,     /*!< QuadSPI global Interrupt                                          */
+  CEC_IRQn                    = 93,     /*!< CEC global Interrupt                                              */
+  SPDIF_RX_IRQn               = 94,     /*!< SPDIF-RX global Interrupt                                          */
   FMPI2C1_EV_IRQn             = 95,     /*!< FMPI2C1 Event Interrupt                                           */
   FMPI2C1_ER_IRQn             = 96      /*!< FMPI2C1 Error Interrupt                                           */  
 } IRQn_Type;
@@ -445,39 +445,18 @@ typedef struct
 } FMC_Bank1E_TypeDef;
 
 /** 
-  * @brief Flexible Memory Controller Bank2
+  * @brief Flexible Memory Controller Bank3
   */
-  
+ 
 typedef struct
 {
-  __IO uint32_t PCR2;       /*!< NAND Flash control register 2,                       Address offset: 0x60 */
-  __IO uint32_t SR2;        /*!< NAND Flash FIFO status and interrupt register 2,     Address offset: 0x64 */
-  __IO uint32_t PMEM2;      /*!< NAND Flash Common memory space timing register 2,    Address offset: 0x68 */
-  __IO uint32_t PATT2;      /*!< NAND Flash Attribute memory space timing register 2, Address offset: 0x6C */
-  uint32_t      RESERVED0;  /*!< Reserved, 0x70                                                            */
-  __IO uint32_t ECCR2;      /*!< NAND Flash ECC result registers 2,                   Address offset: 0x74 */
-  uint32_t      RESERVED1;  /*!< Reserved, 0x78                                                            */
-  uint32_t      RESERVED2;  /*!< Reserved, 0x7C                                                            */
-  __IO uint32_t PCR3;       /*!< NAND Flash control register 3,                       Address offset: 0x80 */
-  __IO uint32_t SR3;        /*!< NAND Flash FIFO status and interrupt register 3,     Address offset: 0x84 */
-  __IO uint32_t PMEM3;      /*!< NAND Flash Common memory space timing register 3,    Address offset: 0x88 */
-  __IO uint32_t PATT3;      /*!< NAND Flash Attribute memory space timing register 3, Address offset: 0x8C */
-  uint32_t      RESERVED3;  /*!< Reserved, 0x90                                                            */
-  __IO uint32_t ECCR3;      /*!< NAND Flash ECC result registers 3,                   Address offset: 0x94 */
-} FMC_Bank2_3_TypeDef;
-
-/** 
-  * @brief Flexible Memory Controller Bank4
-  */
-  
-typedef struct
-{
-  __IO uint32_t PCR4;       /*!< PC Card  control register 4,                       Address offset: 0xA0 */
-  __IO uint32_t SR4;        /*!< PC Card  FIFO status and interrupt register 4,     Address offset: 0xA4 */
-  __IO uint32_t PMEM4;      /*!< PC Card  Common memory space timing register 4,    Address offset: 0xA8 */
-  __IO uint32_t PATT4;      /*!< PC Card  Attribute memory space timing register 4, Address offset: 0xAC */
-  __IO uint32_t PIO4;       /*!< PC Card  I/O space timing register 4,              Address offset: 0xB0 */
-} FMC_Bank4_TypeDef; 
+  __IO uint32_t PCR;       /*!< NAND Flash control register,                       Address offset: 0x80 */
+  __IO uint32_t SR;        /*!< NAND Flash FIFO status and interrupt register,     Address offset: 0x84 */
+  __IO uint32_t PMEM;      /*!< NAND Flash Common memory space timing register,    Address offset: 0x88 */
+  __IO uint32_t PATT;      /*!< NAND Flash Attribute memory space timing register, Address offset: 0x8C */
+  uint32_t      RESERVED;  /*!< Reserved, 0x90                                                          */
+  __IO uint32_t ECCR;      /*!< NAND Flash ECC result registers,                   Address offset: 0x94 */
+} FMC_Bank3_TypeDef;
 
 /** 
   * @brief Flexible Memory Controller Bank5_6
@@ -520,6 +499,8 @@ typedef struct
   __IO uint32_t EXTICR[4];    /*!< SYSCFG external interrupt configuration registers, Address offset: 0x08-0x14 */
   uint32_t      RESERVED[2];  /*!< Reserved, 0x18-0x1C                                                          */ 
   __IO uint32_t CMPCR;        /*!< SYSCFG Compensation cell control register,         Address offset: 0x20      */
+  uint32_t      RESERVED1[2]; /*!< Reserved, 0x24-0x28                                                          */ 
+  __IO uint32_t CFGR;         /*!< SYSCFG Configuration register,                     Address offset: 0x2C      */
 } SYSCFG_TypeDef;
 
 /** 
@@ -759,7 +740,7 @@ typedef struct
 } QUADSPI_TypeDef;
 
 /** 
-  * @brief SPDIFRX-RX Interface
+  * @brief SPDIFRX Interface
   */
 
 // [ILG]
@@ -843,34 +824,39 @@ typedef struct
 } WWDG_TypeDef;
  
 /** 
-  * @brief __USB_OTG_Core_register
+  * @brief USB_OTG_Core_Registers
   */
 typedef struct
 {
-  __IO uint32_t GOTGCTL;       /*!<  USB_OTG Control and Status Register    000h */
-  __IO uint32_t GOTGINT;       /*!<  USB_OTG Interrupt Register             004h */
-  __IO uint32_t GAHBCFG;       /*!<  Core AHB Configuration Register        008h */
-  __IO uint32_t GUSBCFG;       /*!<  Core USB Configuration Register        00Ch */
-  __IO uint32_t GRSTCTL;       /*!<  Core Reset Register                    010h */
-  __IO uint32_t GINTSTS;       /*!<  Core Interrupt Register                014h */
-  __IO uint32_t GINTMSK;       /*!<  Core Interrupt Mask Register           018h */
-  __IO uint32_t GRXSTSR;       /*!<  Receive Sts Q Read Register            01Ch */
-  __IO uint32_t GRXSTSP;       /*!<  Receive Sts Q Read & POP Register      020h */
-  __IO uint32_t GRXFSIZ;       /*!< Receive FIFO Size Register              024h */
-  __IO uint32_t DIEPTXF0_HNPTXFSIZ;   /*!<  EP0 / Non Periodic Tx FIFO Size Register 028h*/
-  __IO uint32_t HNPTXSTS;      /*!<  Non Periodic Tx FIFO/Queue Sts reg     02Ch */
-  uint32_t Reserved30[2];      /*!< Reserved                                030h */
-  __IO uint32_t GCCFG;         /*!< General Purpose IO Register             038h */
-  __IO uint32_t CID;           /*!< User ID Register                        03Ch */
-  uint32_t  Reserved40[48];    /*!< Reserved                           040h-0FFh */
-  __IO uint32_t HPTXFSIZ;      /*!< Host Periodic Tx FIFO Size Reg          100h */
-  __IO uint32_t DIEPTXF[0x0F]; /*!< dev Periodic Transmit FIFO */
-}
-USB_OTG_GlobalTypeDef;
-
+ __IO uint32_t GOTGCTL;               /*!< USB_OTG Control and Status Register          000h */
+  __IO uint32_t GOTGINT;              /*!< USB_OTG Interrupt Register                   004h */
+  __IO uint32_t GAHBCFG;              /*!< Core AHB Configuration Register              008h */
+  __IO uint32_t GUSBCFG;              /*!< Core USB Configuration Register              00Ch */
+  __IO uint32_t GRSTCTL;              /*!< Core Reset Register                          010h */
+  __IO uint32_t GINTSTS;              /*!< Core Interrupt Register                      014h */
+  __IO uint32_t GINTMSK;              /*!< Core Interrupt Mask Register                 018h */
+  __IO uint32_t GRXSTSR;              /*!< Receive Sts Q Read Register                  01Ch */
+  __IO uint32_t GRXSTSP;              /*!< Receive Sts Q Read & POP Register            020h */
+  __IO uint32_t GRXFSIZ;              /*!< Receive FIFO Size Register                   024h */
+  __IO uint32_t DIEPTXF0_HNPTXFSIZ;   /*!< EP0 / Non Periodic Tx FIFO Size Register     028h */
+  __IO uint32_t HNPTXSTS;             /*!< Non Periodic Tx FIFO/Queue Sts reg           02Ch */
+  uint32_t Reserved30[2];             /*!< Reserved                                     030h */
+  __IO uint32_t GCCFG;                /*!< General Purpose IO Register                  038h */
+  __IO uint32_t CID;                  /*!< User ID Register                             03Ch */
+  uint32_t  Reserved5[3];             /*!< Reserved                                040h-048h */
+  __IO uint32_t GHWCFG3;              /*!< User HW config3                              04Ch */
+  uint32_t  Reserved6;                /*!< Reserved                                     050h */ 
+  __IO uint32_t GLPMCFG;              /*!< LPM Register                                 054h */
+  __IO uint32_t GPWRDN;               /*!< Power Down Register                          058h */
+  __IO uint32_t GDFIFOCFG;            /*!< DFIFO Software Config Register               05Ch */
+   __IO uint32_t GADPCTL;             /*!< ADP Timer, Control and Status Register       60Ch */
+    uint32_t  Reserved43[39];         /*!< Reserved                                058h-0FFh */
+  __IO uint32_t HPTXFSIZ;             /*!< Host Periodic Tx FIFO Size Reg               100h */
+  __IO uint32_t DIEPTXF[0x0F];        /*!< dev Periodic Transmit FIFO */
+} USB_OTG_GlobalTypeDef;
 
 /** 
-  * @brief __device_Registers
+  * @brief USB_OTG_device_Registers
   */
 typedef struct 
 {
@@ -886,7 +872,7 @@ typedef struct
   uint32_t Reserved9;            /*!< Reserved                     824h */
   __IO uint32_t DVBUSDIS;        /*!< dev VBUS discharge Register  828h */
   __IO uint32_t DVBUSPULSE;      /*!< dev VBUS Pulse Register      82Ch */
-  __IO uint32_t DTHRCTL;         /*!< dev thr                      830h */
+  __IO uint32_t DTHRCTL;         /*!< dev threshold                830h */
   __IO uint32_t DIEPEMPMSK;      /*!< dev empty msk                834h */
   __IO uint32_t DEACHINT;        /*!< dedicated EP interrupt       838h */
   __IO uint32_t DEACHMSK;        /*!< dedicated EP msk             83Ch */  
@@ -894,12 +880,10 @@ typedef struct
   __IO uint32_t DINEP1MSK;       /*!< dedicated EP mask            844h */
   uint32_t  Reserved44[15];      /*!< Reserved                 844-87Ch */
   __IO uint32_t DOUTEP1MSK;      /*!< dedicated EP msk             884h */   
-}
-USB_OTG_DeviceTypeDef;
-
+} USB_OTG_DeviceTypeDef;
 
 /** 
-  * @brief __IN_Endpoint-Specific_Register
+  * @brief USB_OTG_IN_Endpoint-Specific_Register
   */
 typedef struct 
 {
@@ -909,14 +893,12 @@ typedef struct
   uint32_t Reserved0C;             /*!< Reserved                       900h + (ep_num * 20h) + 0Ch */
   __IO uint32_t DIEPTSIZ;          /*!< IN Endpoint Txfer Size         900h + (ep_num * 20h) + 10h */
   __IO uint32_t DIEPDMA;           /*!< IN Endpoint DMA Address Reg    900h + (ep_num * 20h) + 14h */
-  __IO uint32_t DTXFSTS;           /*!<IN Endpoint Tx FIFO Status Reg  900h + (ep_num * 20h) + 18h */
+  __IO uint32_t DTXFSTS;           /*!< IN Endpoint Tx FIFO Status Reg 900h + (ep_num * 20h) + 18h */
   uint32_t Reserved18;             /*!< Reserved  900h+(ep_num*20h)+1Ch-900h+ (ep_num * 20h) + 1Ch */
-}
-USB_OTG_INEndpointTypeDef;
-
+} USB_OTG_INEndpointTypeDef;
 
 /** 
-  * @brief __OUT_Endpoint-Specific_Registers
+  * @brief USB_OTG_OUT_Endpoint-Specific_Registers
   */
 typedef struct 
 {
@@ -927,12 +909,10 @@ typedef struct
   __IO uint32_t DOEPTSIZ;      /*!< dev OUT Endpoint Txfer Size            B00h + (ep_num * 20h) + 10h */
   __IO uint32_t DOEPDMA;       /*!< dev OUT Endpoint DMA Address           B00h + (ep_num * 20h) + 14h */
   uint32_t Reserved18[2];      /*!< Reserved B00h + (ep_num * 20h) + 18h - B00h + (ep_num * 20h) + 1Ch */
-}
-USB_OTG_OUTEndpointTypeDef;
-
+} USB_OTG_OUTEndpointTypeDef;
 
 /** 
-  * @brief __Host_Mode_Register_Structures
+  * @brief USB_OTG_Host_Mode_Register_Structures
   */
 typedef struct 
 {
@@ -943,23 +923,22 @@ typedef struct
   __IO uint32_t HPTXSTS;          /*!< Host Periodic Tx FIFO/ Queue Status  410h */
   __IO uint32_t HAINT;            /*!< Host All Channels Interrupt Register 414h */
   __IO uint32_t HAINTMSK;         /*!< Host All Channels Interrupt Mask     418h */
-}
-USB_OTG_HostTypeDef;
+} USB_OTG_HostTypeDef;
 
 /** 
-  * @brief __Host_Channel_Specific_Registers
+  * @brief USB_OTG_Host_Channel_Specific_Registers
   */
 typedef struct
 {
-  __IO uint32_t HCCHAR;
-  __IO uint32_t HCSPLT;
-  __IO uint32_t HCINT;
-  __IO uint32_t HCINTMSK;
-  __IO uint32_t HCTSIZ;
-  __IO uint32_t HCDMA;
-  uint32_t Reserved[2];
-}
-USB_OTG_HostChannelTypeDef;
+  __IO uint32_t HCCHAR;           /*!< Host Channel Characteristics Register    500h */
+  __IO uint32_t HCSPLT;           /*!< Host Channel Split Control Register      504h */
+  __IO uint32_t HCINT;            /*!< Host Channel Interrupt Register          508h */
+  __IO uint32_t HCINTMSK;         /*!< Host Channel Interrupt Mask Register     50Ch */
+  __IO uint32_t HCTSIZ;           /*!< Host Channel Transfer Size Register      510h */
+  __IO uint32_t HCDMA;            /*!< Host Channel DMA Address Register        514h */
+  uint32_t Reserved[2];           /*!< Reserved                                      */
+} USB_OTG_HostChannelTypeDef;
+
 /**
   * @}
   */
@@ -976,10 +955,11 @@ USB_OTG_HostChannelTypeDef;
 #define QSPI_R_BASE            ((uint32_t)0xA0001000) /*!< QuadSPI registers base address                                            */
 
 #define SRAM1_BB_BASE         ((uint32_t)0x22000000) /*!< SRAM1(112 KB) base address in the bit-band region                          */
-#define SRAM2_BB_BASE         ((uint32_t)0x2201C000) /*!< SRAM2(16 KB) base address in the bit-band region                           */
+#define SRAM2_BB_BASE         ((uint32_t)0x22380000) /*!< SRAM2(16 KB) base address in the bit-band region                           */
 #define PERIPH_BB_BASE        ((uint32_t)0x42000000) /*!< Peripheral base address in the bit-band region                             */
-#define BKPSRAM_BB_BASE       ((uint32_t)0x42024000) /*!< Backup SRAM(4 KB) base address in the bit-band region                      */
+#define BKPSRAM_BB_BASE       ((uint32_t)0x42480000) /*!< Backup SRAM(4 KB) base address in the bit-band region                      */
 #define FLASH_END             ((uint32_t)0x0807FFFF) /*!< FLASH end address                                                          */
+
 
 /* Legacy defines */
 #define SRAM_BASE             SRAM1_BASE
@@ -1007,7 +987,7 @@ USB_OTG_HostChannelTypeDef;
 #define IWDG_BASE             (APB1PERIPH_BASE + 0x3000)
 #define SPI2_BASE             (APB1PERIPH_BASE + 0x3800)
 #define SPI3_BASE             (APB1PERIPH_BASE + 0x3C00)
-#define SPDIFRX_BASE            (APB1PERIPH_BASE + 0x4000)
+#define SPDIFRX_BASE          (APB1PERIPH_BASE + 0x4000)
 #define USART2_BASE           (APB1PERIPH_BASE + 0x4400)
 #define USART3_BASE           (APB1PERIPH_BASE + 0x4800)
 #define UART4_BASE            (APB1PERIPH_BASE + 0x4C00)
@@ -1083,8 +1063,7 @@ USB_OTG_HostChannelTypeDef;
 /*!< FMC Bankx registers base address */
 #define FMC_Bank1_R_BASE      (FMC_R_BASE + 0x0000)
 #define FMC_Bank1E_R_BASE     (FMC_R_BASE + 0x0104)
-#define FMC_Bank2_3_R_BASE    (FMC_R_BASE + 0x0060)
-#define FMC_Bank4_R_BASE      (FMC_R_BASE + 0x00A0)
+#define FMC_Bank3_R_BASE      (FMC_R_BASE + 0x0080)
 #define FMC_Bank5_6_R_BASE    (FMC_R_BASE + 0x0140)
 
 /*!< Debug MCU registers base address */
@@ -1197,8 +1176,7 @@ USB_OTG_HostChannelTypeDef;
 #define DCMI                ((DCMI_TypeDef *) DCMI_BASE)
 #define FMC_Bank1           ((FMC_Bank1_TypeDef *) FMC_Bank1_R_BASE)
 #define FMC_Bank1E          ((FMC_Bank1E_TypeDef *) FMC_Bank1E_R_BASE)
-#define FMC_Bank2_3         ((FMC_Bank2_3_TypeDef *) FMC_Bank2_3_R_BASE)
-#define FMC_Bank4           ((FMC_Bank4_TypeDef *) FMC_Bank4_R_BASE)
+#define FMC_Bank3           ((FMC_Bank3_TypeDef *) FMC_Bank3_R_BASE)
 #define FMC_Bank5_6         ((FMC_Bank5_6_TypeDef *) FMC_Bank5_6_R_BASE)
 #define QUADSPI             ((QUADSPI_TypeDef *) QSPI_R_BASE)
 
@@ -3323,6 +3301,9 @@ USB_OTG_HostChannelTypeDef;
 #define  EXTI_IMR_MR17                       ((uint32_t)0x00020000)        /*!< Interrupt Mask on line 17 */
 #define  EXTI_IMR_MR18                       ((uint32_t)0x00040000)        /*!< Interrupt Mask on line 18 */
 #define  EXTI_IMR_MR19                       ((uint32_t)0x00080000)        /*!< Interrupt Mask on line 19 */
+#define  EXTI_IMR_MR20                       ((uint32_t)0x00100000)        /*!< Interrupt Mask on line 20 */
+#define  EXTI_IMR_MR21                       ((uint32_t)0x00200000)        /*!< Interrupt Mask on line 21 */
+#define  EXTI_IMR_MR22                       ((uint32_t)0x00400000)        /*!< Interrupt Mask on line 22 */
 
 /*******************  Bit definition for EXTI_EMR register  *******************/
 #define  EXTI_EMR_MR0                        ((uint32_t)0x00000001)        /*!< Event Mask on line 0 */
@@ -3345,6 +3326,9 @@ USB_OTG_HostChannelTypeDef;
 #define  EXTI_EMR_MR17                       ((uint32_t)0x00020000)        /*!< Event Mask on line 17 */
 #define  EXTI_EMR_MR18                       ((uint32_t)0x00040000)        /*!< Event Mask on line 18 */
 #define  EXTI_EMR_MR19                       ((uint32_t)0x00080000)        /*!< Event Mask on line 19 */
+#define  EXTI_EMR_MR20                       ((uint32_t)0x00100000)        /*!< Event Mask on line 20 */
+#define  EXTI_EMR_MR21                       ((uint32_t)0x00200000)        /*!< Event Mask on line 21 */
+#define  EXTI_EMR_MR22                       ((uint32_t)0x00400000)        /*!< Event Mask on line 22 */
 
 /******************  Bit definition for EXTI_RTSR register  *******************/
 #define  EXTI_RTSR_TR0                       ((uint32_t)0x00000001)        /*!< Rising trigger event configuration bit of line 0 */
@@ -3367,6 +3351,9 @@ USB_OTG_HostChannelTypeDef;
 #define  EXTI_RTSR_TR17                      ((uint32_t)0x00020000)        /*!< Rising trigger event configuration bit of line 17 */
 #define  EXTI_RTSR_TR18                      ((uint32_t)0x00040000)        /*!< Rising trigger event configuration bit of line 18 */
 #define  EXTI_RTSR_TR19                      ((uint32_t)0x00080000)        /*!< Rising trigger event configuration bit of line 19 */
+#define  EXTI_RTSR_TR20                      ((uint32_t)0x00100000)        /*!< Rising trigger event configuration bit of line 20 */
+#define  EXTI_RTSR_TR21                      ((uint32_t)0x00200000)        /*!< Rising trigger event configuration bit of line 21 */
+#define  EXTI_RTSR_TR22                      ((uint32_t)0x00400000)        /*!< Rising trigger event configuration bit of line 22 */
 
 /******************  Bit definition for EXTI_FTSR register  *******************/
 #define  EXTI_FTSR_TR0                       ((uint32_t)0x00000001)        /*!< Falling trigger event configuration bit of line 0 */
@@ -3389,6 +3376,9 @@ USB_OTG_HostChannelTypeDef;
 #define  EXTI_FTSR_TR17                      ((uint32_t)0x00020000)        /*!< Falling trigger event configuration bit of line 17 */
 #define  EXTI_FTSR_TR18                      ((uint32_t)0x00040000)        /*!< Falling trigger event configuration bit of line 18 */
 #define  EXTI_FTSR_TR19                      ((uint32_t)0x00080000)        /*!< Falling trigger event configuration bit of line 19 */
+#define  EXTI_FTSR_TR20                      ((uint32_t)0x00100000)        /*!< Falling trigger event configuration bit of line 20 */
+#define  EXTI_FTSR_TR21                      ((uint32_t)0x00200000)        /*!< Falling trigger event configuration bit of line 21 */
+#define  EXTI_FTSR_TR22                      ((uint32_t)0x00400000)        /*!< Falling trigger event configuration bit of line 22 */
 
 /******************  Bit definition for EXTI_SWIER register  ******************/
 #define  EXTI_SWIER_SWIER0                   ((uint32_t)0x00000001)        /*!< Software Interrupt on line 0 */
@@ -3411,6 +3401,9 @@ USB_OTG_HostChannelTypeDef;
 #define  EXTI_SWIER_SWIER17                  ((uint32_t)0x00020000)        /*!< Software Interrupt on line 17 */
 #define  EXTI_SWIER_SWIER18                  ((uint32_t)0x00040000)        /*!< Software Interrupt on line 18 */
 #define  EXTI_SWIER_SWIER19                  ((uint32_t)0x00080000)        /*!< Software Interrupt on line 19 */
+#define  EXTI_SWIER_SWIER20                  ((uint32_t)0x00100000)        /*!< Software Interrupt on line 20 */
+#define  EXTI_SWIER_SWIER21                  ((uint32_t)0x00200000)        /*!< Software Interrupt on line 21 */
+#define  EXTI_SWIER_SWIER22                  ((uint32_t)0x00400000)        /*!< Software Interrupt on line 22 */
 
 /*******************  Bit definition for EXTI_PR register  ********************/
 #define  EXTI_PR_PR0                         ((uint32_t)0x00000001)        /*!< Pending bit for line 0 */
@@ -3433,6 +3426,9 @@ USB_OTG_HostChannelTypeDef;
 #define  EXTI_PR_PR17                        ((uint32_t)0x00020000)        /*!< Pending bit for line 17 */
 #define  EXTI_PR_PR18                        ((uint32_t)0x00040000)        /*!< Pending bit for line 18 */
 #define  EXTI_PR_PR19                        ((uint32_t)0x00080000)        /*!< Pending bit for line 19 */
+#define  EXTI_PR_PR20                        ((uint32_t)0x00100000)        /*!< Pending bit for line 20 */
+#define  EXTI_PR_PR21                        ((uint32_t)0x00200000)        /*!< Pending bit for line 21 */
+#define  EXTI_PR_PR22                        ((uint32_t)0x00400000)        /*!< Pending bit for line 22 */
 
 /******************************************************************************/
 /*                                                                            */
@@ -3563,14 +3559,18 @@ USB_OTG_HostChannelTypeDef;
 #define  FMC_BCR1_FACCEN                    ((uint32_t)0x00000040)        /*!<Flash access enable        */
 #define  FMC_BCR1_BURSTEN                   ((uint32_t)0x00000100)        /*!<Burst enable bit           */
 #define  FMC_BCR1_WAITPOL                   ((uint32_t)0x00000200)        /*!<Wait signal polarity bit   */
-#define  FMC_BCR1_WRAPMOD                   ((uint32_t)0x00000400)        /*!<Wrapped burst mode support */
 #define  FMC_BCR1_WAITCFG                   ((uint32_t)0x00000800)        /*!<Wait timing configuration  */
 #define  FMC_BCR1_WREN                      ((uint32_t)0x00001000)        /*!<Write enable bit           */
 #define  FMC_BCR1_WAITEN                    ((uint32_t)0x00002000)        /*!<Wait enable bit            */
 #define  FMC_BCR1_EXTMOD                    ((uint32_t)0x00004000)        /*!<Extended mode enable       */
 #define  FMC_BCR1_ASYNCWAIT                 ((uint32_t)0x00008000)        /*!<Asynchronous wait          */
+#define  FMC_BCR1_CPSIZE                    ((uint32_t)0x00070000)        /*!<CRAM page size             */
+#define  FMC_BCR1_CPSIZE_0                  ((uint32_t)0x00010000)        /*!<Bit 0 */
+#define  FMC_BCR1_CPSIZE_1                  ((uint32_t)0x00020000)        /*!<Bit 1 */
+#define  FMC_BCR1_CPSIZE_2                  ((uint32_t)0x00040000)        /*!<Bit 2 */
 #define  FMC_BCR1_CBURSTRW                  ((uint32_t)0x00080000)        /*!<Write burst enable         */
 #define  FMC_BCR1_CCLKEN                    ((uint32_t)0x00100000)        /*!<Continous clock enable     */
+#define  FMC_BCR1_WFDIS                     ((uint32_t)0x00200000)        /*!<Write FIFO Disable         */
 
 /******************  Bit definition for FMC_BCR2 register  *******************/
 #define  FMC_BCR2_MBKEN                     ((uint32_t)0x00000001)        /*!<Memory bank enable bit                 */
@@ -3587,7 +3587,6 @@ USB_OTG_HostChannelTypeDef;
 #define  FMC_BCR2_FACCEN                    ((uint32_t)0x00000040)        /*!<Flash access enable        */
 #define  FMC_BCR2_BURSTEN                   ((uint32_t)0x00000100)        /*!<Burst enable bit           */
 #define  FMC_BCR2_WAITPOL                   ((uint32_t)0x00000200)        /*!<Wait signal polarity bit   */
-#define  FMC_BCR2_WRAPMOD                   ((uint32_t)0x00000400)        /*!<Wrapped burst mode support */
 #define  FMC_BCR2_WAITCFG                   ((uint32_t)0x00000800)        /*!<Wait timing configuration  */
 #define  FMC_BCR2_WREN                      ((uint32_t)0x00001000)        /*!<Write enable bit           */
 #define  FMC_BCR2_WAITEN                    ((uint32_t)0x00002000)        /*!<Wait enable bit            */
@@ -3610,7 +3609,6 @@ USB_OTG_HostChannelTypeDef;
 #define  FMC_BCR3_FACCEN                    ((uint32_t)0x00000040)        /*!<Flash access enable        */
 #define  FMC_BCR3_BURSTEN                   ((uint32_t)0x00000100)        /*!<Burst enable bit           */
 #define  FMC_BCR3_WAITPOL                   ((uint32_t)0x00000200)        /*!<Wait signal polarity bit   */
-#define  FMC_BCR3_WRAPMOD                   ((uint32_t)0x00000400)        /*!<Wrapped burst mode support */
 #define  FMC_BCR3_WAITCFG                   ((uint32_t)0x00000800)        /*!<Wait timing configuration  */
 #define  FMC_BCR3_WREN                      ((uint32_t)0x00001000)        /*!<Write enable bit           */
 #define  FMC_BCR3_WAITEN                    ((uint32_t)0x00002000)        /*!<Wait enable bit            */
@@ -3633,7 +3631,6 @@ USB_OTG_HostChannelTypeDef;
 #define  FMC_BCR4_FACCEN                    ((uint32_t)0x00000040)        /*!<Flash access enable        */
 #define  FMC_BCR4_BURSTEN                   ((uint32_t)0x00000100)        /*!<Burst enable bit           */
 #define  FMC_BCR4_WAITPOL                   ((uint32_t)0x00000200)        /*!<Wait signal polarity bit   */
-#define  FMC_BCR4_WRAPMOD                   ((uint32_t)0x00000400)        /*!<Wrapped burst mode support */
 #define  FMC_BCR4_WAITCFG                   ((uint32_t)0x00000800)        /*!<Wait timing configuration  */
 #define  FMC_BCR4_WREN                      ((uint32_t)0x00001000)        /*!<Write enable bit           */
 #define  FMC_BCR4_WAITEN                    ((uint32_t)0x00002000)        /*!<Wait enable bit            */
@@ -3850,18 +3847,6 @@ USB_OTG_HostChannelTypeDef;
 #define  FMC_BWTR1_BUSTURN_2                ((uint32_t)0x00040000)        /*!<Bit 2 */
 #define  FMC_BWTR1_BUSTURN_3                ((uint32_t)0x00080000)        /*!<Bit 3 */
 
-#define  FMC_BWTR1_CLKDIV                   ((uint32_t)0x00F00000)        /*!<CLKDIV[3:0] bits (Clock divide ratio) */
-#define  FMC_BWTR1_CLKDIV_0                 ((uint32_t)0x00100000)        /*!<Bit 0 */
-#define  FMC_BWTR1_CLKDIV_1                 ((uint32_t)0x00200000)        /*!<Bit 1 */
-#define  FMC_BWTR1_CLKDIV_2                 ((uint32_t)0x00400000)        /*!<Bit 2 */
-#define  FMC_BWTR1_CLKDIV_3                 ((uint32_t)0x00800000)        /*!<Bit 3 */
-
-#define  FMC_BWTR1_DATLAT                   ((uint32_t)0x0F000000)        /*!<DATLA[3:0] bits (Data latency) */
-#define  FMC_BWTR1_DATLAT_0                 ((uint32_t)0x01000000)        /*!<Bit 0 */
-#define  FMC_BWTR1_DATLAT_1                 ((uint32_t)0x02000000)        /*!<Bit 1 */
-#define  FMC_BWTR1_DATLAT_2                 ((uint32_t)0x04000000)        /*!<Bit 2 */
-#define  FMC_BWTR1_DATLAT_3                 ((uint32_t)0x08000000)        /*!<Bit 3 */
-
 #define  FMC_BWTR1_ACCMOD                   ((uint32_t)0x30000000)        /*!<ACCMOD[1:0] bits (Access mode) */
 #define  FMC_BWTR1_ACCMOD_0                 ((uint32_t)0x10000000)        /*!<Bit 0 */
 #define  FMC_BWTR1_ACCMOD_1                 ((uint32_t)0x20000000)        /*!<Bit 1 */
@@ -3894,18 +3879,6 @@ USB_OTG_HostChannelTypeDef;
 #define  FMC_BWTR2_BUSTURN_1                ((uint32_t)0x00020000)        /*!<Bit 1 */
 #define  FMC_BWTR2_BUSTURN_2                ((uint32_t)0x00040000)        /*!<Bit 2 */
 #define  FMC_BWTR2_BUSTURN_3                ((uint32_t)0x00080000)        /*!<Bit 3 */
-
-#define  FMC_BWTR2_CLKDIV                   ((uint32_t)0x00F00000)        /*!<CLKDIV[3:0] bits (Clock divide ratio) */
-#define  FMC_BWTR2_CLKDIV_0                 ((uint32_t)0x00100000)        /*!<Bit 0 */
-#define  FMC_BWTR2_CLKDIV_1                 ((uint32_t)0x00200000)        /*!<Bit 1*/
-#define  FMC_BWTR2_CLKDIV_2                 ((uint32_t)0x00400000)        /*!<Bit 2 */
-#define  FMC_BWTR2_CLKDIV_3                 ((uint32_t)0x00800000)        /*!<Bit 3 */
-
-#define  FMC_BWTR2_DATLAT                   ((uint32_t)0x0F000000)        /*!<DATLA[3:0] bits (Data latency) */
-#define  FMC_BWTR2_DATLAT_0                 ((uint32_t)0x01000000)        /*!<Bit 0 */
-#define  FMC_BWTR2_DATLAT_1                 ((uint32_t)0x02000000)        /*!<Bit 1 */
-#define  FMC_BWTR2_DATLAT_2                 ((uint32_t)0x04000000)        /*!<Bit 2 */
-#define  FMC_BWTR2_DATLAT_3                 ((uint32_t)0x08000000)        /*!<Bit 3 */
 
 #define  FMC_BWTR2_ACCMOD                   ((uint32_t)0x30000000)        /*!<ACCMOD[1:0] bits (Access mode) */
 #define  FMC_BWTR2_ACCMOD_0                 ((uint32_t)0x10000000)        /*!<Bit 0 */
@@ -3940,18 +3913,6 @@ USB_OTG_HostChannelTypeDef;
 #define  FMC_BWTR3_BUSTURN_2                ((uint32_t)0x00040000)        /*!<Bit 2 */
 #define  FMC_BWTR3_BUSTURN_3                ((uint32_t)0x00080000)        /*!<Bit 3 */
 
-#define  FMC_BWTR3_CLKDIV                   ((uint32_t)0x00F00000)        /*!<CLKDIV[3:0] bits (Clock divide ratio) */
-#define  FMC_BWTR3_CLKDIV_0                 ((uint32_t)0x00100000)        /*!<Bit 0 */
-#define  FMC_BWTR3_CLKDIV_1                 ((uint32_t)0x00200000)        /*!<Bit 1 */
-#define  FMC_BWTR3_CLKDIV_2                 ((uint32_t)0x00400000)        /*!<Bit 2 */
-#define  FMC_BWTR3_CLKDIV_3                 ((uint32_t)0x00800000)        /*!<Bit 3 */
-
-#define  FMC_BWTR3_DATLAT                   ((uint32_t)0x0F000000)        /*!<DATLA[3:0] bits (Data latency) */
-#define  FMC_BWTR3_DATLAT_0                 ((uint32_t)0x01000000)        /*!<Bit 0 */
-#define  FMC_BWTR3_DATLAT_1                 ((uint32_t)0x02000000)        /*!<Bit 1 */
-#define  FMC_BWTR3_DATLAT_2                 ((uint32_t)0x04000000)        /*!<Bit 2 */
-#define  FMC_BWTR3_DATLAT_3                 ((uint32_t)0x08000000)        /*!<Bit 3 */
-
 #define  FMC_BWTR3_ACCMOD                   ((uint32_t)0x30000000)        /*!<ACCMOD[1:0] bits (Access mode) */
 #define  FMC_BWTR3_ACCMOD_0                 ((uint32_t)0x10000000)        /*!<Bit 0 */
 #define  FMC_BWTR3_ACCMOD_1                 ((uint32_t)0x20000000)        /*!<Bit 1 */
@@ -3985,425 +3946,131 @@ USB_OTG_HostChannelTypeDef;
 #define  FMC_BWTR4_BUSTURN_2                ((uint32_t)0x00040000)        /*!<Bit 2 */
 #define  FMC_BWTR4_BUSTURN_3                ((uint32_t)0x00080000)        /*!<Bit 3 */
 
-#define  FMC_BWTR4_CLKDIV                   ((uint32_t)0x00F00000)        /*!<CLKDIV[3:0] bits (Clock divide ratio) */
-#define  FMC_BWTR4_CLKDIV_0                 ((uint32_t)0x00100000)        /*!<Bit 0 */
-#define  FMC_BWTR4_CLKDIV_1                 ((uint32_t)0x00200000)        /*!<Bit 1 */
-#define  FMC_BWTR4_CLKDIV_2                 ((uint32_t)0x00400000)        /*!<Bit 2 */
-#define  FMC_BWTR4_CLKDIV_3                 ((uint32_t)0x00800000)        /*!<Bit 3 */
-
-#define  FMC_BWTR4_DATLAT                   ((uint32_t)0x0F000000)        /*!<DATLA[3:0] bits (Data latency) */
-#define  FMC_BWTR4_DATLAT_0                 ((uint32_t)0x01000000)        /*!<Bit 0 */
-#define  FMC_BWTR4_DATLAT_1                 ((uint32_t)0x02000000)        /*!<Bit 1 */
-#define  FMC_BWTR4_DATLAT_2                 ((uint32_t)0x04000000)        /*!<Bit 2 */
-#define  FMC_BWTR4_DATLAT_3                 ((uint32_t)0x08000000)        /*!<Bit 3 */
-
 #define  FMC_BWTR4_ACCMOD                   ((uint32_t)0x30000000)        /*!<ACCMOD[1:0] bits (Access mode) */
 #define  FMC_BWTR4_ACCMOD_0                 ((uint32_t)0x10000000)        /*!<Bit 0 */
 #define  FMC_BWTR4_ACCMOD_1                 ((uint32_t)0x20000000)        /*!<Bit 1 */
 
-/******************  Bit definition for FMC_PCR2 register  *******************/
-#define  FMC_PCR2_PWAITEN                   ((uint32_t)0x00000002)        /*!<Wait feature enable bit                   */
-#define  FMC_PCR2_PBKEN                     ((uint32_t)0x00000004)        /*!<PC Card/NAND Flash memory bank enable bit */
-#define  FMC_PCR2_PTYP                      ((uint32_t)0x00000008)        /*!<Memory type                               */
+/******************  Bit definition for FMC_PCR register  *******************/
+#define  FMC_PCR_PWAITEN                   ((uint32_t)0x00000002)        /*!<Wait feature enable bit                   */
+#define  FMC_PCR_PBKEN                     ((uint32_t)0x00000004)        /*!<PC Card/NAND Flash memory bank enable bit */
+#define  FMC_PCR_PTYP                      ((uint32_t)0x00000008)        /*!<Memory type                               */
 
-#define  FMC_PCR2_PWID                      ((uint32_t)0x00000030)        /*!<PWID[1:0] bits (NAND Flash databus width) */
-#define  FMC_PCR2_PWID_0                    ((uint32_t)0x00000010)        /*!<Bit 0 */
-#define  FMC_PCR2_PWID_1                    ((uint32_t)0x00000020)        /*!<Bit 1 */
+#define  FMC_PCR_PWID                      ((uint32_t)0x00000030)        /*!<PWID[1:0] bits (NAND Flash databus width) */
+#define  FMC_PCR_PWID_0                    ((uint32_t)0x00000010)        /*!<Bit 0 */
+#define  FMC_PCR_PWID_1                    ((uint32_t)0x00000020)        /*!<Bit 1 */
 
-#define  FMC_PCR2_ECCEN                     ((uint32_t)0x00000040)        /*!<ECC computation logic enable bit          */
+#define  FMC_PCR_ECCEN                     ((uint32_t)0x00000040)        /*!<ECC computation logic enable bit          */
 
-#define  FMC_PCR2_TCLR                      ((uint32_t)0x00001E00)        /*!<TCLR[3:0] bits (CLE to RE delay)          */
-#define  FMC_PCR2_TCLR_0                    ((uint32_t)0x00000200)        /*!<Bit 0 */
-#define  FMC_PCR2_TCLR_1                    ((uint32_t)0x00000400)        /*!<Bit 1 */
-#define  FMC_PCR2_TCLR_2                    ((uint32_t)0x00000800)        /*!<Bit 2 */
-#define  FMC_PCR2_TCLR_3                    ((uint32_t)0x00001000)        /*!<Bit 3 */
+#define  FMC_PCR_TCLR                      ((uint32_t)0x00001E00)        /*!<TCLR[3:0] bits (CLE to RE delay)          */
+#define  FMC_PCR_TCLR_0                    ((uint32_t)0x00000200)        /*!<Bit 0 */
+#define  FMC_PCR_TCLR_1                    ((uint32_t)0x00000400)        /*!<Bit 1 */
+#define  FMC_PCR_TCLR_2                    ((uint32_t)0x00000800)        /*!<Bit 2 */
+#define  FMC_PCR_TCLR_3                    ((uint32_t)0x00001000)        /*!<Bit 3 */
 
-#define  FMC_PCR2_TAR                       ((uint32_t)0x0001E000)        /*!<TAR[3:0] bits (ALE to RE delay)           */
-#define  FMC_PCR2_TAR_0                     ((uint32_t)0x00002000)        /*!<Bit 0 */
-#define  FMC_PCR2_TAR_1                     ((uint32_t)0x00004000)        /*!<Bit 1 */
-#define  FMC_PCR2_TAR_2                     ((uint32_t)0x00008000)        /*!<Bit 2 */
-#define  FMC_PCR2_TAR_3                     ((uint32_t)0x00010000)        /*!<Bit 3 */
+#define  FMC_PCR_TAR                       ((uint32_t)0x0001E000)        /*!<TAR[3:0] bits (ALE to RE delay)           */
+#define  FMC_PCR_TAR_0                     ((uint32_t)0x00002000)        /*!<Bit 0 */
+#define  FMC_PCR_TAR_1                     ((uint32_t)0x00004000)        /*!<Bit 1 */
+#define  FMC_PCR_TAR_2                     ((uint32_t)0x00008000)        /*!<Bit 2 */
+#define  FMC_PCR_TAR_3                     ((uint32_t)0x00010000)        /*!<Bit 3 */
 
-#define  FMC_PCR2_ECCPS                     ((uint32_t)0x000E0000)        /*!<ECCPS[1:0] bits (ECC page size)           */
-#define  FMC_PCR2_ECCPS_0                   ((uint32_t)0x00020000)        /*!<Bit 0 */
-#define  FMC_PCR2_ECCPS_1                   ((uint32_t)0x00040000)        /*!<Bit 1 */
-#define  FMC_PCR2_ECCPS_2                   ((uint32_t)0x00080000)        /*!<Bit 2 */
+#define  FMC_PCR_ECCPS                     ((uint32_t)0x000E0000)        /*!<ECCPS[1:0] bits (ECC page size)           */
+#define  FMC_PCR_ECCPS_0                   ((uint32_t)0x00020000)        /*!<Bit 0 */
+#define  FMC_PCR_ECCPS_1                   ((uint32_t)0x00040000)        /*!<Bit 1 */
+#define  FMC_PCR_ECCPS_2                   ((uint32_t)0x00080000)        /*!<Bit 2 */
 
-/******************  Bit definition for FMC_PCR3 register  *******************/
-#define  FMC_PCR3_PWAITEN                   ((uint32_t)0x00000002)        /*!<Wait feature enable bit                   */
-#define  FMC_PCR3_PBKEN                     ((uint32_t)0x00000004)        /*!<PC Card/NAND Flash memory bank enable bit */
-#define  FMC_PCR3_PTYP                      ((uint32_t)0x00000008)        /*!<Memory type                               */
+/*******************  Bit definition for FMC_SR register  *******************/
+#define  FMC_SR_IRS                        ((uint32_t)0x01)               /*!<Interrupt Rising Edge status                */
+#define  FMC_SR_ILS                        ((uint32_t)0x02)               /*!<Interrupt Level status                      */
+#define  FMC_SR_IFS                        ((uint32_t)0x04)               /*!<Interrupt Falling Edge status               */
+#define  FMC_SR_IREN                       ((uint32_t)0x08)               /*!<Interrupt Rising Edge detection Enable bit  */
+#define  FMC_SR_ILEN                       ((uint32_t)0x10)               /*!<Interrupt Level detection Enable bit        */
+#define  FMC_SR_IFEN                       ((uint32_t)0x20)               /*!<Interrupt Falling Edge detection Enable bit */
+#define  FMC_SR_FEMPT                      ((uint32_t)0x40)               /*!<FIFO empty                                  */
 
-#define  FMC_PCR3_PWID                      ((uint32_t)0x00000030)        /*!<PWID[1:0] bits (NAND Flash databus width) */
-#define  FMC_PCR3_PWID_0                    ((uint32_t)0x00000010)        /*!<Bit 0 */
-#define  FMC_PCR3_PWID_1                    ((uint32_t)0x00000020)        /*!<Bit 1 */
+/******************  Bit definition for FMC_PMEM register  ******************/
+#define  FMC_PMEM_MEMSET2                  ((uint32_t)0x000000FF)        /*!<MEMSET2[7:0] bits (Common memory 2 setup time) */
+#define  FMC_PMEM_MEMSET2_0                ((uint32_t)0x00000001)        /*!<Bit 0 */
+#define  FMC_PMEM_MEMSET2_1                ((uint32_t)0x00000002)        /*!<Bit 1 */
+#define  FMC_PMEM_MEMSET2_2                ((uint32_t)0x00000004)        /*!<Bit 2 */
+#define  FMC_PMEM_MEMSET2_3                ((uint32_t)0x00000008)        /*!<Bit 3 */
+#define  FMC_PMEM_MEMSET2_4                ((uint32_t)0x00000010)        /*!<Bit 4 */
+#define  FMC_PMEM_MEMSET2_5                ((uint32_t)0x00000020)        /*!<Bit 5 */
+#define  FMC_PMEM_MEMSET2_6                ((uint32_t)0x00000040)        /*!<Bit 6 */
+#define  FMC_PMEM_MEMSET2_7                ((uint32_t)0x00000080)        /*!<Bit 7 */
 
-#define  FMC_PCR3_ECCEN                     ((uint32_t)0x00000040)        /*!<ECC computation logic enable bit          */
+#define  FMC_PMEM_MEMWAIT2                 ((uint32_t)0x0000FF00)        /*!<MEMWAIT2[7:0] bits (Common memory 2 wait time) */
+#define  FMC_PMEM_MEMWAIT2_0               ((uint32_t)0x00000100)        /*!<Bit 0 */
+#define  FMC_PMEM_MEMWAIT2_1               ((uint32_t)0x00000200)        /*!<Bit 1 */
+#define  FMC_PMEM_MEMWAIT2_2               ((uint32_t)0x00000400)        /*!<Bit 2 */
+#define  FMC_PMEM_MEMWAIT2_3               ((uint32_t)0x00000800)        /*!<Bit 3 */
+#define  FMC_PMEM_MEMWAIT2_4               ((uint32_t)0x00001000)        /*!<Bit 4 */
+#define  FMC_PMEM_MEMWAIT2_5               ((uint32_t)0x00002000)        /*!<Bit 5 */
+#define  FMC_PMEM_MEMWAIT2_6               ((uint32_t)0x00004000)        /*!<Bit 6 */
+#define  FMC_PMEM_MEMWAIT2_7               ((uint32_t)0x00008000)        /*!<Bit 7 */
 
-#define  FMC_PCR3_TCLR                      ((uint32_t)0x00001E00)        /*!<TCLR[3:0] bits (CLE to RE delay)          */
-#define  FMC_PCR3_TCLR_0                    ((uint32_t)0x00000200)        /*!<Bit 0 */
-#define  FMC_PCR3_TCLR_1                    ((uint32_t)0x00000400)        /*!<Bit 1 */
-#define  FMC_PCR3_TCLR_2                    ((uint32_t)0x00000800)        /*!<Bit 2 */
-#define  FMC_PCR3_TCLR_3                    ((uint32_t)0x00001000)        /*!<Bit 3 */
+#define  FMC_PMEM_MEMHOLD2                 ((uint32_t)0x00FF0000)        /*!<MEMHOLD2[7:0] bits (Common memory 2 hold time) */
+#define  FMC_PMEM_MEMHOLD2_0               ((uint32_t)0x00010000)        /*!<Bit 0 */
+#define  FMC_PMEM_MEMHOLD2_1               ((uint32_t)0x00020000)        /*!<Bit 1 */
+#define  FMC_PMEM_MEMHOLD2_2               ((uint32_t)0x00040000)        /*!<Bit 2 */
+#define  FMC_PMEM_MEMHOLD2_3               ((uint32_t)0x00080000)        /*!<Bit 3 */
+#define  FMC_PMEM_MEMHOLD2_4               ((uint32_t)0x00100000)        /*!<Bit 4 */
+#define  FMC_PMEM_MEMHOLD2_5               ((uint32_t)0x00200000)        /*!<Bit 5 */
+#define  FMC_PMEM_MEMHOLD2_6               ((uint32_t)0x00400000)        /*!<Bit 6 */
+#define  FMC_PMEM_MEMHOLD2_7               ((uint32_t)0x00800000)        /*!<Bit 7 */
 
-#define  FMC_PCR3_TAR                       ((uint32_t)0x0001E000)        /*!<TAR[3:0] bits (ALE to RE delay)           */
-#define  FMC_PCR3_TAR_0                     ((uint32_t)0x00002000)        /*!<Bit 0 */
-#define  FMC_PCR3_TAR_1                     ((uint32_t)0x00004000)        /*!<Bit 1 */
-#define  FMC_PCR3_TAR_2                     ((uint32_t)0x00008000)        /*!<Bit 2 */
-#define  FMC_PCR3_TAR_3                     ((uint32_t)0x00010000)        /*!<Bit 3 */
+#define  FMC_PMEM_MEMHIZ2                  ((uint32_t)0xFF000000)        /*!<MEMHIZ2[7:0] bits (Common memory 2 databus HiZ time) */
+#define  FMC_PMEM_MEMHIZ2_0                ((uint32_t)0x01000000)        /*!<Bit 0 */
+#define  FMC_PMEM_MEMHIZ2_1                ((uint32_t)0x02000000)        /*!<Bit 1 */
+#define  FMC_PMEM_MEMHIZ2_2                ((uint32_t)0x04000000)        /*!<Bit 2 */
+#define  FMC_PMEM_MEMHIZ2_3                ((uint32_t)0x08000000)        /*!<Bit 3 */
+#define  FMC_PMEM_MEMHIZ2_4                ((uint32_t)0x10000000)        /*!<Bit 4 */
+#define  FMC_PMEM_MEMHIZ2_5                ((uint32_t)0x20000000)        /*!<Bit 5 */
+#define  FMC_PMEM_MEMHIZ2_6                ((uint32_t)0x40000000)        /*!<Bit 6 */
+#define  FMC_PMEM_MEMHIZ2_7                ((uint32_t)0x80000000)        /*!<Bit 7 */
 
-#define  FMC_PCR3_ECCPS                     ((uint32_t)0x000E0000)        /*!<ECCPS[2:0] bits (ECC page size)           */
-#define  FMC_PCR3_ECCPS_0                   ((uint32_t)0x00020000)        /*!<Bit 0 */
-#define  FMC_PCR3_ECCPS_1                   ((uint32_t)0x00040000)        /*!<Bit 1 */
-#define  FMC_PCR3_ECCPS_2                   ((uint32_t)0x00080000)        /*!<Bit 2 */
+/******************  Bit definition for FMC_PATT register  ******************/
+#define  FMC_PATT_ATTSET2                  ((uint32_t)0x000000FF)        /*!<ATTSET2[7:0] bits (Attribute memory 2 setup time) */
+#define  FMC_PATT_ATTSET2_0                ((uint32_t)0x00000001)        /*!<Bit 0 */
+#define  FMC_PATT_ATTSET2_1                ((uint32_t)0x00000002)        /*!<Bit 1 */
+#define  FMC_PATT_ATTSET2_2                ((uint32_t)0x00000004)        /*!<Bit 2 */
+#define  FMC_PATT_ATTSET2_3                ((uint32_t)0x00000008)        /*!<Bit 3 */
+#define  FMC_PATT_ATTSET2_4                ((uint32_t)0x00000010)        /*!<Bit 4 */
+#define  FMC_PATT_ATTSET2_5                ((uint32_t)0x00000020)        /*!<Bit 5 */
+#define  FMC_PATT_ATTSET2_6                ((uint32_t)0x00000040)        /*!<Bit 6 */
+#define  FMC_PATT_ATTSET2_7                ((uint32_t)0x00000080)        /*!<Bit 7 */
 
-/******************  Bit definition for FMC_PCR4 register  *******************/
-#define  FMC_PCR4_PWAITEN                   ((uint32_t)0x00000002)        /*!<Wait feature enable bit                   */
-#define  FMC_PCR4_PBKEN                     ((uint32_t)0x00000004)        /*!<PC Card/NAND Flash memory bank enable bit */
-#define  FMC_PCR4_PTYP                      ((uint32_t)0x00000008)        /*!<Memory type                               */
+#define  FMC_PATT_ATTWAIT2                 ((uint32_t)0x0000FF00)        /*!<ATTWAIT2[7:0] bits (Attribute memory 2 wait time) */
+#define  FMC_PATT_ATTWAIT2_0               ((uint32_t)0x00000100)        /*!<Bit 0 */
+#define  FMC_PATT_ATTWAIT2_1               ((uint32_t)0x00000200)        /*!<Bit 1 */
+#define  FMC_PATT_ATTWAIT2_2               ((uint32_t)0x00000400)        /*!<Bit 2 */
+#define  FMC_PATT_ATTWAIT2_3               ((uint32_t)0x00000800)        /*!<Bit 3 */
+#define  FMC_PATT_ATTWAIT2_4               ((uint32_t)0x00001000)        /*!<Bit 4 */
+#define  FMC_PATT_ATTWAIT2_5               ((uint32_t)0x00002000)        /*!<Bit 5 */
+#define  FMC_PATT_ATTWAIT2_6               ((uint32_t)0x00004000)        /*!<Bit 6 */
+#define  FMC_PATT_ATTWAIT2_7               ((uint32_t)0x00008000)        /*!<Bit 7 */
 
-#define  FMC_PCR4_PWID                      ((uint32_t)0x00000030)        /*!<PWID[1:0] bits (NAND Flash databus width) */
-#define  FMC_PCR4_PWID_0                    ((uint32_t)0x00000010)        /*!<Bit 0 */
-#define  FMC_PCR4_PWID_1                    ((uint32_t)0x00000020)        /*!<Bit 1 */
+#define  FMC_PATT_ATTHOLD2                 ((uint32_t)0x00FF0000)        /*!<ATTHOLD2[7:0] bits (Attribute memory 2 hold time) */
+#define  FMC_PATT_ATTHOLD2_0               ((uint32_t)0x00010000)        /*!<Bit 0 */
+#define  FMC_PATT_ATTHOLD2_1               ((uint32_t)0x00020000)        /*!<Bit 1 */
+#define  FMC_PATT_ATTHOLD2_2               ((uint32_t)0x00040000)        /*!<Bit 2 */
+#define  FMC_PATT_ATTHOLD2_3               ((uint32_t)0x00080000)        /*!<Bit 3 */
+#define  FMC_PATT_ATTHOLD2_4               ((uint32_t)0x00100000)        /*!<Bit 4 */
+#define  FMC_PATT_ATTHOLD2_5               ((uint32_t)0x00200000)        /*!<Bit 5 */
+#define  FMC_PATT_ATTHOLD2_6               ((uint32_t)0x00400000)        /*!<Bit 6 */
+#define  FMC_PATT_ATTHOLD2_7               ((uint32_t)0x00800000)        /*!<Bit 7 */
 
-#define  FMC_PCR4_ECCEN                     ((uint32_t)0x00000040)        /*!<ECC computation logic enable bit          */
+#define  FMC_PATT_ATTHIZ2                  ((uint32_t)0xFF000000)        /*!<ATTHIZ2[7:0] bits (Attribute memory 2 databus HiZ time) */
+#define  FMC_PATT_ATTHIZ2_0                ((uint32_t)0x01000000)        /*!<Bit 0 */
+#define  FMC_PATT_ATTHIZ2_1                ((uint32_t)0x02000000)        /*!<Bit 1 */
+#define  FMC_PATT_ATTHIZ2_2                ((uint32_t)0x04000000)        /*!<Bit 2 */
+#define  FMC_PATT_ATTHIZ2_3                ((uint32_t)0x08000000)        /*!<Bit 3 */
+#define  FMC_PATT_ATTHIZ2_4                ((uint32_t)0x10000000)        /*!<Bit 4 */
+#define  FMC_PATT_ATTHIZ2_5                ((uint32_t)0x20000000)        /*!<Bit 5 */
+#define  FMC_PATT_ATTHIZ2_6                ((uint32_t)0x40000000)        /*!<Bit 6 */
+#define  FMC_PATT_ATTHIZ2_7                ((uint32_t)0x80000000)        /*!<Bit 7 */
 
-#define  FMC_PCR4_TCLR                      ((uint32_t)0x00001E00)        /*!<TCLR[3:0] bits (CLE to RE delay)          */
-#define  FMC_PCR4_TCLR_0                    ((uint32_t)0x00000200)        /*!<Bit 0 */
-#define  FMC_PCR4_TCLR_1                    ((uint32_t)0x00000400)        /*!<Bit 1 */
-#define  FMC_PCR4_TCLR_2                    ((uint32_t)0x00000800)        /*!<Bit 2 */
-#define  FMC_PCR4_TCLR_3                    ((uint32_t)0x00001000)        /*!<Bit 3 */
-
-#define  FMC_PCR4_TAR                       ((uint32_t)0x0001E000)        /*!<TAR[3:0] bits (ALE to RE delay)           */
-#define  FMC_PCR4_TAR_0                     ((uint32_t)0x00002000)        /*!<Bit 0 */
-#define  FMC_PCR4_TAR_1                     ((uint32_t)0x00004000)        /*!<Bit 1 */
-#define  FMC_PCR4_TAR_2                     ((uint32_t)0x00008000)        /*!<Bit 2 */
-#define  FMC_PCR4_TAR_3                     ((uint32_t)0x00010000)        /*!<Bit 3 */
-
-#define  FMC_PCR4_ECCPS                     ((uint32_t)0x000E0000)        /*!<ECCPS[2:0] bits (ECC page size)           */
-#define  FMC_PCR4_ECCPS_0                   ((uint32_t)0x00020000)        /*!<Bit 0 */
-#define  FMC_PCR4_ECCPS_1                   ((uint32_t)0x00040000)        /*!<Bit 1 */
-#define  FMC_PCR4_ECCPS_2                   ((uint32_t)0x00080000)        /*!<Bit 2 */
-
-/*******************  Bit definition for FMC_SR2 register  *******************/
-#define  FMC_SR2_IRS                        ((uint32_t)0x01)               /*!<Interrupt Rising Edge status                */
-#define  FMC_SR2_ILS                        ((uint32_t)0x02)               /*!<Interrupt Level status                      */
-#define  FMC_SR2_IFS                        ((uint32_t)0x04)               /*!<Interrupt Falling Edge status               */
-#define  FMC_SR2_IREN                       ((uint32_t)0x08)               /*!<Interrupt Rising Edge detection Enable bit  */
-#define  FMC_SR2_ILEN                       ((uint32_t)0x10)               /*!<Interrupt Level detection Enable bit        */
-#define  FMC_SR2_IFEN                       ((uint32_t)0x20)               /*!<Interrupt Falling Edge detection Enable bit */
-#define  FMC_SR2_FEMPT                      ((uint32_t)0x40)               /*!<FIFO empty                                  */
-
-/*******************  Bit definition for FMC_SR3 register  *******************/
-#define  FMC_SR3_IRS                        ((uint32_t)0x01)               /*!<Interrupt Rising Edge status                */
-#define  FMC_SR3_ILS                        ((uint32_t)0x02)               /*!<Interrupt Level status                      */
-#define  FMC_SR3_IFS                        ((uint32_t)0x04)               /*!<Interrupt Falling Edge status               */
-#define  FMC_SR3_IREN                       ((uint32_t)0x08)               /*!<Interrupt Rising Edge detection Enable bit  */
-#define  FMC_SR3_ILEN                       ((uint32_t)0x10)               /*!<Interrupt Level detection Enable bit        */
-#define  FMC_SR3_IFEN                       ((uint32_t)0x20)               /*!<Interrupt Falling Edge detection Enable bit */
-#define  FMC_SR3_FEMPT                      ((uint32_t)0x40)               /*!<FIFO empty                                  */
-
-/*******************  Bit definition for FMC_SR4 register  *******************/
-#define  FMC_SR4_IRS                        ((uint32_t)0x01)               /*!<Interrupt Rising Edge status                */
-#define  FMC_SR4_ILS                        ((uint32_t)0x02)               /*!<Interrupt Level status                      */
-#define  FMC_SR4_IFS                        ((uint32_t)0x04)               /*!<Interrupt Falling Edge status               */
-#define  FMC_SR4_IREN                       ((uint32_t)0x08)               /*!<Interrupt Rising Edge detection Enable bit  */
-#define  FMC_SR4_ILEN                       ((uint32_t)0x10)               /*!<Interrupt Level detection Enable bit        */
-#define  FMC_SR4_IFEN                       ((uint32_t)0x20)               /*!<Interrupt Falling Edge detection Enable bit */
-#define  FMC_SR4_FEMPT                      ((uint32_t)0x40)               /*!<FIFO empty                                  */
-
-/******************  Bit definition for FMC_PMEM2 register  ******************/
-#define  FMC_PMEM2_MEMSET2                  ((uint32_t)0x000000FF)        /*!<MEMSET2[7:0] bits (Common memory 2 setup time) */
-#define  FMC_PMEM2_MEMSET2_0                ((uint32_t)0x00000001)        /*!<Bit 0 */
-#define  FMC_PMEM2_MEMSET2_1                ((uint32_t)0x00000002)        /*!<Bit 1 */
-#define  FMC_PMEM2_MEMSET2_2                ((uint32_t)0x00000004)        /*!<Bit 2 */
-#define  FMC_PMEM2_MEMSET2_3                ((uint32_t)0x00000008)        /*!<Bit 3 */
-#define  FMC_PMEM2_MEMSET2_4                ((uint32_t)0x00000010)        /*!<Bit 4 */
-#define  FMC_PMEM2_MEMSET2_5                ((uint32_t)0x00000020)        /*!<Bit 5 */
-#define  FMC_PMEM2_MEMSET2_6                ((uint32_t)0x00000040)        /*!<Bit 6 */
-#define  FMC_PMEM2_MEMSET2_7                ((uint32_t)0x00000080)        /*!<Bit 7 */
-
-#define  FMC_PMEM2_MEMWAIT2                 ((uint32_t)0x0000FF00)        /*!<MEMWAIT2[7:0] bits (Common memory 2 wait time) */
-#define  FMC_PMEM2_MEMWAIT2_0               ((uint32_t)0x00000100)        /*!<Bit 0 */
-#define  FMC_PMEM2_MEMWAIT2_1               ((uint32_t)0x00000200)        /*!<Bit 1 */
-#define  FMC_PMEM2_MEMWAIT2_2               ((uint32_t)0x00000400)        /*!<Bit 2 */
-#define  FMC_PMEM2_MEMWAIT2_3               ((uint32_t)0x00000800)        /*!<Bit 3 */
-#define  FMC_PMEM2_MEMWAIT2_4               ((uint32_t)0x00001000)        /*!<Bit 4 */
-#define  FMC_PMEM2_MEMWAIT2_5               ((uint32_t)0x00002000)        /*!<Bit 5 */
-#define  FMC_PMEM2_MEMWAIT2_6               ((uint32_t)0x00004000)        /*!<Bit 6 */
-#define  FMC_PMEM2_MEMWAIT2_7               ((uint32_t)0x00008000)        /*!<Bit 7 */
-
-#define  FMC_PMEM2_MEMHOLD2                 ((uint32_t)0x00FF0000)        /*!<MEMHOLD2[7:0] bits (Common memory 2 hold time) */
-#define  FMC_PMEM2_MEMHOLD2_0               ((uint32_t)0x00010000)        /*!<Bit 0 */
-#define  FMC_PMEM2_MEMHOLD2_1               ((uint32_t)0x00020000)        /*!<Bit 1 */
-#define  FMC_PMEM2_MEMHOLD2_2               ((uint32_t)0x00040000)        /*!<Bit 2 */
-#define  FMC_PMEM2_MEMHOLD2_3               ((uint32_t)0x00080000)        /*!<Bit 3 */
-#define  FMC_PMEM2_MEMHOLD2_4               ((uint32_t)0x00100000)        /*!<Bit 4 */
-#define  FMC_PMEM2_MEMHOLD2_5               ((uint32_t)0x00200000)        /*!<Bit 5 */
-#define  FMC_PMEM2_MEMHOLD2_6               ((uint32_t)0x00400000)        /*!<Bit 6 */
-#define  FMC_PMEM2_MEMHOLD2_7               ((uint32_t)0x00800000)        /*!<Bit 7 */
-
-#define  FMC_PMEM2_MEMHIZ2                  ((uint32_t)0xFF000000)        /*!<MEMHIZ2[7:0] bits (Common memory 2 databus HiZ time) */
-#define  FMC_PMEM2_MEMHIZ2_0                ((uint32_t)0x01000000)        /*!<Bit 0 */
-#define  FMC_PMEM2_MEMHIZ2_1                ((uint32_t)0x02000000)        /*!<Bit 1 */
-#define  FMC_PMEM2_MEMHIZ2_2                ((uint32_t)0x04000000)        /*!<Bit 2 */
-#define  FMC_PMEM2_MEMHIZ2_3                ((uint32_t)0x08000000)        /*!<Bit 3 */
-#define  FMC_PMEM2_MEMHIZ2_4                ((uint32_t)0x10000000)        /*!<Bit 4 */
-#define  FMC_PMEM2_MEMHIZ2_5                ((uint32_t)0x20000000)        /*!<Bit 5 */
-#define  FMC_PMEM2_MEMHIZ2_6                ((uint32_t)0x40000000)        /*!<Bit 6 */
-#define  FMC_PMEM2_MEMHIZ2_7                ((uint32_t)0x80000000)        /*!<Bit 7 */
-
-/******************  Bit definition for FMC_PMEM3 register  ******************/
-#define  FMC_PMEM3_MEMSET3                  ((uint32_t)0x000000FF)        /*!<MEMSET3[7:0] bits (Common memory 3 setup time) */
-#define  FMC_PMEM3_MEMSET3_0                ((uint32_t)0x00000001)        /*!<Bit 0 */
-#define  FMC_PMEM3_MEMSET3_1                ((uint32_t)0x00000002)        /*!<Bit 1 */
-#define  FMC_PMEM3_MEMSET3_2                ((uint32_t)0x00000004)        /*!<Bit 2 */
-#define  FMC_PMEM3_MEMSET3_3                ((uint32_t)0x00000008)        /*!<Bit 3 */
-#define  FMC_PMEM3_MEMSET3_4                ((uint32_t)0x00000010)        /*!<Bit 4 */
-#define  FMC_PMEM3_MEMSET3_5                ((uint32_t)0x00000020)        /*!<Bit 5 */
-#define  FMC_PMEM3_MEMSET3_6                ((uint32_t)0x00000040)        /*!<Bit 6 */
-#define  FMC_PMEM3_MEMSET3_7                ((uint32_t)0x00000080)        /*!<Bit 7 */
-
-#define  FMC_PMEM3_MEMWAIT3                 ((uint32_t)0x0000FF00)        /*!<MEMWAIT3[7:0] bits (Common memory 3 wait time) */
-#define  FMC_PMEM3_MEMWAIT3_0               ((uint32_t)0x00000100)        /*!<Bit 0 */
-#define  FMC_PMEM3_MEMWAIT3_1               ((uint32_t)0x00000200)        /*!<Bit 1 */
-#define  FMC_PMEM3_MEMWAIT3_2               ((uint32_t)0x00000400)        /*!<Bit 2 */
-#define  FMC_PMEM3_MEMWAIT3_3               ((uint32_t)0x00000800)        /*!<Bit 3 */
-#define  FMC_PMEM3_MEMWAIT3_4               ((uint32_t)0x00001000)        /*!<Bit 4 */
-#define  FMC_PMEM3_MEMWAIT3_5               ((uint32_t)0x00002000)        /*!<Bit 5 */
-#define  FMC_PMEM3_MEMWAIT3_6               ((uint32_t)0x00004000)        /*!<Bit 6 */
-#define  FMC_PMEM3_MEMWAIT3_7               ((uint32_t)0x00008000)        /*!<Bit 7 */
-
-#define  FMC_PMEM3_MEMHOLD3                 ((uint32_t)0x00FF0000)        /*!<MEMHOLD3[7:0] bits (Common memory 3 hold time) */
-#define  FMC_PMEM3_MEMHOLD3_0               ((uint32_t)0x00010000)        /*!<Bit 0 */
-#define  FMC_PMEM3_MEMHOLD3_1               ((uint32_t)0x00020000)        /*!<Bit 1 */
-#define  FMC_PMEM3_MEMHOLD3_2               ((uint32_t)0x00040000)        /*!<Bit 2 */
-#define  FMC_PMEM3_MEMHOLD3_3               ((uint32_t)0x00080000)        /*!<Bit 3 */
-#define  FMC_PMEM3_MEMHOLD3_4               ((uint32_t)0x00100000)        /*!<Bit 4 */
-#define  FMC_PMEM3_MEMHOLD3_5               ((uint32_t)0x00200000)        /*!<Bit 5 */
-#define  FMC_PMEM3_MEMHOLD3_6               ((uint32_t)0x00400000)        /*!<Bit 6 */
-#define  FMC_PMEM3_MEMHOLD3_7               ((uint32_t)0x00800000)        /*!<Bit 7 */
-
-#define  FMC_PMEM3_MEMHIZ3                  ((uint32_t)0xFF000000)        /*!<MEMHIZ3[7:0] bits (Common memory 3 databus HiZ time) */
-#define  FMC_PMEM3_MEMHIZ3_0                ((uint32_t)0x01000000)        /*!<Bit 0 */
-#define  FMC_PMEM3_MEMHIZ3_1                ((uint32_t)0x02000000)        /*!<Bit 1 */
-#define  FMC_PMEM3_MEMHIZ3_2                ((uint32_t)0x04000000)        /*!<Bit 2 */
-#define  FMC_PMEM3_MEMHIZ3_3                ((uint32_t)0x08000000)        /*!<Bit 3 */
-#define  FMC_PMEM3_MEMHIZ3_4                ((uint32_t)0x10000000)        /*!<Bit 4 */
-#define  FMC_PMEM3_MEMHIZ3_5                ((uint32_t)0x20000000)        /*!<Bit 5 */
-#define  FMC_PMEM3_MEMHIZ3_6                ((uint32_t)0x40000000)        /*!<Bit 6 */
-#define  FMC_PMEM3_MEMHIZ3_7                ((uint32_t)0x80000000)        /*!<Bit 7 */
-
-/******************  Bit definition for FMC_PMEM4 register  ******************/
-#define  FMC_PMEM4_MEMSET4                  ((uint32_t)0x000000FF)        /*!<MEMSET4[7:0] bits (Common memory 4 setup time) */
-#define  FMC_PMEM4_MEMSET4_0                ((uint32_t)0x00000001)        /*!<Bit 0 */
-#define  FMC_PMEM4_MEMSET4_1                ((uint32_t)0x00000002)        /*!<Bit 1 */
-#define  FMC_PMEM4_MEMSET4_2                ((uint32_t)0x00000004)        /*!<Bit 2 */
-#define  FMC_PMEM4_MEMSET4_3                ((uint32_t)0x00000008)        /*!<Bit 3 */
-#define  FMC_PMEM4_MEMSET4_4                ((uint32_t)0x00000010)        /*!<Bit 4 */
-#define  FMC_PMEM4_MEMSET4_5                ((uint32_t)0x00000020)        /*!<Bit 5 */
-#define  FMC_PMEM4_MEMSET4_6                ((uint32_t)0x00000040)        /*!<Bit 6 */
-#define  FMC_PMEM4_MEMSET4_7                ((uint32_t)0x00000080)        /*!<Bit 7 */
-
-#define  FMC_PMEM4_MEMWAIT4                 ((uint32_t)0x0000FF00)        /*!<MEMWAIT4[7:0] bits (Common memory 4 wait time) */
-#define  FMC_PMEM4_MEMWAIT4_0               ((uint32_t)0x00000100)        /*!<Bit 0 */
-#define  FMC_PMEM4_MEMWAIT4_1               ((uint32_t)0x00000200)        /*!<Bit 1 */
-#define  FMC_PMEM4_MEMWAIT4_2               ((uint32_t)0x00000400)        /*!<Bit 2 */
-#define  FMC_PMEM4_MEMWAIT4_3               ((uint32_t)0x00000800)        /*!<Bit 3 */
-#define  FMC_PMEM4_MEMWAIT4_4               ((uint32_t)0x00001000)        /*!<Bit 4 */
-#define  FMC_PMEM4_MEMWAIT4_5               ((uint32_t)0x00002000)        /*!<Bit 5 */
-#define  FMC_PMEM4_MEMWAIT4_6               ((uint32_t)0x00004000)        /*!<Bit 6 */
-#define  FMC_PMEM4_MEMWAIT4_7               ((uint32_t)0x00008000)        /*!<Bit 7 */
-
-#define  FMC_PMEM4_MEMHOLD4                 ((uint32_t)0x00FF0000)        /*!<MEMHOLD4[7:0] bits (Common memory 4 hold time) */
-#define  FMC_PMEM4_MEMHOLD4_0               ((uint32_t)0x00010000)        /*!<Bit 0 */
-#define  FMC_PMEM4_MEMHOLD4_1               ((uint32_t)0x00020000)        /*!<Bit 1 */
-#define  FMC_PMEM4_MEMHOLD4_2               ((uint32_t)0x00040000)        /*!<Bit 2 */
-#define  FMC_PMEM4_MEMHOLD4_3               ((uint32_t)0x00080000)        /*!<Bit 3 */
-#define  FMC_PMEM4_MEMHOLD4_4               ((uint32_t)0x00100000)        /*!<Bit 4 */
-#define  FMC_PMEM4_MEMHOLD4_5               ((uint32_t)0x00200000)        /*!<Bit 5 */
-#define  FMC_PMEM4_MEMHOLD4_6               ((uint32_t)0x00400000)        /*!<Bit 6 */
-#define  FMC_PMEM4_MEMHOLD4_7               ((uint32_t)0x00800000)        /*!<Bit 7 */
-
-#define  FMC_PMEM4_MEMHIZ4                  ((uint32_t)0xFF000000)        /*!<MEMHIZ4[7:0] bits (Common memory 4 databus HiZ time) */
-#define  FMC_PMEM4_MEMHIZ4_0                ((uint32_t)0x01000000)        /*!<Bit 0 */
-#define  FMC_PMEM4_MEMHIZ4_1                ((uint32_t)0x02000000)        /*!<Bit 1 */
-#define  FMC_PMEM4_MEMHIZ4_2                ((uint32_t)0x04000000)        /*!<Bit 2 */
-#define  FMC_PMEM4_MEMHIZ4_3                ((uint32_t)0x08000000)        /*!<Bit 3 */
-#define  FMC_PMEM4_MEMHIZ4_4                ((uint32_t)0x10000000)        /*!<Bit 4 */
-#define  FMC_PMEM4_MEMHIZ4_5                ((uint32_t)0x20000000)        /*!<Bit 5 */
-#define  FMC_PMEM4_MEMHIZ4_6                ((uint32_t)0x40000000)        /*!<Bit 6 */
-#define  FMC_PMEM4_MEMHIZ4_7                ((uint32_t)0x80000000)        /*!<Bit 7 */
-
-/******************  Bit definition for FMC_PATT2 register  ******************/
-#define  FMC_PATT2_ATTSET2                  ((uint32_t)0x000000FF)        /*!<ATTSET2[7:0] bits (Attribute memory 2 setup time) */
-#define  FMC_PATT2_ATTSET2_0                ((uint32_t)0x00000001)        /*!<Bit 0 */
-#define  FMC_PATT2_ATTSET2_1                ((uint32_t)0x00000002)        /*!<Bit 1 */
-#define  FMC_PATT2_ATTSET2_2                ((uint32_t)0x00000004)        /*!<Bit 2 */
-#define  FMC_PATT2_ATTSET2_3                ((uint32_t)0x00000008)        /*!<Bit 3 */
-#define  FMC_PATT2_ATTSET2_4                ((uint32_t)0x00000010)        /*!<Bit 4 */
-#define  FMC_PATT2_ATTSET2_5                ((uint32_t)0x00000020)        /*!<Bit 5 */
-#define  FMC_PATT2_ATTSET2_6                ((uint32_t)0x00000040)        /*!<Bit 6 */
-#define  FMC_PATT2_ATTSET2_7                ((uint32_t)0x00000080)        /*!<Bit 7 */
-
-#define  FMC_PATT2_ATTWAIT2                 ((uint32_t)0x0000FF00)        /*!<ATTWAIT2[7:0] bits (Attribute memory 2 wait time) */
-#define  FMC_PATT2_ATTWAIT2_0               ((uint32_t)0x00000100)        /*!<Bit 0 */
-#define  FMC_PATT2_ATTWAIT2_1               ((uint32_t)0x00000200)        /*!<Bit 1 */
-#define  FMC_PATT2_ATTWAIT2_2               ((uint32_t)0x00000400)        /*!<Bit 2 */
-#define  FMC_PATT2_ATTWAIT2_3               ((uint32_t)0x00000800)        /*!<Bit 3 */
-#define  FMC_PATT2_ATTWAIT2_4               ((uint32_t)0x00001000)        /*!<Bit 4 */
-#define  FMC_PATT2_ATTWAIT2_5               ((uint32_t)0x00002000)        /*!<Bit 5 */
-#define  FMC_PATT2_ATTWAIT2_6               ((uint32_t)0x00004000)        /*!<Bit 6 */
-#define  FMC_PATT2_ATTWAIT2_7               ((uint32_t)0x00008000)        /*!<Bit 7 */
-
-#define  FMC_PATT2_ATTHOLD2                 ((uint32_t)0x00FF0000)        /*!<ATTHOLD2[7:0] bits (Attribute memory 2 hold time) */
-#define  FMC_PATT2_ATTHOLD2_0               ((uint32_t)0x00010000)        /*!<Bit 0 */
-#define  FMC_PATT2_ATTHOLD2_1               ((uint32_t)0x00020000)        /*!<Bit 1 */
-#define  FMC_PATT2_ATTHOLD2_2               ((uint32_t)0x00040000)        /*!<Bit 2 */
-#define  FMC_PATT2_ATTHOLD2_3               ((uint32_t)0x00080000)        /*!<Bit 3 */
-#define  FMC_PATT2_ATTHOLD2_4               ((uint32_t)0x00100000)        /*!<Bit 4 */
-#define  FMC_PATT2_ATTHOLD2_5               ((uint32_t)0x00200000)        /*!<Bit 5 */
-#define  FMC_PATT2_ATTHOLD2_6               ((uint32_t)0x00400000)        /*!<Bit 6 */
-#define  FMC_PATT2_ATTHOLD2_7               ((uint32_t)0x00800000)        /*!<Bit 7 */
-
-#define  FMC_PATT2_ATTHIZ2                  ((uint32_t)0xFF000000)        /*!<ATTHIZ2[7:0] bits (Attribute memory 2 databus HiZ time) */
-#define  FMC_PATT2_ATTHIZ2_0                ((uint32_t)0x01000000)        /*!<Bit 0 */
-#define  FMC_PATT2_ATTHIZ2_1                ((uint32_t)0x02000000)        /*!<Bit 1 */
-#define  FMC_PATT2_ATTHIZ2_2                ((uint32_t)0x04000000)        /*!<Bit 2 */
-#define  FMC_PATT2_ATTHIZ2_3                ((uint32_t)0x08000000)        /*!<Bit 3 */
-#define  FMC_PATT2_ATTHIZ2_4                ((uint32_t)0x10000000)        /*!<Bit 4 */
-#define  FMC_PATT2_ATTHIZ2_5                ((uint32_t)0x20000000)        /*!<Bit 5 */
-#define  FMC_PATT2_ATTHIZ2_6                ((uint32_t)0x40000000)        /*!<Bit 6 */
-#define  FMC_PATT2_ATTHIZ2_7                ((uint32_t)0x80000000)        /*!<Bit 7 */
-
-/******************  Bit definition for FMC_PATT3 register  ******************/
-#define  FMC_PATT3_ATTSET3                  ((uint32_t)0x000000FF)        /*!<ATTSET3[7:0] bits (Attribute memory 3 setup time) */
-#define  FMC_PATT3_ATTSET3_0                ((uint32_t)0x00000001)        /*!<Bit 0 */
-#define  FMC_PATT3_ATTSET3_1                ((uint32_t)0x00000002)        /*!<Bit 1 */
-#define  FMC_PATT3_ATTSET3_2                ((uint32_t)0x00000004)        /*!<Bit 2 */
-#define  FMC_PATT3_ATTSET3_3                ((uint32_t)0x00000008)        /*!<Bit 3 */
-#define  FMC_PATT3_ATTSET3_4                ((uint32_t)0x00000010)        /*!<Bit 4 */
-#define  FMC_PATT3_ATTSET3_5                ((uint32_t)0x00000020)        /*!<Bit 5 */
-#define  FMC_PATT3_ATTSET3_6                ((uint32_t)0x00000040)        /*!<Bit 6 */
-#define  FMC_PATT3_ATTSET3_7                ((uint32_t)0x00000080)        /*!<Bit 7 */
-
-#define  FMC_PATT3_ATTWAIT3                 ((uint32_t)0x0000FF00)        /*!<ATTWAIT3[7:0] bits (Attribute memory 3 wait time) */
-#define  FMC_PATT3_ATTWAIT3_0               ((uint32_t)0x00000100)        /*!<Bit 0 */
-#define  FMC_PATT3_ATTWAIT3_1               ((uint32_t)0x00000200)        /*!<Bit 1 */
-#define  FMC_PATT3_ATTWAIT3_2               ((uint32_t)0x00000400)        /*!<Bit 2 */
-#define  FMC_PATT3_ATTWAIT3_3               ((uint32_t)0x00000800)        /*!<Bit 3 */
-#define  FMC_PATT3_ATTWAIT3_4               ((uint32_t)0x00001000)        /*!<Bit 4 */
-#define  FMC_PATT3_ATTWAIT3_5               ((uint32_t)0x00002000)        /*!<Bit 5 */
-#define  FMC_PATT3_ATTWAIT3_6               ((uint32_t)0x00004000)        /*!<Bit 6 */
-#define  FMC_PATT3_ATTWAIT3_7               ((uint32_t)0x00008000)        /*!<Bit 7 */
-
-#define  FMC_PATT3_ATTHOLD3                 ((uint32_t)0x00FF0000)        /*!<ATTHOLD3[7:0] bits (Attribute memory 3 hold time) */
-#define  FMC_PATT3_ATTHOLD3_0               ((uint32_t)0x00010000)        /*!<Bit 0 */
-#define  FMC_PATT3_ATTHOLD3_1               ((uint32_t)0x00020000)        /*!<Bit 1 */
-#define  FMC_PATT3_ATTHOLD3_2               ((uint32_t)0x00040000)        /*!<Bit 2 */
-#define  FMC_PATT3_ATTHOLD3_3               ((uint32_t)0x00080000)        /*!<Bit 3 */
-#define  FMC_PATT3_ATTHOLD3_4               ((uint32_t)0x00100000)        /*!<Bit 4 */
-#define  FMC_PATT3_ATTHOLD3_5               ((uint32_t)0x00200000)        /*!<Bit 5 */
-#define  FMC_PATT3_ATTHOLD3_6               ((uint32_t)0x00400000)        /*!<Bit 6 */
-#define  FMC_PATT3_ATTHOLD3_7               ((uint32_t)0x00800000)        /*!<Bit 7 */
-
-#define  FMC_PATT3_ATTHIZ3                  ((uint32_t)0xFF000000)        /*!<ATTHIZ3[7:0] bits (Attribute memory 3 databus HiZ time) */
-#define  FMC_PATT3_ATTHIZ3_0                ((uint32_t)0x01000000)        /*!<Bit 0 */
-#define  FMC_PATT3_ATTHIZ3_1                ((uint32_t)0x02000000)        /*!<Bit 1 */
-#define  FMC_PATT3_ATTHIZ3_2                ((uint32_t)0x04000000)        /*!<Bit 2 */
-#define  FMC_PATT3_ATTHIZ3_3                ((uint32_t)0x08000000)        /*!<Bit 3 */
-#define  FMC_PATT3_ATTHIZ3_4                ((uint32_t)0x10000000)        /*!<Bit 4 */
-#define  FMC_PATT3_ATTHIZ3_5                ((uint32_t)0x20000000)        /*!<Bit 5 */
-#define  FMC_PATT3_ATTHIZ3_6                ((uint32_t)0x40000000)        /*!<Bit 6 */
-#define  FMC_PATT3_ATTHIZ3_7                ((uint32_t)0x80000000)        /*!<Bit 7 */
-
-/******************  Bit definition for FMC_PATT4 register  ******************/
-#define  FMC_PATT4_ATTSET4                  ((uint32_t)0x000000FF)        /*!<ATTSET4[7:0] bits (Attribute memory 4 setup time) */
-#define  FMC_PATT4_ATTSET4_0                ((uint32_t)0x00000001)        /*!<Bit 0 */
-#define  FMC_PATT4_ATTSET4_1                ((uint32_t)0x00000002)        /*!<Bit 1 */
-#define  FMC_PATT4_ATTSET4_2                ((uint32_t)0x00000004)        /*!<Bit 2 */
-#define  FMC_PATT4_ATTSET4_3                ((uint32_t)0x00000008)        /*!<Bit 3 */
-#define  FMC_PATT4_ATTSET4_4                ((uint32_t)0x00000010)        /*!<Bit 4 */
-#define  FMC_PATT4_ATTSET4_5                ((uint32_t)0x00000020)        /*!<Bit 5 */
-#define  FMC_PATT4_ATTSET4_6                ((uint32_t)0x00000040)        /*!<Bit 6 */
-#define  FMC_PATT4_ATTSET4_7                ((uint32_t)0x00000080)        /*!<Bit 7 */
-
-#define  FMC_PATT4_ATTWAIT4                 ((uint32_t)0x0000FF00)        /*!<ATTWAIT4[7:0] bits (Attribute memory 4 wait time) */
-#define  FMC_PATT4_ATTWAIT4_0               ((uint32_t)0x00000100)        /*!<Bit 0 */
-#define  FMC_PATT4_ATTWAIT4_1               ((uint32_t)0x00000200)        /*!<Bit 1 */
-#define  FMC_PATT4_ATTWAIT4_2               ((uint32_t)0x00000400)        /*!<Bit 2 */
-#define  FMC_PATT4_ATTWAIT4_3               ((uint32_t)0x00000800)        /*!<Bit 3 */
-#define  FMC_PATT4_ATTWAIT4_4               ((uint32_t)0x00001000)        /*!<Bit 4 */
-#define  FMC_PATT4_ATTWAIT4_5               ((uint32_t)0x00002000)        /*!<Bit 5 */
-#define  FMC_PATT4_ATTWAIT4_6               ((uint32_t)0x00004000)        /*!<Bit 6 */
-#define  FMC_PATT4_ATTWAIT4_7               ((uint32_t)0x00008000)        /*!<Bit 7 */
-
-#define  FMC_PATT4_ATTHOLD4                 ((uint32_t)0x00FF0000)        /*!<ATTHOLD4[7:0] bits (Attribute memory 4 hold time) */
-#define  FMC_PATT4_ATTHOLD4_0               ((uint32_t)0x00010000)        /*!<Bit 0 */
-#define  FMC_PATT4_ATTHOLD4_1               ((uint32_t)0x00020000)        /*!<Bit 1 */
-#define  FMC_PATT4_ATTHOLD4_2               ((uint32_t)0x00040000)        /*!<Bit 2 */
-#define  FMC_PATT4_ATTHOLD4_3               ((uint32_t)0x00080000)        /*!<Bit 3 */
-#define  FMC_PATT4_ATTHOLD4_4               ((uint32_t)0x00100000)        /*!<Bit 4 */
-#define  FMC_PATT4_ATTHOLD4_5               ((uint32_t)0x00200000)        /*!<Bit 5 */
-#define  FMC_PATT4_ATTHOLD4_6               ((uint32_t)0x00400000)        /*!<Bit 6 */
-#define  FMC_PATT4_ATTHOLD4_7               ((uint32_t)0x00800000)        /*!<Bit 7 */
-
-#define  FMC_PATT4_ATTHIZ4                  ((uint32_t)0xFF000000)        /*!<ATTHIZ4[7:0] bits (Attribute memory 4 databus HiZ time) */
-#define  FMC_PATT4_ATTHIZ4_0                ((uint32_t)0x01000000)        /*!<Bit 0 */
-#define  FMC_PATT4_ATTHIZ4_1                ((uint32_t)0x02000000)        /*!<Bit 1 */
-#define  FMC_PATT4_ATTHIZ4_2                ((uint32_t)0x04000000)        /*!<Bit 2 */
-#define  FMC_PATT4_ATTHIZ4_3                ((uint32_t)0x08000000)        /*!<Bit 3 */
-#define  FMC_PATT4_ATTHIZ4_4                ((uint32_t)0x10000000)        /*!<Bit 4 */
-#define  FMC_PATT4_ATTHIZ4_5                ((uint32_t)0x20000000)        /*!<Bit 5 */
-#define  FMC_PATT4_ATTHIZ4_6                ((uint32_t)0x40000000)        /*!<Bit 6 */
-#define  FMC_PATT4_ATTHIZ4_7                ((uint32_t)0x80000000)        /*!<Bit 7 */
-
-/******************  Bit definition for FMC_PIO4 register  *******************/
-#define  FMC_PIO4_IOSET4                    ((uint32_t)0x000000FF)        /*!<IOSET4[7:0] bits (I/O 4 setup time) */
-#define  FMC_PIO4_IOSET4_0                  ((uint32_t)0x00000001)        /*!<Bit 0 */
-#define  FMC_PIO4_IOSET4_1                  ((uint32_t)0x00000002)        /*!<Bit 1 */
-#define  FMC_PIO4_IOSET4_2                  ((uint32_t)0x00000004)        /*!<Bit 2 */
-#define  FMC_PIO4_IOSET4_3                  ((uint32_t)0x00000008)        /*!<Bit 3 */
-#define  FMC_PIO4_IOSET4_4                  ((uint32_t)0x00000010)        /*!<Bit 4 */
-#define  FMC_PIO4_IOSET4_5                  ((uint32_t)0x00000020)        /*!<Bit 5 */
-#define  FMC_PIO4_IOSET4_6                  ((uint32_t)0x00000040)        /*!<Bit 6 */
-#define  FMC_PIO4_IOSET4_7                  ((uint32_t)0x00000080)        /*!<Bit 7 */
-
-#define  FMC_PIO4_IOWAIT4                   ((uint32_t)0x0000FF00)        /*!<IOWAIT4[7:0] bits (I/O 4 wait time) */
-#define  FMC_PIO4_IOWAIT4_0                 ((uint32_t)0x00000100)        /*!<Bit 0 */
-#define  FMC_PIO4_IOWAIT4_1                 ((uint32_t)0x00000200)        /*!<Bit 1 */
-#define  FMC_PIO4_IOWAIT4_2                 ((uint32_t)0x00000400)        /*!<Bit 2 */
-#define  FMC_PIO4_IOWAIT4_3                 ((uint32_t)0x00000800)        /*!<Bit 3 */
-#define  FMC_PIO4_IOWAIT4_4                 ((uint32_t)0x00001000)        /*!<Bit 4 */
-#define  FMC_PIO4_IOWAIT4_5                 ((uint32_t)0x00002000)        /*!<Bit 5 */
-#define  FMC_PIO4_IOWAIT4_6                 ((uint32_t)0x00004000)        /*!<Bit 6 */
-#define  FMC_PIO4_IOWAIT4_7                 ((uint32_t)0x00008000)        /*!<Bit 7 */
-
-#define  FMC_PIO4_IOHOLD4                   ((uint32_t)0x00FF0000)        /*!<IOHOLD4[7:0] bits (I/O 4 hold time) */
-#define  FMC_PIO4_IOHOLD4_0                 ((uint32_t)0x00010000)        /*!<Bit 0 */
-#define  FMC_PIO4_IOHOLD4_1                 ((uint32_t)0x00020000)        /*!<Bit 1 */
-#define  FMC_PIO4_IOHOLD4_2                 ((uint32_t)0x00040000)        /*!<Bit 2 */
-#define  FMC_PIO4_IOHOLD4_3                 ((uint32_t)0x00080000)        /*!<Bit 3 */
-#define  FMC_PIO4_IOHOLD4_4                 ((uint32_t)0x00100000)        /*!<Bit 4 */
-#define  FMC_PIO4_IOHOLD4_5                 ((uint32_t)0x00200000)        /*!<Bit 5 */
-#define  FMC_PIO4_IOHOLD4_6                 ((uint32_t)0x00400000)        /*!<Bit 6 */
-#define  FMC_PIO4_IOHOLD4_7                 ((uint32_t)0x00800000)        /*!<Bit 7 */
-
-#define  FMC_PIO4_IOHIZ4                    ((uint32_t)0xFF000000)        /*!<IOHIZ4[7:0] bits (I/O 4 databus HiZ time) */
-#define  FMC_PIO4_IOHIZ4_0                  ((uint32_t)0x01000000)        /*!<Bit 0 */
-#define  FMC_PIO4_IOHIZ4_1                  ((uint32_t)0x02000000)        /*!<Bit 1 */
-#define  FMC_PIO4_IOHIZ4_2                  ((uint32_t)0x04000000)        /*!<Bit 2 */
-#define  FMC_PIO4_IOHIZ4_3                  ((uint32_t)0x08000000)        /*!<Bit 3 */
-#define  FMC_PIO4_IOHIZ4_4                  ((uint32_t)0x10000000)        /*!<Bit 4 */
-#define  FMC_PIO4_IOHIZ4_5                  ((uint32_t)0x20000000)        /*!<Bit 5 */
-#define  FMC_PIO4_IOHIZ4_6                  ((uint32_t)0x40000000)        /*!<Bit 6 */
-#define  FMC_PIO4_IOHIZ4_7                  ((uint32_t)0x80000000)        /*!<Bit 7 */
-
-/******************  Bit definition for FMC_ECCR2 register  ******************/
-#define  FMC_ECCR2_ECC2                     ((uint32_t)0xFFFFFFFF)        /*!<ECC result */
-
-/******************  Bit definition for FMC_ECCR3 register  ******************/
-#define  FMC_ECCR3_ECC3                     ((uint32_t)0xFFFFFFFF)        /*!<ECC result */
+/******************  Bit definition for FMC_ECCR register  ******************/
+#define  FMC_ECCR_ECC2                     ((uint32_t)0xFFFFFFFF)        /*!<ECC result */
 
 /******************  Bit definition for FMC_SDCR1 register  ******************/
 #define  FMC_SDCR1_NC                       ((uint32_t)0x00000003)        /*!<NC[1:0] bits (Number of column bits) */
@@ -4549,7 +4216,7 @@ USB_OTG_HostChannelTypeDef;
 #define  FMC_SDCMR_MODE                     ((uint32_t)0x00000007)        /*!<MODE[2:0] bits (Command mode) */
 #define  FMC_SDCMR_MODE_0                   ((uint32_t)0x00000001)        /*!<Bit 0 */
 #define  FMC_SDCMR_MODE_1                   ((uint32_t)0x00000002)        /*!<Bit 1 */
-#define  FMC_SDCMR_MODE_2                   ((uint32_t)0x00000003)        /*!<Bit 2 */
+#define  FMC_SDCMR_MODE_2                   ((uint32_t)0x00000004)        /*!<Bit 2 */
                                             
 #define  FMC_SDCMR_CTB2                     ((uint32_t)0x00000008)        /*!<Command target 2 */
 
@@ -4581,8 +4248,6 @@ USB_OTG_HostChannelTypeDef;
 #define  FMC_SDSR_MODES2_0                  ((uint32_t)0x00000008)        /*!<Bit 0 */
 #define  FMC_SDSR_MODES2_1                  ((uint32_t)0x00000010)        /*!<Bit 1 */
 #define  FMC_SDSR_BUSY                      ((uint32_t)0x00000020)        /*!<Busy status */
-
-
 
 /******************************************************************************/
 /*                                                                            */
@@ -5267,12 +4932,13 @@ USB_OTG_HostChannelTypeDef;
 #define  QUADSPI_SR_SMF                          ((uint32_t)0x00000008)             /*!< Status Match Flag      */
 #define  QUADSPI_SR_TOF                          ((uint32_t)0x00000010)             /*!< Timeout Flag           */
 #define  QUADSPI_SR_BUSY                         ((uint32_t)0x00000020)             /*!< Busy                   */
-#define  QUADSPI_SR_FLEVEL                       ((uint32_t)0x00001F00)             /*!< FIFO Threshlod Flag    */
+#define  QUADSPI_SR_FLEVEL                       ((uint32_t)0x00003F00)             /*!< FIFO Threshlod Flag    */
 #define  QUADSPI_SR_FLEVEL_0                     ((uint32_t)0x00000100)             /*!< Bit 0 */
 #define  QUADSPI_SR_FLEVEL_1                     ((uint32_t)0x00000200)             /*!< Bit 1 */
 #define  QUADSPI_SR_FLEVEL_2                     ((uint32_t)0x00000400)             /*!< Bit 2 */
 #define  QUADSPI_SR_FLEVEL_3                     ((uint32_t)0x00000800)             /*!< Bit 3 */
 #define  QUADSPI_SR_FLEVEL_4                     ((uint32_t)0x00001000)             /*!< Bit 4 */
+#define  QUADSPI_SR_FLEVEL_5                     ((uint32_t)0x00002000)             /*!< Bit 5 */
 
 /******************  Bit definition for QUADSPI_FCR register  ******************/
 #define  QUADSPI_FCR_CTEF                        ((uint32_t)0x00000001)             /*!< Clear Transfer Error Flag    */
@@ -5549,7 +5215,7 @@ USB_OTG_HostChannelTypeDef;
 #define  RCC_AHB1RSTR_CRCRST                 ((uint32_t)0x00001000)
 #define  RCC_AHB1RSTR_DMA1RST                ((uint32_t)0x00200000)
 #define  RCC_AHB1RSTR_DMA2RST                ((uint32_t)0x00400000)
-#define  RCC_AHB1RSTR_OTGHRST                ((uint32_t)0x10000000)
+#define  RCC_AHB1RSTR_OTGHRST                ((uint32_t)0x20000000)
 
 /********************  Bit definition for RCC_AHB2RSTR register  **************/
 #define  RCC_AHB2RSTR_DCMIRST                ((uint32_t)0x00000001)
@@ -5572,7 +5238,7 @@ USB_OTG_HostChannelTypeDef;
 #define  RCC_APB1RSTR_WWDGRST                ((uint32_t)0x00000800)
 #define  RCC_APB1RSTR_SPI2RST                ((uint32_t)0x00004000)
 #define  RCC_APB1RSTR_SPI3RST                ((uint32_t)0x00008000)
-#define  RCC_APB1RSTR_SPDIFRST               ((uint32_t)0x00010000)
+#define  RCC_APB1RSTR_SPDIFRXRST             ((uint32_t)0x00010000)
 #define  RCC_APB1RSTR_USART2RST              ((uint32_t)0x00020000)
 #define  RCC_APB1RSTR_USART3RST              ((uint32_t)0x00040000)
 #define  RCC_APB1RSTR_UART4RST               ((uint32_t)0x00080000)
@@ -5645,7 +5311,7 @@ USB_OTG_HostChannelTypeDef;
 #define  RCC_APB1ENR_WWDGEN                  ((uint32_t)0x00000800)
 #define  RCC_APB1ENR_SPI2EN                  ((uint32_t)0x00004000)
 #define  RCC_APB1ENR_SPI3EN                  ((uint32_t)0x00008000)
-#define  RCC_APB1ENR_SPDIFEN                 ((uint32_t)0x00010000)
+#define  RCC_APB1ENR_SPDIFRXEN               ((uint32_t)0x00010000)
 #define  RCC_APB1ENR_USART2EN                ((uint32_t)0x00020000)
 #define  RCC_APB1ENR_USART3EN                ((uint32_t)0x00040000)
 #define  RCC_APB1ENR_UART4EN                 ((uint32_t)0x00080000)
@@ -5723,7 +5389,7 @@ USB_OTG_HostChannelTypeDef;
 #define  RCC_APB1LPENR_WWDGLPEN              ((uint32_t)0x00000800)
 #define  RCC_APB1LPENR_SPI2LPEN              ((uint32_t)0x00004000)
 #define  RCC_APB1LPENR_SPI3LPEN              ((uint32_t)0x00008000)
-#define  RCC_APB1LPENR_SPDIFLPEN             ((uint32_t)0x00010000)
+#define  RCC_APB1LPENR_SPDIFRXLPEN           ((uint32_t)0x00010000)
 #define  RCC_APB1LPENR_USART2LPEN            ((uint32_t)0x00020000)
 #define  RCC_APB1LPENR_USART3LPEN            ((uint32_t)0x00040000)
 #define  RCC_APB1LPENR_UART4LPEN             ((uint32_t)0x00080000)
@@ -5857,8 +5523,8 @@ USB_OTG_HostChannelTypeDef;
 #define  RCC_DCKCFGR_PLLI2SDIVQ              ((uint32_t)0x0000001F)
 #define  RCC_DCKCFGR_PLLSAIDIVQ              ((uint32_t)0x00001F00)
 #define  RCC_DCKCFGR_SAI1SRC                 ((uint32_t)0x00300000)
-#define  RCC_DCKCFGR_SAI1SR_0                ((uint32_t)0x00100000)
-#define  RCC_DCKCFGR_SAI1SR_1                ((uint32_t)0x00200000)
+#define  RCC_DCKCFGR_SAI1SRC_0               ((uint32_t)0x00100000)
+#define  RCC_DCKCFGR_SAI1SRC_1               ((uint32_t)0x00200000)
 #define  RCC_DCKCFGR_SAI2SRC                 ((uint32_t)0x00C00000)
 #define  RCC_DCKCFGR_SAI2SRC_0               ((uint32_t)0x00400000)
 #define  RCC_DCKCFGR_SAI2SRC_1               ((uint32_t)0x00800000)
@@ -5886,7 +5552,7 @@ USB_OTG_HostChannelTypeDef;
 #define  RCC_DCKCFGR2_CECSEL                 ((uint32_t)0x04000000)
 #define  RCC_DCKCFGR2_CK48MSEL               ((uint32_t)0x08000000)
 #define  RCC_DCKCFGR2_SDIOSEL                ((uint32_t)0x10000000)
-#define  RCC_DCKCFGR2_SPDIFSEL               ((uint32_t)0x20000000)
+#define  RCC_DCKCFGR2_SPDIFRXSEL             ((uint32_t)0x20000000)
 
 /******************************************************************************/
 /*                                                                            */
@@ -6000,7 +5666,7 @@ USB_OTG_HostChannelTypeDef;
 
 /********************  Bits definition for RTC_PRER register  *****************/
 #define RTC_PRER_PREDIV_A                    ((uint32_t)0x007F0000)
-#define RTC_PRER_PREDIV_S                    ((uint32_t)0x00001FFF)
+#define RTC_PRER_PREDIV_S                    ((uint32_t)0x00007FFF)
 
 /********************  Bits definition for RTC_WUTR register  *****************/
 #define RTC_WUTR_WUT                         ((uint32_t)0x0000FFFF)
@@ -6309,16 +5975,17 @@ USB_OTG_HostChannelTypeDef;
 #define  SAI_xCR1_DMAEN                   ((uint32_t)0x00020000)        /*!<DMA enable                 */
 #define  SAI_xCR1_NODIV                   ((uint32_t)0x00080000)        /*!<No Divider Configuration   */
 
-#define  SAI_xCR1_MCKDIV                  ((uint32_t)0x00780000)        /*!<MCKDIV[3:0] (Master ClocK Divider)  */
-#define  SAI_xCR1_MCKDIV_0                ((uint32_t)0x00080000)        /*!<Bit 0  */
-#define  SAI_xCR1_MCKDIV_1                ((uint32_t)0x00100000)        /*!<Bit 1  */
-#define  SAI_xCR1_MCKDIV_2                ((uint32_t)0x00200000)        /*!<Bit 2  */
-#define  SAI_xCR1_MCKDIV_3                ((uint32_t)0x00400000)        /*!<Bit 3  */
+#define  SAI_xCR1_MCKDIV                  ((uint32_t)0x00F00000)        /*!<MCKDIV[3:0] (Master ClocK Divider)  */
+#define  SAI_xCR1_MCKDIV_0                ((uint32_t)0x00100000)        /*!<Bit 0  */
+#define  SAI_xCR1_MCKDIV_1                ((uint32_t)0x00200000)        /*!<Bit 1  */
+#define  SAI_xCR1_MCKDIV_2                ((uint32_t)0x00400000)        /*!<Bit 2  */
+#define  SAI_xCR1_MCKDIV_3                ((uint32_t)0x00800000)        /*!<Bit 3  */
 
 /*******************  Bit definition for SAI_xCR2 register  *******************/
-#define  SAI_xCR2_FTH                     ((uint32_t)0x00000003)        /*!<FTH[1:0](Fifo THreshold)  */
+#define  SAI_xCR2_FTH                     ((uint32_t)0x00000007)        /*!<FTH[2:0](Fifo THreshold)  */
 #define  SAI_xCR2_FTH_0                   ((uint32_t)0x00000001)        /*!<Bit 0 */
 #define  SAI_xCR2_FTH_1                   ((uint32_t)0x00000002)        /*!<Bit 1 */
+#define  SAI_xCR2_FTH_2                   ((uint32_t)0x00000004)        /*!<Bit 2 */
 
 #define  SAI_xCR2_FFLUSH                  ((uint32_t)0x00000008)        /*!<Fifo FLUSH                       */
 #define  SAI_xCR2_TRIS                    ((uint32_t)0x00000010)        /*!<TRIState Management on data line */
@@ -6532,9 +6199,6 @@ USB_OTG_HostChannelTypeDef;
 #define  SDIO_CMD_WAITPEND                   ((uint32_t)0x0200)            /*!<CPSM Waits for ends of data transfer (CmdPend internal signal) */
 #define  SDIO_CMD_CPSMEN                     ((uint32_t)0x0400)            /*!<Command path state machine (CPSM) Enable bit                   */
 #define  SDIO_CMD_SDIOSUSPEND                ((uint32_t)0x0800)            /*!<SD I/O suspend command                                         */
-#define  SDIO_CMD_ENCMDCOMPL                 ((uint32_t)0x1000)            /*!<Enable CMD completion                                          */
-#define  SDIO_CMD_NIEN                       ((uint32_t)0x2000)            /*!<Not Interrupt Enable */
-#define  SDIO_CMD_CEATACMD                   ((uint32_t)0x4000)            /*!<CE-ATA command       */
 
 /*****************  Bit definition for SDIO_RESPCMD register  *****************/
 #define  SDIO_RESPCMD_RESPCMD                ((uint32_t)0x3F)               /*!<Response command index */
@@ -6590,7 +6254,6 @@ USB_OTG_HostChannelTypeDef;
 #define  SDIO_STA_CMDREND                    ((uint32_t)0x00000040)        /*!<Command response received (CRC check passed)  */
 #define  SDIO_STA_CMDSENT                    ((uint32_t)0x00000080)        /*!<Command sent (no response required)           */
 #define  SDIO_STA_DATAEND                    ((uint32_t)0x00000100)        /*!<Data end (data counter, SDIDCOUNT, is zero)   */
-#define  SDIO_STA_STBITERR                   ((uint32_t)0x00000200)        /*!<Start bit not detected on all data signals in wide bus mode */
 #define  SDIO_STA_DBCKEND                    ((uint32_t)0x00000400)        /*!<Data block sent/received (CRC check passed)   */
 #define  SDIO_STA_CMDACT                     ((uint32_t)0x00000800)        /*!<Command transfer in progress                  */
 #define  SDIO_STA_TXACT                      ((uint32_t)0x00001000)        /*!<Data transmit in progress                     */
@@ -6604,7 +6267,6 @@ USB_OTG_HostChannelTypeDef;
 #define  SDIO_STA_TXDAVL                     ((uint32_t)0x00100000)        /*!<Data available in transmit FIFO               */
 #define  SDIO_STA_RXDAVL                     ((uint32_t)0x00200000)        /*!<Data available in receive FIFO                */
 #define  SDIO_STA_SDIOIT                     ((uint32_t)0x00400000)        /*!<SDIO interrupt received                       */
-#define  SDIO_STA_CEATAEND                   ((uint32_t)0x00800000)        /*!<CE-ATA command completion signal received for CMD61 */
 
 /*******************  Bit definition for SDIO_ICR register  *******************/
 #define  SDIO_ICR_CCRCFAILC                  ((uint32_t)0x00000001)        /*!<CCRCFAIL flag clear bit */
@@ -6616,10 +6278,8 @@ USB_OTG_HostChannelTypeDef;
 #define  SDIO_ICR_CMDRENDC                   ((uint32_t)0x00000040)        /*!<CMDREND flag clear bit  */
 #define  SDIO_ICR_CMDSENTC                   ((uint32_t)0x00000080)        /*!<CMDSENT flag clear bit  */
 #define  SDIO_ICR_DATAENDC                   ((uint32_t)0x00000100)        /*!<DATAEND flag clear bit  */
-#define  SDIO_ICR_STBITERRC                  ((uint32_t)0x00000200)        /*!<STBITERR flag clear bit */
 #define  SDIO_ICR_DBCKENDC                   ((uint32_t)0x00000400)        /*!<DBCKEND flag clear bit  */
 #define  SDIO_ICR_SDIOITC                    ((uint32_t)0x00400000)        /*!<SDIOIT flag clear bit   */
-#define  SDIO_ICR_CEATAENDC                  ((uint32_t)0x00800000)        /*!<CEATAEND flag clear bit */
 
 /******************  Bit definition for SDIO_MASK register  *******************/
 #define  SDIO_MASK_CCRCFAILIE                ((uint32_t)0x00000001)        /*!<Command CRC Fail Interrupt Enable          */
@@ -6631,7 +6291,6 @@ USB_OTG_HostChannelTypeDef;
 #define  SDIO_MASK_CMDRENDIE                 ((uint32_t)0x00000040)        /*!<Command Response Received Interrupt Enable */
 #define  SDIO_MASK_CMDSENTIE                 ((uint32_t)0x00000080)        /*!<Command Sent Interrupt Enable              */
 #define  SDIO_MASK_DATAENDIE                 ((uint32_t)0x00000100)        /*!<Data End Interrupt Enable                  */
-#define  SDIO_MASK_STBITERRIE                ((uint32_t)0x00000200)        /*!<Start Bit Error Interrupt Enable           */
 #define  SDIO_MASK_DBCKENDIE                 ((uint32_t)0x00000400)        /*!<Data Block End Interrupt Enable            */
 #define  SDIO_MASK_CMDACTIE                  ((uint32_t)0x00000800)        /*!<CCommand Acting Interrupt Enable           */
 #define  SDIO_MASK_TXACTIE                   ((uint32_t)0x00001000)        /*!<Data Transmit Acting Interrupt Enable      */
@@ -6645,7 +6304,6 @@ USB_OTG_HostChannelTypeDef;
 #define  SDIO_MASK_TXDAVLIE                  ((uint32_t)0x00100000)        /*!<Data available in Tx FIFO interrupt Enable */
 #define  SDIO_MASK_RXDAVLIE                  ((uint32_t)0x00200000)        /*!<Data available in Rx FIFO interrupt Enable */
 #define  SDIO_MASK_SDIOITIE                  ((uint32_t)0x00400000)        /*!<SDIO Mode Interrupt Received interrupt Enable */
-#define  SDIO_MASK_CEATAENDIE                ((uint32_t)0x00800000)        /*!<CE-ATA command completion signal received Interrupt Enable */
 
 /*****************  Bit definition for SDIO_FIFOCNT register  *****************/
 #define  SDIO_FIFOCNT_FIFOCOUNT              ((uint32_t)0x00FFFFFF)        /*!<Remaining number of words to be written to or read from the FIFO */
@@ -6732,6 +6390,7 @@ USB_OTG_HostChannelTypeDef;
 
 #define  SPI_I2SCFGR_I2SE                    ((uint32_t)0x00000400)            /*!<I2S Enable         */
 #define  SPI_I2SCFGR_I2SMOD                  ((uint32_t)0x00000800)            /*!<I2S mode selection */
+#define  SPI_I2SCFGR_ASTRTEN                 ((uint32_t)0x00001000)            /*!<Asynchronous start enable */
 
 /******************  Bit definition for SPI_I2SPR register  *******************/
 #define  SPI_I2SPR_I2SDIV                    ((uint32_t)0x000000FF)            /*!<I2S Linear prescaler         */
@@ -7024,6 +6683,10 @@ USB_OTG_HostChannelTypeDef;
 /******************  Bit definition for SYSCFG_CMPCR register  ****************/  
 #define SYSCFG_CMPCR_CMP_PD             ((uint32_t)0x00000001) /*!<Compensation cell ready flag */
 #define SYSCFG_CMPCR_READY              ((uint32_t)0x00000100) /*!<Compensation cell power-down */
+
+/******************  Bit definition for SYSCFG_CFGR register  ****************/  
+#define SYSCFG_CFGR_FMPI2C1_SCL         ((uint32_t)0x00000001) /*!<FM+ drive capability for FMPI2C1_SCL pin */
+#define SYSCFG_CFGR_FMPI2C1_SDA         ((uint32_t)0x00000002) /*!<FM+ drive capability for FMPI2C1_SDA pin */
 
 /******************************************************************************/
 /*                                                                            */
@@ -7495,20 +7158,28 @@ USB_OTG_HostChannelTypeDef;
 
 /******************************************************************************/
 /*                                                                            */
-/*                                       USB_OTG			                        */
+/*                                       USB_OTG                              */
 /*                                                                            */
 /******************************************************************************/
 /********************  Bit definition forUSB_OTG_GOTGCTL register  ********************/
-#define USB_OTG_GOTGCTL_SRQSCS                  ((uint32_t)0x00000001)            /*!< Session request success  */
-#define USB_OTG_GOTGCTL_SRQ                     ((uint32_t)0x00000002)            /*!< Session request          */
-#define USB_OTG_GOTGCTL_HNGSCS                  ((uint32_t)0x00000100)            /*!< Host negotiation success */
-#define USB_OTG_GOTGCTL_HNPRQ                   ((uint32_t)0x00000200)            /*!< HNP request              */
-#define USB_OTG_GOTGCTL_HSHNPEN                 ((uint32_t)0x00000400)            /*!< Host set HNP enable      */
-#define USB_OTG_GOTGCTL_DHNPEN                  ((uint32_t)0x00000800)            /*!< Device HNP enabled       */
-#define USB_OTG_GOTGCTL_CIDSTS                  ((uint32_t)0x00010000)            /*!< Connector ID status      */
-#define USB_OTG_GOTGCTL_DBCT                    ((uint32_t)0x00020000)            /*!< Long/short debounce time */
-#define USB_OTG_GOTGCTL_ASVLD                   ((uint32_t)0x00040000)            /*!< A-session valid          */
-#define USB_OTG_GOTGCTL_BSVLD                   ((uint32_t)0x00080000)            /*!< B-session valid          */
+#define USB_OTG_GOTGCTL_SRQSCS                  ((uint32_t)0x00000001)         /*!< Session request success */
+#define USB_OTG_GOTGCTL_SRQ                     ((uint32_t)0x00000002)         /*!< Session request */
+#define USB_OTG_GOTGCTL_VBVALOEN                ((uint32_t)0x00000004)         /*!< VBUS valid override enable */
+#define USB_OTG_GOTGCTL_VBVALOVAL               ((uint32_t)0x00000008)         /*!< VBUS valid override value */
+#define USB_OTG_GOTGCTL_AVALOEN                 ((uint32_t)0x00000010)         /*!< A-peripheral session valid override enable */
+#define USB_OTG_GOTGCTL_AVALOVAL                ((uint32_t)0x00000020)         /*!< A-peripheral session valid override value */
+#define USB_OTG_GOTGCTL_BVALOEN                 ((uint32_t)0x00000040)         /*!< B-peripheral session valid override enable */
+#define USB_OTG_GOTGCTL_BVALOVAL                ((uint32_t)0x00000080)         /*!< B-peripheral session valid override value  */
+#define USB_OTG_GOTGCTL_HNGSCS                  ((uint32_t)0x00000100)         /*!< Host set HNP enable */
+#define USB_OTG_GOTGCTL_HNPRQ                   ((uint32_t)0x00000200)         /*!< HNP request */
+#define USB_OTG_GOTGCTL_HSHNPEN                 ((uint32_t)0x00000400)         /*!< Host set HNP enable */
+#define USB_OTG_GOTGCTL_DHNPEN                  ((uint32_t)0x00000800)         /*!< Device HNP enabled */
+#define USB_OTG_GOTGCTL_EHEN                    ((uint32_t)0x00001000)         /*!< Embedded host enable */
+#define USB_OTG_GOTGCTL_CIDSTS                  ((uint32_t)0x00010000)         /*!< Connector ID status */
+#define USB_OTG_GOTGCTL_DBCT                    ((uint32_t)0x00020000)         /*!< Long/short debounce time */
+#define USB_OTG_GOTGCTL_ASVLD                   ((uint32_t)0x00040000)         /*!< A-session valid  */
+#define USB_OTG_GOTGCTL_BSESVLD                 ((uint32_t)0x00080000)         /*!< B-session valid */
+#define USB_OTG_GOTGCTL_OTGVER                  ((uint32_t)0x00100000)         /*!< OTG version  */
 
 /********************  Bit definition forUSB_OTG_HCFG register  ********************/
 
@@ -7553,6 +7224,7 @@ USB_OTG_HostChannelTypeDef;
 #define USB_OTG_GOTGINT_HNGDET                  ((uint32_t)0x00020000)            /*!< Host negotiation detected              */
 #define USB_OTG_GOTGINT_ADTOCHG                 ((uint32_t)0x00040000)            /*!< A-device timeout change                */
 #define USB_OTG_GOTGINT_DBCDNE                  ((uint32_t)0x00080000)            /*!< Debounce done                          */
+#define USB_OTG_GOTGINT_IDCHNG                  ((uint32_t)0x00100000)            /*!< Change in ID pin input value           */
 
 /********************  Bit definition forUSB_OTG_DCTL register  ********************/
 #define USB_OTG_DCTL_RWUSIG                  ((uint32_t)0x00000001)            /*!< Remote wakeup signaling */
@@ -7588,7 +7260,6 @@ USB_OTG_HostChannelTypeDef;
 
 /********************  Bit definition forUSB_OTG_GAHBCFG register  ********************/
 #define USB_OTG_GAHBCFG_GINT                    ((uint32_t)0x00000001)            /*!< Global interrupt mask */
-
 #define USB_OTG_GAHBCFG_HBSTLEN                 ((uint32_t)0x0000001E)            /*!< Burst length/type */
 #define USB_OTG_GAHBCFG_HBSTLEN_0               ((uint32_t)0x00000002)            /*!<Bit 0 */
 #define USB_OTG_GAHBCFG_HBSTLEN_1               ((uint32_t)0x00000004)            /*!<Bit 1 */
@@ -7607,7 +7278,6 @@ USB_OTG_HostChannelTypeDef;
 #define USB_OTG_GUSBCFG_PHYSEL                  ((uint32_t)0x00000040)            /*!< USB 2.0 high-speed ULPI PHY or USB 1.1 full-speed serial transceiver select */
 #define USB_OTG_GUSBCFG_SRPCAP                  ((uint32_t)0x00000100)            /*!< SRP-capable */
 #define USB_OTG_GUSBCFG_HNPCAP                  ((uint32_t)0x00000200)            /*!< HNP-capable */
-
 #define USB_OTG_GUSBCFG_TRDT                    ((uint32_t)0x00003C00)            /*!< USB turnaround time */
 #define USB_OTG_GUSBCFG_TRDT_0                  ((uint32_t)0x00000400)            /*!<Bit 0 */
 #define USB_OTG_GUSBCFG_TRDT_1                  ((uint32_t)0x00000800)            /*!<Bit 1 */
@@ -7633,7 +7303,6 @@ USB_OTG_HostChannelTypeDef;
 #define USB_OTG_GRSTCTL_FCRST                   ((uint32_t)0x00000004)            /*!< Host frame counter reset */
 #define USB_OTG_GRSTCTL_RXFFLSH                 ((uint32_t)0x00000010)            /*!< RxFIFO flush             */
 #define USB_OTG_GRSTCTL_TXFFLSH                 ((uint32_t)0x00000020)            /*!< TxFIFO flush             */
-
 #define USB_OTG_GRSTCTL_TXFNUM                  ((uint32_t)0x000007C0)            /*!< TxFIFO number */
 #define USB_OTG_GRSTCTL_TXFNUM_0                ((uint32_t)0x00000040)            /*!<Bit 0 */
 #define USB_OTG_GRSTCTL_TXFNUM_1                ((uint32_t)0x00000080)            /*!<Bit 1 */
@@ -7655,7 +7324,6 @@ USB_OTG_HostChannelTypeDef;
 
 /********************  Bit definition forUSB_OTG_HPTXSTS register  ********************/
 #define USB_OTG_HPTXSTS_PTXFSAVL                ((uint32_t)0x0000FFFF)            /*!< Periodic transmit data FIFO space available     */
-
 #define USB_OTG_HPTXSTS_PTXQSAV                 ((uint32_t)0x00FF0000)            /*!< Periodic transmit request queue space available */
 #define USB_OTG_HPTXSTS_PTXQSAV_0               ((uint32_t)0x00010000)            /*!<Bit 0 */
 #define USB_OTG_HPTXSTS_PTXQSAV_1               ((uint32_t)0x00020000)            /*!<Bit 1 */
@@ -7689,28 +7357,30 @@ USB_OTG_HostChannelTypeDef;
 #define USB_OTG_DOEPMSK_BOIM                    ((uint32_t)0x00000200)            /*!< BNA interrupt mask                             */
 
 /********************  Bit definition forUSB_OTG_GINTSTS register  ********************/
-#define USB_OTG_GINTSTS_CMOD                    ((uint32_t)0x00000001)            /*!< Current mode of operation           */
-#define USB_OTG_GINTSTS_MMIS                    ((uint32_t)0x00000002)            /*!< Mode mismatch interrupt             */
-#define USB_OTG_GINTSTS_OTGINT                  ((uint32_t)0x00000004)            /*!< OTG interrupt                       */
-#define USB_OTG_GINTSTS_SOF                     ((uint32_t)0x00000008)            /*!< Start of frame                      */
-#define USB_OTG_GINTSTS_RXFLVL                  ((uint32_t)0x00000010)            /*!< RxFIFO nonempty                     */
-#define USB_OTG_GINTSTS_NPTXFE                  ((uint32_t)0x00000020)            /*!< Nonperiodic TxFIFO empty            */
-#define USB_OTG_GINTSTS_GINAKEFF                ((uint32_t)0x00000040)            /*!< Global IN nonperiodic NAK effective */
-#define USB_OTG_GINTSTS_BOUTNAKEFF              ((uint32_t)0x00000080)            /*!< Global OUT NAK effective            */
-#define USB_OTG_GINTSTS_ESUSP                   ((uint32_t)0x00000400)            /*!< Early suspend                            */
-#define USB_OTG_GINTSTS_USBSUSP                 ((uint32_t)0x00000800)            /*!< USB suspend                              */
-#define USB_OTG_GINTSTS_USBRST                  ((uint32_t)0x00001000)            /*!< USB reset                                */
-#define USB_OTG_GINTSTS_ENUMDNE                 ((uint32_t)0x00002000)            /*!< Enumeration done                         */
-#define USB_OTG_GINTSTS_ISOODRP                 ((uint32_t)0x00004000)            /*!< Isochronous OUT packet dropped interrupt */
-#define USB_OTG_GINTSTS_EOPF                    ((uint32_t)0x00008000)            /*!< End of periodic frame interrupt          */
+#define USB_OTG_GINTSTS_CMOD                    ((uint32_t)0x00000001)            /*!< Current mode of operation                      */
+#define USB_OTG_GINTSTS_MMIS                    ((uint32_t)0x00000002)            /*!< Mode mismatch interrupt                        */
+#define USB_OTG_GINTSTS_OTGINT                  ((uint32_t)0x00000004)            /*!< OTG interrupt                                  */
+#define USB_OTG_GINTSTS_SOF                     ((uint32_t)0x00000008)            /*!< Start of frame                                 */
+#define USB_OTG_GINTSTS_RXFLVL                  ((uint32_t)0x00000010)            /*!< RxFIFO nonempty                                */
+#define USB_OTG_GINTSTS_NPTXFE                  ((uint32_t)0x00000020)            /*!< Nonperiodic TxFIFO empty                       */
+#define USB_OTG_GINTSTS_GINAKEFF                ((uint32_t)0x00000040)            /*!< Global IN nonperiodic NAK effective            */
+#define USB_OTG_GINTSTS_BOUTNAKEFF              ((uint32_t)0x00000080)            /*!< Global OUT NAK effective                       */
+#define USB_OTG_GINTSTS_ESUSP                   ((uint32_t)0x00000400)            /*!< Early suspend                                  */
+#define USB_OTG_GINTSTS_USBSUSP                 ((uint32_t)0x00000800)            /*!< USB suspend                                    */
+#define USB_OTG_GINTSTS_USBRST                  ((uint32_t)0x00001000)            /*!< USB reset                                      */
+#define USB_OTG_GINTSTS_ENUMDNE                 ((uint32_t)0x00002000)            /*!< Enumeration done                               */
+#define USB_OTG_GINTSTS_ISOODRP                 ((uint32_t)0x00004000)            /*!< Isochronous OUT packet dropped interrupt       */
+#define USB_OTG_GINTSTS_EOPF                    ((uint32_t)0x00008000)            /*!< End of periodic frame interrupt                */
 #define USB_OTG_GINTSTS_IEPINT                  ((uint32_t)0x00040000)            /*!< IN endpoint interrupt                          */
 #define USB_OTG_GINTSTS_OEPINT                  ((uint32_t)0x00080000)            /*!< OUT endpoint interrupt                         */
 #define USB_OTG_GINTSTS_IISOIXFR                ((uint32_t)0x00100000)            /*!< Incomplete isochronous IN transfer             */
 #define USB_OTG_GINTSTS_PXFR_INCOMPISOOUT       ((uint32_t)0x00200000)            /*!< Incomplete periodic transfer                   */
 #define USB_OTG_GINTSTS_DATAFSUSP               ((uint32_t)0x00400000)            /*!< Data fetch suspended                           */
+#define USB_OTG_GINTSTS_RSTDET                  ((uint32_t)0x00800000)            /*!< Reset detected interrupt                       */
 #define USB_OTG_GINTSTS_HPRTINT                 ((uint32_t)0x01000000)            /*!< Host port interrupt                            */
 #define USB_OTG_GINTSTS_HCINT                   ((uint32_t)0x02000000)            /*!< Host channels interrupt                        */
 #define USB_OTG_GINTSTS_PTXFE                   ((uint32_t)0x04000000)            /*!< Periodic TxFIFO empty                          */
+#define USB_OTG_GINTSTS_LPMINT                  ((uint32_t)0x08000000)            /*!< LPM interrupt                                  */
 #define USB_OTG_GINTSTS_CIDSCHG                 ((uint32_t)0x10000000)            /*!< Connector ID status change                     */
 #define USB_OTG_GINTSTS_DISCINT                 ((uint32_t)0x20000000)            /*!< Disconnect detected interrupt                  */
 #define USB_OTG_GINTSTS_SRQINT                  ((uint32_t)0x40000000)            /*!< Session request/new session detected interrupt */
@@ -7736,9 +7406,11 @@ USB_OTG_HostChannelTypeDef;
 #define USB_OTG_GINTMSK_IISOIXFRM               ((uint32_t)0x00100000)            /*!< Incomplete isochronous IN transfer mask             */
 #define USB_OTG_GINTMSK_PXFRM_IISOOXFRM         ((uint32_t)0x00200000)            /*!< Incomplete periodic transfer mask                   */
 #define USB_OTG_GINTMSK_FSUSPM                  ((uint32_t)0x00400000)            /*!< Data fetch suspended mask                           */
+#define USB_OTG_GINTMSK_RSTDEM                  ((uint32_t)0x00800000)            /*!< Reset detected interrupt mask                      */
 #define USB_OTG_GINTMSK_PRTIM                   ((uint32_t)0x01000000)            /*!< Host port interrupt mask                            */
 #define USB_OTG_GINTMSK_HCIM                    ((uint32_t)0x02000000)            /*!< Host channels interrupt mask                        */
 #define USB_OTG_GINTMSK_PTXFEM                  ((uint32_t)0x04000000)            /*!< Periodic TxFIFO empty mask                          */
+#define USB_OTG_GINTMSK_LPMINTM                 ((uint32_t)0x08000000)            /*!< LPM interrupt Mask                                  */
 #define USB_OTG_GINTMSK_CIDSCHGM                ((uint32_t)0x10000000)            /*!< Connector ID status change mask                     */
 #define USB_OTG_GINTMSK_DISCINT                 ((uint32_t)0x20000000)            /*!< Disconnect detected interrupt mask                  */
 #define USB_OTG_GINTMSK_SRQIM                   ((uint32_t)0x40000000)            /*!< Session request/new session detected interrupt mask */
@@ -7889,37 +7561,62 @@ USB_OTG_HostChannelTypeDef;
 #define USB_OTG_DTHRCTL_ARPEN                   ((uint32_t)0x08000000)            /*!< Arbiter parking enable */
 
 /********************  Bit definition forUSB_OTG_DIEPEMPMSK register  ********************/
-#define USB_OTG_DIEPEMPMSK_INEPTXFEM               ((uint32_t)0x0000FFFF)            /*!< IN EP Tx FIFO empty interrupt mask bits */
+#define USB_OTG_DIEPEMPMSK_INEPTXFEM               ((uint32_t)0x0000FFFF)         /*!< IN EP Tx FIFO empty interrupt mask bits */
 
 /********************  Bit definition forUSB_OTG_DEACHINT register  ********************/
-#define USB_OTG_DEACHINT_IEP1INT                 ((uint32_t)0x00000002)            /*!< IN endpoint 1interrupt bit   */
-#define USB_OTG_DEACHINT_OEP1INT                 ((uint32_t)0x00020000)            /*!< OUT endpoint 1 interrupt bit */
+#define USB_OTG_DEACHINT_IEP1INT                 ((uint32_t)0x00000002)           /*!< IN endpoint 1interrupt bit   */
+#define USB_OTG_DEACHINT_OEP1INT                 ((uint32_t)0x00020000)           /*!< OUT endpoint 1 interrupt bit */
 
 /********************  Bit definition forUSB_OTG_GCCFG register  ********************/
-#define USB_OTG_GCCFG_PWRDWN                  ((uint32_t)0x00010000)            /*!< Power down */
-#define USB_OTG_GCCFG_I2CPADEN                ((uint32_t)0x00020000)            /*!< Enable I2C bus connection for the external I2C PHY interface */
-#define USB_OTG_GCCFG_VBUSASEN                ((uint32_t)0x00040000)            /*!< Enable the VBUS sensing device                               */
-#define USB_OTG_GCCFG_VBUSBSEN                ((uint32_t)0x00080000)            /*!< Enable the VBUS sensing device                               */
-#define USB_OTG_GCCFG_SOFOUTEN                ((uint32_t)0x00100000)            /*!< SOF output enable                                            */
-#define USB_OTG_GCCFG_NOVBUSSENS              ((uint32_t)0x00200000)            /*!< VBUS sensing disable option                                  */
+#define USB_OTG_GCCFG_DCDET                  ((uint32_t)0x00000001)              /*!< Data contact detection (DCD) status */
+#define USB_OTG_GCCFG_PDET                   ((uint32_t)0x00000002)              /*!< Primary detection (PD) status */
+#define USB_OTG_GCCFG_SDET                   ((uint32_t)0x00000004)              /*!< Secondary detection (SD) status */
+#define USB_OTG_GCCFG_PS2DET                 ((uint32_t)0x00000008)              /*!< DM pull-up detection status */
+#define USB_OTG_GCCFG_PWRDWN                 ((uint32_t)0x00010000)              /*!< Power down */
+#define USB_OTG_GCCFG_BCDEN                  ((uint32_t)0x00020000)              /*!< Battery charging detector (BCD) enable */
+#define USB_OTG_GCCFG_DCDEN                  ((uint32_t)0x00040000)              /*!< Data contact detection (DCD) mode enable*/
+#define USB_OTG_GCCFG_PDEN                   ((uint32_t)0x00080000)              /*!< Primary detection (PD) mode enable*/
+#define USB_OTG_GCCFG_SDEN                   ((uint32_t)0x00100000)              /*!< Secondary detection (SD) mode enable */
+#define USB_OTG_GCCFG_VBDEN                  ((uint32_t)0x00200000)              /*!< USB VBUS Detection Enable */
+
+/********************  Bit definition forUSB_OTG_GPWRDN) register  ********************/
+#define USB_OTG_GPWRDN_ADPMEN                 ((uint32_t)0x00000001)             /*!< ADP module enable */
+#define USB_OTG_GPWRDN_ADPIF                  ((uint32_t)0x00800000)             /*!< ADP Interrupt flag */
 
 /********************  Bit definition forUSB_OTG_DEACHINTMSK register  ********************/
-#define USB_OTG_DEACHINTMSK_IEP1INTM                ((uint32_t)0x00000002)            /*!< IN Endpoint 1 interrupt mask bit  */
-#define USB_OTG_DEACHINTMSK_OEP1INTM                ((uint32_t)0x00020000)            /*!< OUT Endpoint 1 interrupt mask bit */
-
+#define USB_OTG_DEACHINTMSK_IEP1INTM          ((uint32_t)0x00000002)            /*!< IN Endpoint 1 interrupt mask bit  */
+#define USB_OTG_DEACHINTMSK_OEP1INTM          ((uint32_t)0x00020000)            /*!< OUT Endpoint 1 interrupt mask bit */
+ 
 /********************  Bit definition forUSB_OTG_CID register  ********************/
-#define USB_OTG_CID_PRODUCT_ID              ((uint32_t)0xFFFFFFFF)            /*!< Product ID field */
+#define USB_OTG_CID_PRODUCT_ID               ((uint32_t)0xFFFFFFFF)            /*!< Product ID field */
+
+/********************  Bit definition for USB_OTG_GLPMCFG register  ********************/
+#define  USB_OTG_GLPMCFG_LPMEN               ((uint32_t)0x00000001)            /*!< LPM support enable                                     */
+#define  USB_OTG_GLPMCFG_LPMACK              ((uint32_t)0x00000002)            /*!< LPM Token acknowledge enable                           */
+#define  USB_OTG_GLPMCFG_BESL                ((uint32_t)0x0000003C)            /*!< BESL value received with last ACKed LPM Token          */
+#define  USB_OTG_GLPMCFG_REMWAKE             ((uint32_t)0x00000040)            /*!< bRemoteWake value received with last ACKed LPM Token   */
+#define  USB_OTG_GLPMCFG_L1SSEN              ((uint32_t)0x00000080)            /*!< L1 shallow sleep enable                                */
+#define  USB_OTG_GLPMCFG_BESLTHRS            ((uint32_t)0x00000F00)            /*!< BESL threshold                                         */
+#define  USB_OTG_GLPMCFG_L1DSEN              ((uint32_t)0x00001000)            /*!< L1 deep sleep enable                                   */
+#define  USB_OTG_GLPMCFG_LPMRSP              ((uint32_t)0x00006000)            /*!< LPM response                                           */
+#define  USB_OTG_GLPMCFG_SLPSTS              ((uint32_t)0x00008000)            /*!< Port sleep status                                      */
+#define  USB_OTG_GLPMCFG_L1RSMOK             ((uint32_t)0x00010000)            /*!< Sleep State Resume OK                                  */
+#define  USB_OTG_GLPMCFG_LPMCHIDX            ((uint32_t)0x001E0000)            /*!< LPM Channel Index                                      */
+#define  USB_OTG_GLPMCFG_LPMRCNT             ((uint32_t)0x00E00000)            /*!< LPM retry count                                        */
+#define  USB_OTG_GLPMCFG_SNDLPM              ((uint32_t)0x01000000)            /*!< Send LPM transaction                                   */
+#define  USB_OTG_GLPMCFG_LPMRCNTSTS          ((uint32_t)0x0E000000)            /*!< LPM retry count status                                 */
+#define  USB_OTG_GLPMCFG_ENBESL              ((uint32_t)0x10000000)            /*!< Enable best effort service latency                     */
 
 /********************  Bit definition forUSB_OTG_DIEPEACHMSK1 register  ********************/
-#define USB_OTG_DIEPEACHMSK1_XFRCM                   ((uint32_t)0x00000001)            /*!< Transfer completed interrupt mask                 */
-#define USB_OTG_DIEPEACHMSK1_EPDM                    ((uint32_t)0x00000002)            /*!< Endpoint disabled interrupt mask                  */
-#define USB_OTG_DIEPEACHMSK1_TOM                     ((uint32_t)0x00000008)            /*!< Timeout condition mask (nonisochronous endpoints) */
-#define USB_OTG_DIEPEACHMSK1_ITTXFEMSK               ((uint32_t)0x00000010)            /*!< IN token received when TxFIFO empty mask          */
-#define USB_OTG_DIEPEACHMSK1_INEPNMM                 ((uint32_t)0x00000020)            /*!< IN token received with EP mismatch mask           */
-#define USB_OTG_DIEPEACHMSK1_INEPNEM                 ((uint32_t)0x00000040)            /*!< IN endpoint NAK effective mask                    */
-#define USB_OTG_DIEPEACHMSK1_TXFURM                  ((uint32_t)0x00000100)            /*!< FIFO underrun mask */
-#define USB_OTG_DIEPEACHMSK1_BIM                     ((uint32_t)0x00000200)            /*!< BNA interrupt mask */
-#define USB_OTG_DIEPEACHMSK1_NAKM                    ((uint32_t)0x00002000)            /*!< NAK interrupt mask */
+#define USB_OTG_DIEPEACHMSK1_XFRCM           ((uint32_t)0x00000001)            /*!< Transfer completed interrupt mask                 */
+#define USB_OTG_DIEPEACHMSK1_EPDM            ((uint32_t)0x00000002)            /*!< Endpoint disabled interrupt mask                  */
+#define USB_OTG_DIEPEACHMSK1_TOM             ((uint32_t)0x00000008)            /*!< Timeout condition mask (nonisochronous endpoints) */
+#define USB_OTG_DIEPEACHMSK1_ITTXFEMSK       ((uint32_t)0x00000010)            /*!< IN token received when TxFIFO empty mask          */
+#define USB_OTG_DIEPEACHMSK1_INEPNMM         ((uint32_t)0x00000020)            /*!< IN token received with EP mismatch mask           */
+#define USB_OTG_DIEPEACHMSK1_INEPNEM         ((uint32_t)0x00000040)            /*!< IN endpoint NAK effective mask                    */
+#define USB_OTG_DIEPEACHMSK1_TXFURM          ((uint32_t)0x00000100)            /*!< FIFO underrun mask                                */
+#define USB_OTG_DIEPEACHMSK1_BIM             ((uint32_t)0x00000200)            /*!< BNA interrupt mask                                */
+#define USB_OTG_DIEPEACHMSK1_NAKM            ((uint32_t)0x00002000)            /*!< NAK interrupt mask                                */
 
 /********************  Bit definition forUSB_OTG_HPRT register  ********************/
 #define USB_OTG_HPRT_PCSTS                   ((uint32_t)0x00000001)            /*!< Port connect status        */
@@ -7928,64 +7625,64 @@ USB_OTG_HostChannelTypeDef;
 #define USB_OTG_HPRT_PENCHNG                 ((uint32_t)0x00000008)            /*!< Port enable/disable change */
 #define USB_OTG_HPRT_POCA                    ((uint32_t)0x00000010)            /*!< Port overcurrent active    */
 #define USB_OTG_HPRT_POCCHNG                 ((uint32_t)0x00000020)            /*!< Port overcurrent change    */
-#define USB_OTG_HPRT_PRES                    ((uint32_t)0x00000040)            /*!< Port resume   */
-#define USB_OTG_HPRT_PSUSP                   ((uint32_t)0x00000080)            /*!< Port suspend  */
-#define USB_OTG_HPRT_PRST                    ((uint32_t)0x00000100)            /*!< Port reset    */
+#define USB_OTG_HPRT_PRES                    ((uint32_t)0x00000040)            /*!< Port resume                */
+#define USB_OTG_HPRT_PSUSP                   ((uint32_t)0x00000080)            /*!< Port suspend               */
+#define USB_OTG_HPRT_PRST                    ((uint32_t)0x00000100)            /*!< Port reset                 */
 
-#define USB_OTG_HPRT_PLSTS                   ((uint32_t)0x00000C00)            /*!< Port line status */
+#define USB_OTG_HPRT_PLSTS                   ((uint32_t)0x00000C00)            /*!< Port line status           */
 #define USB_OTG_HPRT_PLSTS_0                 ((uint32_t)0x00000400)            /*!<Bit 0 */
 #define USB_OTG_HPRT_PLSTS_1                 ((uint32_t)0x00000800)            /*!<Bit 1 */
-#define USB_OTG_HPRT_PPWR                    ((uint32_t)0x00001000)            /*!< Port power */
+#define USB_OTG_HPRT_PPWR                    ((uint32_t)0x00001000)            /*!< Port power                 */
 
-#define USB_OTG_HPRT_PTCTL                   ((uint32_t)0x0001E000)            /*!< Port test control */
+#define USB_OTG_HPRT_PTCTL                   ((uint32_t)0x0001E000)            /*!< Port test control          */
 #define USB_OTG_HPRT_PTCTL_0                 ((uint32_t)0x00002000)            /*!<Bit 0 */
 #define USB_OTG_HPRT_PTCTL_1                 ((uint32_t)0x00004000)            /*!<Bit 1 */
 #define USB_OTG_HPRT_PTCTL_2                 ((uint32_t)0x00008000)            /*!<Bit 2 */
 #define USB_OTG_HPRT_PTCTL_3                 ((uint32_t)0x00010000)            /*!<Bit 3 */
 
-#define USB_OTG_HPRT_PSPD                    ((uint32_t)0x00060000)            /*!< Port speed */
+#define USB_OTG_HPRT_PSPD                    ((uint32_t)0x00060000)            /*!< Port speed                 */
 #define USB_OTG_HPRT_PSPD_0                  ((uint32_t)0x00020000)            /*!<Bit 0 */
 #define USB_OTG_HPRT_PSPD_1                  ((uint32_t)0x00040000)            /*!<Bit 1 */
 
 /********************  Bit definition forUSB_OTG_DOEPEACHMSK1 register  ********************/
-#define USB_OTG_DOEPEACHMSK1_XFRCM                   ((uint32_t)0x00000001)            /*!< Transfer completed interrupt mask */
-#define USB_OTG_DOEPEACHMSK1_EPDM                    ((uint32_t)0x00000002)            /*!< Endpoint disabled interrupt mask */
-#define USB_OTG_DOEPEACHMSK1_TOM                     ((uint32_t)0x00000008)            /*!< Timeout condition mask */
-#define USB_OTG_DOEPEACHMSK1_ITTXFEMSK               ((uint32_t)0x00000010)            /*!< IN token received when TxFIFO empty mask */
-#define USB_OTG_DOEPEACHMSK1_INEPNMM                 ((uint32_t)0x00000020)            /*!< IN token received with EP mismatch mask */
-#define USB_OTG_DOEPEACHMSK1_INEPNEM                 ((uint32_t)0x00000040)            /*!< IN endpoint NAK effective mask */
-#define USB_OTG_DOEPEACHMSK1_TXFURM                  ((uint32_t)0x00000100)            /*!< OUT packet error mask */
-#define USB_OTG_DOEPEACHMSK1_BIM                     ((uint32_t)0x00000200)            /*!< BNA interrupt mask */
-#define USB_OTG_DOEPEACHMSK1_BERRM                   ((uint32_t)0x00001000)            /*!< Bubble error interrupt mask */
-#define USB_OTG_DOEPEACHMSK1_NAKM                    ((uint32_t)0x00002000)            /*!< NAK interrupt mask */
-#define USB_OTG_DOEPEACHMSK1_NYETM                   ((uint32_t)0x00004000)            /*!< NYET interrupt mask */
+#define USB_OTG_DOEPEACHMSK1_XFRCM                   ((uint32_t)0x00000001)            /*!< Transfer completed interrupt mask         */
+#define USB_OTG_DOEPEACHMSK1_EPDM                    ((uint32_t)0x00000002)            /*!< Endpoint disabled interrupt mask          */
+#define USB_OTG_DOEPEACHMSK1_TOM                     ((uint32_t)0x00000008)            /*!< Timeout condition mask                    */
+#define USB_OTG_DOEPEACHMSK1_ITTXFEMSK               ((uint32_t)0x00000010)            /*!< IN token received when TxFIFO empty mask  */
+#define USB_OTG_DOEPEACHMSK1_INEPNMM                 ((uint32_t)0x00000020)            /*!< IN token received with EP mismatch mask   */
+#define USB_OTG_DOEPEACHMSK1_INEPNEM                 ((uint32_t)0x00000040)            /*!< IN endpoint NAK effective mask            */
+#define USB_OTG_DOEPEACHMSK1_TXFURM                  ((uint32_t)0x00000100)            /*!< OUT packet error mask                     */
+#define USB_OTG_DOEPEACHMSK1_BIM                     ((uint32_t)0x00000200)            /*!< BNA interrupt mask                        */
+#define USB_OTG_DOEPEACHMSK1_BERRM                   ((uint32_t)0x00001000)            /*!< Bubble error interrupt mask               */
+#define USB_OTG_DOEPEACHMSK1_NAKM                    ((uint32_t)0x00002000)            /*!< NAK interrupt mask                        */
+#define USB_OTG_DOEPEACHMSK1_NYETM                   ((uint32_t)0x00004000)            /*!< NYET interrupt mask                       */
 
 /********************  Bit definition forUSB_OTG_HPTXFSIZ register  ********************/
-#define USB_OTG_HPTXFSIZ_PTXSA                   ((uint32_t)0x0000FFFF)            /*!< Host periodic TxFIFO start address */
-#define USB_OTG_HPTXFSIZ_PTXFD                   ((uint32_t)0xFFFF0000)            /*!< Host periodic TxFIFO depth */
+#define USB_OTG_HPTXFSIZ_PTXSA                   ((uint32_t)0x0000FFFF)            /*!< Host periodic TxFIFO start address            */
+#define USB_OTG_HPTXFSIZ_PTXFD                   ((uint32_t)0xFFFF0000)            /*!< Host periodic TxFIFO depth                    */
 
 /********************  Bit definition forUSB_OTG_DIEPCTL register  ********************/
-#define USB_OTG_DIEPCTL_MPSIZ                   ((uint32_t)0x000007FF)            /*!< Maximum packet size */
-#define USB_OTG_DIEPCTL_USBAEP                  ((uint32_t)0x00008000)            /*!< USB active endpoint */
-#define USB_OTG_DIEPCTL_EONUM_DPID              ((uint32_t)0x00010000)            /*!< Even/odd frame */
-#define USB_OTG_DIEPCTL_NAKSTS                  ((uint32_t)0x00020000)            /*!< NAK status */
+#define USB_OTG_DIEPCTL_MPSIZ                   ((uint32_t)0x000007FF)            /*!< Maximum packet size              */
+#define USB_OTG_DIEPCTL_USBAEP                  ((uint32_t)0x00008000)            /*!< USB active endpoint              */
+#define USB_OTG_DIEPCTL_EONUM_DPID              ((uint32_t)0x00010000)            /*!< Even/odd frame                   */
+#define USB_OTG_DIEPCTL_NAKSTS                  ((uint32_t)0x00020000)            /*!< NAK status                       */
 
-#define USB_OTG_DIEPCTL_EPTYP                   ((uint32_t)0x000C0000)            /*!< Endpoint type */
+#define USB_OTG_DIEPCTL_EPTYP                   ((uint32_t)0x000C0000)            /*!< Endpoint type                    */
 #define USB_OTG_DIEPCTL_EPTYP_0                 ((uint32_t)0x00040000)            /*!<Bit 0 */
 #define USB_OTG_DIEPCTL_EPTYP_1                 ((uint32_t)0x00080000)            /*!<Bit 1 */
-#define USB_OTG_DIEPCTL_STALL                   ((uint32_t)0x00200000)            /*!< STALL handshake */
+#define USB_OTG_DIEPCTL_STALL                   ((uint32_t)0x00200000)            /*!< STALL handshake                  */
 
-#define USB_OTG_DIEPCTL_TXFNUM                  ((uint32_t)0x03C00000)            /*!< TxFIFO number */
+#define USB_OTG_DIEPCTL_TXFNUM                  ((uint32_t)0x03C00000)            /*!< TxFIFO number                    */
 #define USB_OTG_DIEPCTL_TXFNUM_0                ((uint32_t)0x00400000)            /*!<Bit 0 */
 #define USB_OTG_DIEPCTL_TXFNUM_1                ((uint32_t)0x00800000)            /*!<Bit 1 */
 #define USB_OTG_DIEPCTL_TXFNUM_2                ((uint32_t)0x01000000)            /*!<Bit 2 */
 #define USB_OTG_DIEPCTL_TXFNUM_3                ((uint32_t)0x02000000)            /*!<Bit 3 */
-#define USB_OTG_DIEPCTL_CNAK                    ((uint32_t)0x04000000)            /*!< Clear NAK */
+#define USB_OTG_DIEPCTL_CNAK                    ((uint32_t)0x04000000)            /*!< Clear NAK                        */
 #define USB_OTG_DIEPCTL_SNAK                    ((uint32_t)0x08000000)            /*!< Set NAK */
-#define USB_OTG_DIEPCTL_SD0PID_SEVNFRM          ((uint32_t)0x10000000)            /*!< Set DATA0 PID */
-#define USB_OTG_DIEPCTL_SODDFRM                 ((uint32_t)0x20000000)            /*!< Set odd frame */
-#define USB_OTG_DIEPCTL_EPDIS                   ((uint32_t)0x40000000)            /*!< Endpoint disable */
-#define USB_OTG_DIEPCTL_EPENA                   ((uint32_t)0x80000000)            /*!< Endpoint enable */
+#define USB_OTG_DIEPCTL_SD0PID_SEVNFRM          ((uint32_t)0x10000000)            /*!< Set DATA0 PID                    */
+#define USB_OTG_DIEPCTL_SODDFRM                 ((uint32_t)0x20000000)            /*!< Set odd frame                    */
+#define USB_OTG_DIEPCTL_EPDIS                   ((uint32_t)0x40000000)            /*!< Endpoint disable                 */
+#define USB_OTG_DIEPCTL_EPENA                   ((uint32_t)0x80000000)            /*!< Endpoint enable                  */
 
 /********************  Bit definition forUSB_OTG_HCCHAR register  ********************/
 #define USB_OTG_HCCHAR_MPSIZ                   ((uint32_t)0x000007FF)            /*!< Maximum packet size */
@@ -8525,7 +8222,7 @@ USB_OTG_HostChannelTypeDef;
 }
 #endif /* __cplusplus */
 
-#endif /* __STM32F427xx_H */
+#endif /* __STM32F446xx_H */
 
 
 

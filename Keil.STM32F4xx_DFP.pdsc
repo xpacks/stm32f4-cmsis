@@ -7,6 +7,26 @@
   <url>http://www.keil.com/pack</url>
 
   <releases>
+    <release version="2.5.0" date="2015-06-12">
+      Updated to STMicroelectronics STM32CubeF4 Firmware Package V1.6.0
+      Updated CMSIS drivers:
+      - I2C, MCI, EMAC, USB Device, USB Host, SPI, USART: Updated initialization, uninitialization and power procedures
+      - MCI: Corrected data timeout handling
+      - SPI:
+      -- Corrected status bit-field handling, to prevent race conditions
+      -- Corrected ARM_SPI_EVENT_DATA_LOST event generation in master mode at high bus speeds
+      -- Corrected bus speed configuration
+      - USART:
+      -- Corrected status bit-field handling, to prevent race conditions
+      -- Added RX TimeOut handling
+      - USB Device: Corrected transferred size during transfer
+      - USB Host: 
+      -- Added pipe bus error signaling of active pipes on port disconnect
+      -- Corrected handling on error transfers
+      Updated MDK examples:
+      - Boards\Keil\MCBSTM32F400\Blinky
+      - USB Device Mass Storage Example
+    </release>
     <release version="2.4.0" date="2015-03-20">
       Required PACKs: ARM.CMSIS.4.3.0.pack, Keil.MDK-Middleware.6.3.0.pack, Keil.ARM_Compiler.1.0.0.pack
       Updated devices:
@@ -1464,9 +1484,9 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
        <processor Dclock="180000000"/>
         <compile header="Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h"  define="STM32F446xx"/>
         <debug      svd="CMSIS\SVD\STM32F446x.svd"/>
-        <!--book       name="Documentation/DM00031020.pdf"              title="STM32F40x/41x/42x/43x Reference Manual"/-->
-        <!--book       name="Documentation/DM00077036.pdf"              title="STM32F437/439 Data Sheet"/-->
-        <!--book       name="Documentation/DM00068628.pdf"              title="STM32F42x/43x Errata Sheet"/-->
+        <book       name="Documentation/DM00135183.pdf"              title="STM32F446 Reference Manual"/>
+        <book       name="Documentation/DM00141306.pdf"              title="STM32F446 Data Sheet"/>
+        <book       name="Documentation/DM00155929.pdf"              title="STM32F446 Errata Sheet"/>
         <feature type="Timer"         n="12"      m="16"/>
         <feature type="Timer"         n="2"      m="32"/>
         <feature type="DAC"           n="2"       m="12"/>
@@ -1659,6 +1679,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <image small="MDK/Boards/ST/STM32F429I-Discovery/Documentation/stm32f429i-disco_small.png" large="MDK/Boards/ST/STM32F429I-Discovery/Documentation/stm32f429i-disco.png"/>
       <book category="overview"  name="http://www.st.com/web/catalog/tools/FM116/SC959/SS1532/LN1199/PF259090" title="STM32F429I-Discovery Web Page"/>
       <book category="setup"     name="MDK/Boards/ST/STM32F429I-Discovery/Documentation/DM00092920.pdf" title="Getting Started"/>
+      <book category="setup"     name="Documentation/STMicroelectronics_Blinky_Lab.pdf" title="STM32F429I-Discovery: Blinky Lab"/>
       <book category="schematic" name="MDK/Boards/ST/STM32F429I-Discovery/Documentation/stm32f429i-disco_sch.zip" title="Schematics"/>
       <book category="manual"    name="MDK/Boards/ST/STM32F429I-Discovery/Documentation/DM00093903.pdf" title="User Manual"/>
       <book category="other"     name="MDK/Boards/ST/STM32F429I-Discovery/Documentation/stm32f429i-disco_gerber.zip" title="Gerber Files"/>
@@ -1766,6 +1787,14 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <accept  condition="STM32F437xx"/>
       <accept  condition="STM32F439xx"/>
     </condition>
+    <condition id="STM32F42_43_44x">
+      <description>STMicroelectronics STM32F427/429/437/439/446 Series devices</description>
+      <accept  condition="STM32F427xx"/>
+      <accept  condition="STM32F429xx"/>
+      <accept  condition="STM32F437xx"/>
+      <accept  condition="STM32F439xx"/>
+      <accept  condition="STM32F446xx"/>
+    </condition>
     <condition id="STM32F43x">
       <description>STMicroelectronics STM32F437/439 Series devices</description>
       <accept  condition="STM32F437xx"/>
@@ -1782,6 +1811,18 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <accept  condition="STM32F437xx"/>
       <accept  condition="STM32F439xx"/>
     </condition>
+    <condition id="STM32F4x5_7_9_6">
+      <description>STMicroelectronics STM32F405/407/415/417/427/429/437/439/446 Series devices</description>
+      <accept  condition="STM32F405xx"/>
+      <accept  condition="STM32F407xx"/>
+      <accept  condition="STM32F415xx"/>
+      <accept  condition="STM32F417xx"/>
+      <accept  condition="STM32F427xx"/>
+      <accept  condition="STM32F429xx"/>
+      <accept  condition="STM32F437xx"/>
+      <accept  condition="STM32F439xx"/>
+      <accept  condition="STM32F446xx"/>
+    </condition>
     <condition id="STM32F4x7_9">
       <description>STMicroelectronics STM32F417/427/429/437/439 Series devices</description>
       <accept  condition="STM32F407xx"/>
@@ -1791,13 +1832,23 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <accept  condition="STM32F437xx"/>
       <accept  condition="STM32F439xx"/>
     </condition>
+    <condition id="STM32F4x7_9_6">
+      <description>STMicroelectronics STM32F417/427/429/437/439/446 Series devices</description>
+      <accept  condition="STM32F407xx"/>
+      <accept  condition="STM32F417xx"/>
+      <accept  condition="STM32F427xx"/>
+      <accept  condition="STM32F429xx"/>
+      <accept  condition="STM32F437xx"/>
+      <accept  condition="STM32F439xx"/>
+      <accept  condition="STM32F446xx"/>
+    </condition>
     <condition id="STM32F4x9">
       <description>STMicroelectronics STM32F429/439 Series devices</description>
       <accept  condition="STM32F429xx"/>
       <accept  condition="STM32F439xx"/>
     </condition>
-    <condition id="STM32F4x1_42_43x">
-      <description>STMicroelectronics STM32F401/411/427/429/437/439 Series devices</description>
+    <condition id="STM32F4x1_42_43_44x">
+      <description>STMicroelectronics STM32F401/411/427/429/437/439/446 Series devices</description>
       <accept  condition="STM32F401xC"/>
       <accept  condition="STM32F401xE"/>
       <accept  condition="STM32F411xE"/>
@@ -1805,6 +1856,12 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <accept  condition="STM32F429xx"/>
       <accept  condition="STM32F437xx"/>
       <accept  condition="STM32F439xx"/>
+      <accept  condition="STM32F446xx"/>
+    </condition>
+    <condition id="STM32F4x1_6">
+      <description>STMicroelectronics STM32F411/446 Series devices</description>
+      <accept  condition="STM32F411xE"/>
+      <accept  condition="STM32F446xx"/>
     </condition>
 
     <condition id="STM32F4_ARMCC">
@@ -2076,6 +2133,11 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <require condition="STM32F4x5_7_9"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
     </condition>
+    <condition id="STM32F4x5_7_9_6 HAL">
+      <description>STMicroelectronics STM32F405/407/415/417/427/429/437/439/446 Device and HAL</description>
+      <require condition="STM32F4x5_7_9_6"/>
+      <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
+    </condition>
     <condition id="STM32F4x7_9 HAL">
       <description>STMicroelectronics STM32F417/427/429/437/439 Device and HAL</description>
       <require condition="STM32F4x7_9"/>
@@ -2084,6 +2146,11 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
     <condition id="STM32F4x9 HAL">
       <description>STMicroelectronics STM32F429/439 Device and HAL</description>
       <require condition="STM32F4x9"/>
+      <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
+    </condition>
+    <condition id="STM32F446 HAL">
+      <description>STMicroelectronics STM32F446 Device and HAL</description>
+      <require condition="STM32F446xx"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
     </condition>
 
@@ -2120,9 +2187,9 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="DMA"/>
     </condition>
-    <condition id="STM32F42_43x HAL DMA">
-      <description>STMicroelectronics STM32F427/429/437/439 Device and HAL with DMA</description>
-      <require condition="STM32F42_43x"/>
+    <condition id="STM32F42_43_44x HAL DMA">
+      <description>STMicroelectronics STM32F427/429/437/439/446 Device and HAL with DMA</description>
+      <require condition="STM32F42_43_44x"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="DMA"/>
     </condition>
@@ -2132,9 +2199,21 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="DMA"/>
     </condition>
-    <condition id="STM32F4x7_9 HAL DMA">
-      <description>STMicroelectronics STM32F417/427/429/437/439 Device and HAL with DMA</description>
-      <require condition="STM32F4x7_9"/>
+    <condition id="STM32F4x5_7_9_6 HAL DMA">
+      <description>STMicroelectronics STM32F405/407/415/417/427/429/437/439/446 Device and HAL with DMA</description>
+      <require condition="STM32F4x5_7_9_6"/>
+      <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
+      <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="DMA"/>
+    </condition>
+    <condition id="STM32F4x7_9_6 HAL DMA">
+      <description>STMicroelectronics STM32F417/427/429/437/439/446 Device and HAL with DMA</description>
+      <require condition="STM32F4x7_9_6"/>
+      <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
+      <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="DMA"/>
+    </condition>
+    <condition id="STM32F446 HAL DMA">
+      <description>STMicroelectronics STM32F446 Device and HAL with DMA</description>
+      <require condition="STM32F446xx"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="DMA"/>
     </condition>
@@ -2236,14 +2315,16 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <description>Requirement for CMSIS USB0 Driver</description>
       <require condition="STM32F4"/>
       <require Cclass="CMSIS"  Cgroup="CORE"/>
+      <require Cclass="CMSIS"  Cgroup="RTOS"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="RCC"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="GPIO"/>
     </condition>
     <condition id="STM32F4 CMSIS_Driver USB1">
       <description>Requirement for CMSIS USB1 Driver</description>
-      <require condition="STM32F4x5_7_9"/>
+      <require condition="STM32F4x5_7_9_6"/>
       <require Cclass="CMSIS"  Cgroup="CORE"/>
+      <require Cclass="CMSIS"  Cgroup="RTOS"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="RCC"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="GPIO"/>
@@ -2659,7 +2740,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
   </apis>
 
   <components>
-    <component Cclass="Device" Cgroup="Startup" Cversion="2.1.0" condition="STM32F4 CMSIS">  <!-- Cversion is necessary -->
+    <component Cclass="Device" Cgroup="Startup" Cversion="2.3.1" condition="STM32F4 CMSIS">  <!-- Cversion is necessary -->
       <description>System Startup for STMicroelectronics STM32F4 Series</description>
       <RTE_Components_h>
         <!-- the following content goes into file 'RTE_Components.h' -->
@@ -2680,57 +2761,57 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
 
         <!-- startup files -->
         <!-- ARM Compiler Toolchain -->
-        <file category="source" condition="STM32F401xC_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f401xc.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F401xE_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f401xe.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F405xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f405xx.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F407xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f407xx.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F411xE_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f411xe.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F415xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f415xx.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F417xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f417xx.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F427xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f427xx.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F429xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f429xx.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F437xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f437xx.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F439xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f439xx.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F446xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f446xx.s" attr="config" version="2.1.0"/>
+        <file category="source" condition="STM32F401xC_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f401xc.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F401xE_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f401xe.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F405xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f405xx.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F407xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f407xx.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F411xE_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f411xe.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F415xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f415xx.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F417xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f417xx.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F427xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f427xx.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F429xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f429xx.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F437xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f437xx.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F439xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f439xx.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F446xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f446xx.s" attr="config" version="2.3.1"/>
         <!-- GCC Toolchain -->
-        <file category="source" condition="STM32F401xC_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f401xc.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F401xE_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f401xe.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F405xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f405xx.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F407xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f407xx.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F411xE_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f411xe.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F415xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f415xx.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F417xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f417xx.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F427xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f427xx.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F429xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f429xx.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F437xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f437xx.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F439xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f439xx.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F446xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f446xx.s" attr="config" version="2.1.0"/>
+        <file category="source" condition="STM32F401xC_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f401xc.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F401xE_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f401xe.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F405xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f405xx.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F407xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f407xx.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F411xE_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f411xe.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F415xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f415xx.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F417xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f417xx.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F427xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f427xx.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F429xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f429xx.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F437xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f437xx.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F439xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f439xx.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F446xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f446xx.s" attr="config" version="2.3.1"/>
         <!-- IAR Toolchain -->
-        <file category="source" condition="STM32F401xC_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f401xc.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F401xE_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f401xe.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F405xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f405xx.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F407xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f407xx.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F411xE_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f411xe.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F415xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f415xx.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F417xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f417xx.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F427xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f427xx.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F429xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f429xx.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F437xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f437xx.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F439xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f439xx.s" attr="config" version="2.1.0"/>
-        <file category="source" condition="STM32F446xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f446xx.s" attr="config" version="2.1.0"/>
+        <file category="source" condition="STM32F401xC_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f401xc.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F401xE_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f401xe.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F405xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f405xx.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F407xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f407xx.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F411xE_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f411xe.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F415xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f415xx.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F417xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f417xx.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F427xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f427xx.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F429xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f429xx.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F437xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f437xx.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F439xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f439xx.s" attr="config" version="2.3.1"/>
+        <file category="source" condition="STM32F446xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f446xx.s" attr="config" version="2.3.1"/>
 
         <!-- system file -->
-        <file category="source" name="MDK/Device/Source/ARM/system_stm32f4xx.c" attr="config" version="2.1.0"/>
+        <file category="source" name="MDK/Device/Source/ARM/system_stm32f4xx.c" attr="config" version="2.3.1"/>
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube Framework" Csub="Classic" Cversion="1.1.0" condition="STM32F4 Framework Classic">
+    <component Cclass="Device" Cgroup="STM32Cube Framework" Csub="Classic" Cversion="1.3.1" condition="STM32F4 Framework Classic">
       <description>Configuration via RTE_Device.h</description>
       <RTE_Components_h>
         #define RTE_DEVICE_FRAMEWORK_CLASSIC
       </RTE_Components_h>
       <files>
-        <file category="header"  name="CMSIS/Driver/Config/RTE_Device.h" attr="config" version="2.01"/>
+        <file category="header"  name="CMSIS/Driver/Config/RTE_Device.h" attr="config" version="2.2.0"/>
         <file category="header"  name="MDK/Templates/Inc/stm32f4xx_hal_conf.h" attr="config"/>
         <file category="source"  name="MDK/Templates/Src/stm32f4xx_hal_msp.c"  attr="template" select="MCU Specific HAL Initialization / De-Initialization"/>
         <file category="header"  name="MDK/Templates/Inc/stm32f4xx_it.h" attr="template" select="Exception Handlers and Peripheral IRQ"/>
@@ -2740,26 +2821,22 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <!--
     <component generator="STM32CubeMX" Cclass="Device" Cgroup="STM32Cube Framework" Csub="STM32CubeMX" Cversion="1.0.0" condition="STM32F4">
       <description>Configuration via STM32CubeMX</description>
       <RTE_Components_h>
         #define RTE_DEVICE_FRAMEWORK_CUBE_MX
       </RTE_Components_h>
       <files>
-      -->
         <!-- this component will be replaced by the component described in gpdsc from generator -->
-    <!--
         <file category="source"  name="MDK/CubeMX/run_STM32CubeMX.c" version="1.0"/>
         <file category="other"   name="MDK/CubeMX/FrameworkCubeMX_gpdsc.ftl" version="1.0"/>
         <file category="other"   name="MDK/CubeMX/MX_Device_h.ftl" version ="1.0"/>
       </files>
     </component>
-    -->
 
     <!-- START: STMicroelectronics STM32CubeF4 HAL -->
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common" Cversion="1.1.0" condition="STM32F4 HAL Common">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common" Cversion="1.3.1" condition="STM32F4 HAL Common">
       <description>Common HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_COMMON
@@ -2771,7 +2848,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="ADC" Cversion="1.1.0" condition="STM32F4 HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="ADC" Cversion="1.3.1" condition="STM32F4 HAL DMA">
       <description>Analog-to-digital converter (ADC) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_ADC
@@ -2782,7 +2859,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="CAN" Cversion="1.1.0" condition="STM32F4x5_7_9 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="CAN" Cversion="1.3.1" condition="STM32F4x5_7_9_6 HAL">
       <description>Controller area network (CAN) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_CAN
@@ -2792,7 +2869,17 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="Cortex" Cversion="1.1.0" condition="STM32F4 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="CEC" Cversion="1.3.1" condition="STM32F446 HAL">
+      <description>Consumer Electronics Control (CEC) HAL driver</description>
+      <RTE_Components_h>
+        #define RTE_DEVICE_HAL_CEC
+      </RTE_Components_h>
+      <files>
+        <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cec.c"/>
+      </files>
+    </component>
+
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="Cortex" Cversion="1.3.1" condition="STM32F4 HAL">
       <description>Cortex HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_CORTEX
@@ -2802,7 +2889,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="CRC" Cversion="1.1.0" condition="STM32F4 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="CRC" Cversion="1.3.1" condition="STM32F4 HAL">
       <description>CRC calculation unit (CRC) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_CRC
@@ -2812,7 +2899,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="CRYP" Cversion="1.1.0" condition="STM32F41_43x HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="CRYP" Cversion="1.3.1" condition="STM32F41_43x HAL DMA">
       <description>Cryptographic processor (CRYP) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_CRYP
@@ -2823,7 +2910,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="DAC" Cversion="1.1.0" condition="STM32F4x5_7_9 HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="DAC" Cversion="1.3.1" condition="STM32F4x5_7_9_6 HAL DMA">
       <description>Digital-to-analog converter (DAC) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_DAC
@@ -2834,17 +2921,18 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="DCMI" Cversion="1.1.0" condition="STM32F4x7_9 HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="DCMI" Cversion="1.3.1" condition="STM32F4x7_9_6 HAL DMA">
       <description>Digital camera interface (DCMI) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_DCMI
       </RTE_Components_h>
       <files>
         <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.c"/>
+        <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi_ex.c"/>
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="DMA" Cversion="1.1.0" condition="STM32F4 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="DMA" Cversion="1.3.1" condition="STM32F4 HAL">
       <description>DMA controller (DMA) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_DMA
@@ -2855,7 +2943,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="DMA2D" Cversion="1.1.0" condition="STM32F42_43x HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="DMA2D" Cversion="1.3.1" condition="STM32F42_43x HAL">
       <description>Chrom-Art Accelerator (DMA2D) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_DMA2D
@@ -2865,7 +2953,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="ETH" Cversion="1.1.0" condition="STM32F4x7_9 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="ETH" Cversion="1.3.1" condition="STM32F4x7_9 HAL">
       <description>Ethernet MAC (ETH) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_ETH
@@ -2875,7 +2963,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="Flash" Cversion="1.1.0" condition="STM32F4 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="Flash" Cversion="1.3.1" condition="STM32F4 HAL">
       <description>Embedded Flash memory HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_FLASH
@@ -2883,11 +2971,22 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <files>
         <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c"/>
         <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c"/>
-        <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c" condition="STM32F411xE"/>
+        <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c" condition="STM32F4x1_6"/>
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="GPIO" Cversion="1.1.0" condition="STM32F4 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="FMPI2C" Cversion="1.3.1" condition="STM32F446 HAL DMA">
+      <description>Fast-mode Plus Inter-integrated circuit (FMPI2C) HAL driver</description>
+      <RTE_Components_h>
+        #define RTE_DEVICE_HAL_FMPI2C
+      </RTE_Components_h>
+      <files>
+        <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.c"/>
+        <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c_ex.c"/>
+      </files>
+    </component>
+
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="GPIO" Cversion="1.3.1" condition="STM32F4 HAL">
       <description>General-purpose I/O (GPIO) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_GPIO
@@ -2897,7 +2996,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="HASH" Cversion="1.1.0" condition="STM32F41_43x HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="HASH" Cversion="1.3.1" condition="STM32F41_43x HAL DMA">
       <description>Hash processor (HASH) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_HASH
@@ -2908,7 +3007,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="HCD" Cversion="1.1.0" condition="STM32F4 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="HCD" Cversion="1.3.1" condition="STM32F4 HAL">
       <description>USB Host controller (HCD) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_HCD
@@ -2919,18 +3018,18 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="I2C" Cversion="1.1.0" condition="STM32F4 HAL DMA RCC">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="I2C" Cversion="1.3.1" condition="STM32F4 HAL DMA RCC">
       <description>Inter-integrated circuit (I2C) interface HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_I2C
       </RTE_Components_h>
       <files>
         <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c"/>
-        <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c" condition="STM32F4x1_42_43x"/>
+        <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c" condition="STM32F4x1_42_43_44x"/>
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="I2S" Cversion="1.1.0" condition="STM32F4 HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="I2S" Cversion="1.3.1" condition="STM32F4 HAL DMA">
       <description>I2S HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_I2S
@@ -2941,7 +3040,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="IRDA" Cversion="1.1.0" condition="STM32F4 HAL DMA RCC">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="IRDA" Cversion="1.3.1" condition="STM32F4 HAL DMA RCC">
       <description>IrDA HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_IRDA
@@ -2951,7 +3050,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="IWDG" Cversion="1.1.0" condition="STM32F4 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="IWDG" Cversion="1.3.1" condition="STM32F4 HAL">
       <description>Independent watchdog (IWDG) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_IWDG
@@ -2961,7 +3060,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="LTDC" Cversion="1.1.0" condition="STM32F4x9 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="LTDC" Cversion="1.3.1" condition="STM32F4x9 HAL">
       <description>LCD-TFT Controller (LTDC) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_LTDC
@@ -2971,7 +3070,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="NAND" Cversion="1.1.0" condition="STM32F4x5_7_9 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="NAND" Cversion="1.3.1" condition="STM32F4x5_7_9_6 HAL">
       <description>NAND Flash controller HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_NAND
@@ -2979,11 +3078,11 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <files>
         <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nand.c"/>
         <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fsmc.c" condition="STM32F40_41x"/>
-        <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.c"  condition="STM32F42_43x"/>
+        <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.c"  condition="STM32F42_43_44x"/>
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="NOR" Cversion="1.1.0" condition="STM32F4x5_7_9 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="NOR" Cversion="1.3.1" condition="STM32F4x5_7_9_6 HAL">
       <description>NOR Flash controller HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_NOR
@@ -2991,11 +3090,11 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <files>
         <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nor.c"/>
         <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fsmc.c" condition="STM32F40_41x"/>
-        <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.c"  condition="STM32F42_43x"/>
+        <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.c"  condition="STM32F42_43_44x"/>
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="PC Card" Cversion="1.1.0" condition="STM32F4x5_7_9 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="PC Card" Cversion="1.3.1" condition="STM32F4x5_7_9 HAL">
       <description>PC Card controller HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_PCCARD
@@ -3007,7 +3106,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="PCD" Cversion="1.1.0" condition="STM32F4 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="PCD" Cversion="1.3.1" condition="STM32F4 HAL">
       <description>USB Peripheral controller (PCD) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_PCD
@@ -3019,7 +3118,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="PWR" Cversion="1.1.0" condition="STM32F4 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="PWR" Cversion="1.3.1" condition="STM32F4 HAL">
       <description>Power controller (PWR) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_PWR
@@ -3030,7 +3129,17 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="RCC" Cversion="1.1.0" condition="STM32F4 HAL GPIO">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="QSPI" Cversion="1.3.1" condition="STM32F446 HAL DMA">
+      <description>Quad Serial peripheral interface (QSPI) HAL driver</description>
+      <RTE_Components_h>
+        #define RTE_DEVICE_HAL_QSPI
+      </RTE_Components_h>
+      <files>
+        <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.c"/>
+      </files>
+    </component>
+
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="RCC" Cversion="1.3.1" condition="STM32F4 HAL GPIO">
       <description>Reset and clock control (RCC) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_RCC
@@ -3041,7 +3150,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="RNG" Cversion="1.1.0" condition="STM32F4 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="RNG" Cversion="1.3.1" condition="STM32F4x5_7_9 HAL">
       <description>Random number generator (RNG) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_RNG
@@ -3051,7 +3160,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="RTC" Cversion="1.1.0" condition="STM32F4 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="RTC" Cversion="1.3.1" condition="STM32F4 HAL">
       <description>Real-time clock (RTC) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_RTC
@@ -3062,17 +3171,18 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SAI" Cversion="1.1.0" condition="STM32F42_43x HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SAI" Cversion="1.3.1" condition="STM32F42_43_44x HAL DMA">
       <description>Serial audio interface (SAI) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_SAI
       </RTE_Components_h>
       <files>
         <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.c"/>
+        <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai_ex.c"/>
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SD" Cversion="1.1.0" condition="STM32F4 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SD" Cversion="1.3.1" condition="STM32F4 HAL DMA">
       <description>Secure digital (SD) interface HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_SD
@@ -3083,7 +3193,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SDRAM" Cversion="1.1.0" condition="STM32F42_43x HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SDRAM" Cversion="1.3.1" condition="STM32F42_43_44x HAL DMA">
       <description>SDRAM controller (SDRAM) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_SDRAM
@@ -3094,7 +3204,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="Smartcard" Cversion="1.1.0" condition="STM32F4 HAL DMA RCC">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="Smartcard" Cversion="1.3.1" condition="STM32F4 HAL DMA RCC">
       <description>Smartcard HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_SMARTCARD
@@ -3104,7 +3214,17 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SPI" Cversion="1.1.0" condition="STM32F4 HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SPDIFRX" Cversion="1.3.1" condition="STM32F446 HAL DMA">
+      <description>SPDIF Receiver interface (SPDIFRX) HAL driver</description>
+      <RTE_Components_h>
+        #define RTE_DEVICE_HAL_SPDIFRX
+      </RTE_Components_h>
+      <files>
+        <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spdifrx.c"/>
+      </files>
+    </component>
+
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SPI" Cversion="1.3.1" condition="STM32F4 HAL DMA">
       <description>Serial peripheral interface (SPI) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_SPI
@@ -3114,7 +3234,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SRAM" Cversion="1.1.0" condition="STM32F4x5_7_9 HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SRAM" Cversion="1.3.1" condition="STM32F4x5_7_9_6 HAL DMA">
       <description>SRAM controller (SRAM) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_SRAM
@@ -3122,11 +3242,11 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <files>
         <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.c"/>
         <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fsmc.c" condition="STM32F40_41x"/>
-        <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.c"  condition="STM32F42_43x"/>
+        <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.c"  condition="STM32F42_43_44x"/>
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="TIM" Cversion="1.1.0" condition="STM32F4 HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="TIM" Cversion="1.3.1" condition="STM32F4 HAL DMA">
       <description>Timers (TIM) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_TIM
@@ -3137,7 +3257,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="UART" Cversion="1.1.0" condition="STM32F4 HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="UART" Cversion="1.3.1" condition="STM32F4 HAL DMA">
       <description>Universal asynchronous receiver transmitter (UART) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_UART
@@ -3147,7 +3267,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="USART" Cversion="1.1.0" condition="STM32F4 HAL DMA RCC">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="USART" Cversion="1.3.1" condition="STM32F4 HAL DMA RCC">
       <description>Universal synchronous asynchronous receiver transmitter (USART) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_USART
@@ -3157,7 +3277,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="WWDG" Cversion="1.1.0" condition="STM32F4 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="WWDG" Cversion="1.3.1" condition="STM32F4 HAL">
       <description>Window watchdog (WWDG) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_WWDG
@@ -3169,7 +3289,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
 
     <!-- END: STMicroelectronics STM32CubeF4 HAL -->
 
-    <component Cclass="CMSIS Driver" Cgroup="SPI" Capiversion="2.01"  Cversion="2.02" condition="STM32F4 CMSIS_Driver SPI">
+    <component Cclass="CMSIS Driver" Cgroup="SPI" Capiversion="2.1"  Cversion="2.6" condition="STM32F4 CMSIS_Driver SPI">
       <description>SPI Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_SPI1                /* Driver SPI1 */
@@ -3184,7 +3304,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="CMSIS Driver" Cgroup="USART" Capiversion="2.01" Cversion="2.01" condition="STM32F4 CMSIS_Driver USART">
+    <component Cclass="CMSIS Driver" Cgroup="USART" Capiversion="2.1" Cversion="2.3" condition="STM32F4 CMSIS_Driver USART">
       <description>USART Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_USART1              /* Driver USART1 */
@@ -3201,7 +3321,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="CMSIS Driver" Cgroup="I2C" Capiversion="2.02" Cversion="2.02" condition="STM32F4 CMSIS_Driver I2C">
+    <component Cclass="CMSIS Driver" Cgroup="I2C" Capiversion="2.2" Cversion="2.3" condition="STM32F4 CMSIS_Driver I2C">
       <description>I2C Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_I2C1                /* Driver I2C1 */
@@ -3213,7 +3333,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="CMSIS Driver" Cgroup="MCI" Capiversion="2.02" Cversion="2.01" condition="STM32F4 CMSIS_Driver MCI">
+    <component Cclass="CMSIS Driver" Cgroup="MCI" Capiversion="2.2" Cversion="2.3" condition="STM32F4 CMSIS_Driver MCI">
       <description>MCI Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_MCI0                /* Driver MCI0 */
@@ -3223,7 +3343,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="CMSIS Driver" Cgroup="Ethernet MAC" Capiversion="2.01" Cversion="2.01" condition="STM32F4 CMSIS_Driver ETH_MAC">
+    <component Cclass="CMSIS Driver" Cgroup="Ethernet MAC" Capiversion="2.1" Cversion="2.2" condition="STM32F4 CMSIS_Driver ETH_MAC">
       <description>Ethernet MAC Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_ETH_MAC0            /* Driver ETH_MAC0 */
@@ -3233,7 +3353,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="CMSIS Driver" Cgroup="USB Device" Csub="Full-speed" Capiversion="2.01" Cversion="2.06" condition="STM32F4 CMSIS_Driver USB0">
+    <component Cclass="CMSIS Driver" Cgroup="USB Device" Csub="Full-speed" Capiversion="2.1" Cversion="2.8" condition="STM32F4 CMSIS_Driver USB0">
       <description>USB Device Full-Speed Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_USBD0               /* Driver USBD0 */
@@ -3244,7 +3364,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="CMSIS Driver" Cgroup="USB Device" Csub="High-speed" Capiversion="2.01" Cversion="2.06" condition="STM32F4 CMSIS_Driver USB1">
+    <component Cclass="CMSIS Driver" Cgroup="USB Device" Csub="High-speed" Capiversion="2.1" Cversion="2.8" condition="STM32F4 CMSIS_Driver USB1">
       <description>USB Device High-Speed Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_USBD1               /* Driver USBD1 */
@@ -3255,7 +3375,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="CMSIS Driver" Cgroup="USB Host" Csub="Full-speed" Capiversion="2.00" Cversion="2.07" condition="STM32F4 CMSIS_Driver USB0">
+    <component Cclass="CMSIS Driver" Cgroup="USB Host" Csub="Full-speed" Capiversion="2.0" Cversion="2.11" condition="STM32F4 CMSIS_Driver USB0">
       <description>USB Host Full-Speed Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_USBH0               /* Driver USBH0 */
@@ -3266,7 +3386,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="CMSIS Driver" Cgroup="USB Host" Csub="High-speed" Capiversion="2.00" Cversion="2.07" condition="STM32F4 CMSIS_Driver USB1">
+    <component Cclass="CMSIS Driver" Cgroup="USB Host" Csub="High-speed" Capiversion="2.0" Cversion="2.11" condition="STM32F4 CMSIS_Driver USB1">
       <description>USB Host High-Speed Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_USBH1               /* Driver USBH1 */

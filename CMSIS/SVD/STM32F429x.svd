@@ -25,6 +25,11 @@ xs:noNamespaceSchemaLocation="CMSIS-SVD_Schema_1_1.xsd">
         <size>0x400</size>
         <usage>registers</usage>
       </addressBlock>
+<interrupt>
+<name>FPU</name>
+<description>FPU interrupt</description>
+<value>81</value>
+</interrupt>
       <interrupt>
         <name>RNG</name>
         <description>Rng global interrupt</description>

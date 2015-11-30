@@ -1,28 +1,28 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013 - 2014 ARM Ltd.
+ * Copyright (c) 2013-2015 ARM Ltd.
  *
- * This software is provided 'as-is', without any express or implied warranty. 
- * In no event will the authors be held liable for any damages arising from 
- * the use of this software. Permission is granted to anyone to use this 
- * software for any purpose, including commercial applications, and to alter 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software. Permission is granted to anyone to use this
+ * software for any purpose, including commercial applications, and to alter
  * it and redistribute it freely, subject to the following restrictions:
  *
- * 1. The origin of this software must not be misrepresented; you must not 
+ * 1. The origin of this software must not be misrepresented; you must not
  *    claim that you wrote the original software. If you use this software in
- *    a product, an acknowledgment in the product documentation would be 
- *    appreciated but is not required. 
- * 
- * 2. Altered source versions must be plainly marked as such, and must not be 
- *    misrepresented as being the original software. 
- * 
- * 3. This notice may not be removed or altered from any source distribution.
- *   
+ *    a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  *
- * $Date:        24. October 2014
- * $Revision:    V2.01
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ *
+ * 3. This notice may not be removed or altered from any source distribution.
+ *
+ *
+ * $Date:        02. June 2015
+ * $Revision:    V2.3
  *
  * Project:      I2C Driver definitions for ST STM32F4xx
- * -------------------------------------------------------------------- */
+ * -------------------------------------------------------------------------- */
 
 #ifndef __I2C_STM32F4XX_H
 #define __I2C_STM32F4XX_H
@@ -115,13 +115,13 @@
     #error "I2C2 using DMA requires Rx and Tx DMA channel enabled in RTE_Device.h!"
   #endif
 
-  #if (!defined (STM32F401xC)) && (!defined (STM32F401xE)) && (!defined (STM32F411xE))
+  #if (!defined (STM32F401xC)) && (!defined (STM32F401xE)) && (!defined (STM32F411xE)) && (!defined (STM32F446xx))
     /* SDA available on pins: PB11, PF0, PH5 */
     #if (RTE_I2C2_SDA_PORT_ID != 2 && RTE_I2C2_SDA_PORT_ID != 0 && RTE_I2C2_SDA_PORT_ID != 1)
       #error "Only PB11, PF0 and PH5 can be configured as I2C2 SDA on selected device!"
     #endif
   #endif
-  
+
   #if defined (STM32F411xE)
     /* SDA available on pins: PB3, PB9, PB11 */
     #if (RTE_I2C2_SDA_PORT_ID != 3 && RTE_I2C2_SDA_PORT_ID != 4 && RTE_I2C2_SDA_PORT_ID != 2)
@@ -140,6 +140,17 @@
     /* SCL available on pin:  PB10 */
     #if (RTE_I2C2_SCL_PORT_ID != 2)
       #error "Only PB10 can be configured as I2C2 SCL on selected device!"
+    #endif
+  #endif
+
+  #if defined (STM32F446xx)
+    /* SDA available on pins: PB3, PB11, PF0 */
+    #if (RTE_I2C2_SDA_PORT_ID != 3 && RTE_I2C2_SDA_PORT_ID != 2 && RTE_I2C2_SDA_PORT_ID != 0)
+      #error "Only PB3, PB11 and PF0 can be configured as I2C2 SDA on selected device!"
+    #endif
+    /* SCL available on pin:  PB10, PF1 */
+    #if (RTE_I2C2_SCL_PORT_ID != 2 && RTE_I2C2_SCL_PORT_ID != 0)
+      #error "Only PB10 and PF1 can be configured as I2C2 SCL on selected device!"
     #endif
   #endif
 
@@ -180,7 +191,8 @@
     #error "I2C3 using DMA requires Rx and Tx DMA channel enabled in RTE_Device.h!"
   #endif
 
-  #if (!defined (STM32F401xC)) && (!defined (STM32F401xE)) && (!defined (STM32F411xE))
+
+  #if (!defined (STM32F401xC)) && (!defined (STM32F401xE)) && (!defined (STM32F411xE)) && (!defined (STM32F446xx))
     /* SDA available on pins: PC9, PH8 */
     #if (RTE_I2C3_SDA_PORT_ID != 1 && RTE_I2C3_SDA_PORT_ID != 0)
       #error "Only PC9 and PH8 can be configured as I2C3 SDA on selected device!"
@@ -194,14 +206,14 @@
     #endif
   #endif
 
-  #if defined (STM32F401xC) || defined (STM32F401xE)
+  #if defined (STM32F401xC) || defined (STM32F401xE) || defined (STM32F446xx)
     /* SDA available on pins: PB4, PC9 */
     #if (RTE_I2C3_SDA_PORT_ID != 2 && RTE_I2C3_SDA_PORT_ID != 1)
       #error "Only PB4 and PC9 can be configured as I2C3 SDA on selected device!"
     #endif
   #endif
 
-  #if defined (STM32F401xC) || defined (STM32F401xE) || defined (STM32F411xE)
+  #if defined (STM32F401xC) || defined (STM32F401xE) || defined (STM32F411xE) || defined (STM32F446xx)
     /* SCL available on pin:  PA8 */
     #if (RTE_I2C3_SCL_PORT_ID != 1)
       #error "Only PA8 can be configured as I2C3 SCL on selected device!"
@@ -341,7 +353,6 @@ typedef struct _I2C_INFO {
   ARM_I2C_SignalEvent_t cb_event;             // Event Callback
   ARM_I2C_STATUS        status;               // Status flags
   I2C_TRANSFER_INFO     xfer;                 // Transfer information
-  uint8_t               init;                 // Init counter
   uint8_t               flags;                // Current I2C state flags
 } I2C_INFO;
 

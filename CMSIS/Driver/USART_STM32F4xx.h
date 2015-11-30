@@ -1,28 +1,28 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013 - 2014 ARM Ltd.
+ * Copyright (c) 2013-2015 ARM Ltd.
  *
- * This software is provided 'as-is', without any express or implied warranty. 
- * In no event will the authors be held liable for any damages arising from 
- * the use of this software. Permission is granted to anyone to use this 
- * software for any purpose, including commercial applications, and to alter 
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
+ * the use of this software. Permission is granted to anyone to use this
+ * software for any purpose, including commercial applications, and to alter
  * it and redistribute it freely, subject to the following restrictions:
  *
- * 1. The origin of this software must not be misrepresented; you must not 
+ * 1. The origin of this software must not be misrepresented; you must not
  *    claim that you wrote the original software. If you use this software in
- *    a product, an acknowledgment in the product documentation would be 
- *    appreciated but is not required. 
- * 
- * 2. Altered source versions must be plainly marked as such, and must not be 
- *    misrepresented as being the original software. 
- * 
- * 3. This notice may not be removed or altered from any source distribution.
- *   
+ *    a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  *
- * $Date:        18. November 2014
- * $Revision:    V2.01
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ *
+ * 3. This notice may not be removed or altered from any source distribution.
+ *
+ *
+ * $Date:        9. June 2015
+ * $Revision:    V2.3
  *
  * Project:      USART Driver definitions for ST STM32F4xx
- * -------------------------------------------------------------------- */
+ * -------------------------------------------------------------------------- */
 
 #ifndef __USART_STM32F4XX_H
 #define __USART_STM32F4XX_H
@@ -398,7 +398,7 @@
 // USART3 configuration definitions
 #if (RTE_USART3 == 1)
 
-  #if defined (STM32F401xC) || defined (STM32F401xE) || defined (STM32F411xE)
+  #ifndef USART3
     #error "USART3 not available for selected device!"
   #endif
 
@@ -462,7 +462,7 @@
 // UART4 configuration definitions
 #if (RTE_UART4 == 1)
 
-  #if defined (STM32F401xC) || defined (STM32F401xE) || defined (STM32F411xE)
+  #ifndef UART4
     #error "UART4 not available for selected device!"
   #endif
 
@@ -501,7 +501,7 @@
 // UART5 configuration definitions
 #if (RTE_UART5 == 1)
 
-  #if defined (STM32F401xC) || defined (STM32F401xE) || defined (STM32F411xE)
+  #ifndef UART5
     #error "UART5 not available for selected device!"
   #endif
 
@@ -610,8 +610,8 @@
   #endif
 
   #if (RTE_USART6_CTS == 1)
-     #if defined (STM32F401xC) || defined (STM32F401xE) || defined (STM32F411xE)
-        #error "CTS line not available on selected device!"
+    #if defined (STM32F401xC) || defined (STM32F401xE) || defined (STM32F411xE)
+      #error "CTS line not available on selected device!"
     #endif
     #define MX_USART6_RTS_Pin       1
     #define MX_USART6_RTS_GPIOx     RTE_USART6_RTS_PORT
@@ -635,10 +635,7 @@
 // UART7 configuration definitions
 #if (RTE_UART7 == 1)
 
-  #if defined (STM32F401xC) || defined (STM32F401xE) || \
-      defined (STM32F411xE) || defined (STM32F405xx) || \
-      defined (STM32F407xx) || defined (STM32F415xx) || \
-      defined (STM32F417xx)
+  #ifndef UART7
     #error "UART7 not available for selected device!"
   #endif
 
@@ -677,10 +674,7 @@
 // UART8 configuration definitions
 #if (RTE_UART8 == 1)
 
-  #if defined (STM32F401xC) || defined (STM32F401xE) || \
-      defined (STM32F411xE) || defined (STM32F405xx) || \
-      defined (STM32F407xx) || defined (STM32F415xx) || \
-      defined (STM32F417xx)
+  #ifndef UART8
     #error "UART8 not available for selected device!"
   #endif
 
@@ -806,69 +800,6 @@
 #endif
 #endif
 
-#if defined (STM32F427xx) || defined (STM32F429xx) || \
-    defined (STM32F437xx) || defined (STM32F439xx)
-// USART Enable Clock
-#define __USARTx_CLK_ENABLE(x)             \
- ((x == USART1) ? __USART1_CLK_ENABLE()  : \
-  (x == USART2) ? __USART2_CLK_ENABLE()  : \
-  (x == USART3) ? __USART3_CLK_ENABLE()  : \
-  (x == UART4)  ? __UART4_CLK_ENABLE()   : \
-  (x == UART5)  ? __UART5_CLK_ENABLE()   : \
-  (x == USART6) ? __USART6_CLK_ENABLE()  : \
-  (x == UART7)  ? __UART7_CLK_ENABLE()   : \
-  (x == UART8)  ? __UART8_CLK_ENABLE()   : \
-  NULL)
-
-// USART Disable clock
-#define __USARTx_CLK_DISABLE(x)            \
- ((x == USART1) ? __USART1_CLK_DISABLE() : \
-  (x == USART2) ? __USART2_CLK_DISABLE() : \
-  (x == USART3) ? __USART3_CLK_DISABLE() : \
-  (x == UART4)  ? __UART4_CLK_DISABLE()  : \
-  (x == UART5)  ? __UART5_CLK_DISABLE()  : \
-  (x == USART6) ? __USART6_CLK_DISABLE() : \
-  (x == UART7)  ? __UART7_CLK_DISABLE()  : \
-  (x == UART8)  ? __UART8_CLK_DISABLE()  : \
-  NULL)
-
-#elif defined (STM32F405xx) || defined (STM32F415xx) || \
-      defined (STM32F407xx) || defined (STM32F417xx)
-// USART Enable Clock
-#define __USARTx_CLK_ENABLE(x)             \
- ((x == USART1) ? __USART1_CLK_ENABLE()  : \
-  (x == USART2) ? __USART2_CLK_ENABLE()  : \
-  (x == USART3) ? __USART3_CLK_ENABLE()  : \
-  (x == UART4)  ? __UART4_CLK_ENABLE()   : \
-  (x == UART5)  ? __UART5_CLK_ENABLE()   : \
-  (x == USART6) ? __USART6_CLK_ENABLE()  : \
-  NULL)
-
-// USART Disable clock
-#define __USARTx_CLK_DISABLE(x)            \
- ((x == USART1) ? __USART1_CLK_DISABLE() : \
-  (x == USART2) ? __USART2_CLK_DISABLE() : \
-  (x == USART3) ? __USART3_CLK_DISABLE() : \
-  (x == UART4)  ? __UART4_CLK_DISABLE()  : \
-  (x == UART5)  ? __UART5_CLK_DISABLE()  : \
-  (x == USART6) ? __USART6_CLK_DISABLE() : \
-  NULL)
-
-#else
-// USART Enable Clock
-#define __USARTx_CLK_ENABLE(x)             \
- ((x == USART1) ? __USART1_CLK_ENABLE()  : \
-  (x == USART2) ? __USART2_CLK_ENABLE()  : \
-  (x == USART6) ? __USART6_CLK_ENABLE()  : \
-  NULL)
-
-// USART Disable clock
-#define __USARTx_CLK_DISABLE(x)            \
- ((x == USART1) ? __USART1_CLK_DISABLE() : \
-  (x == USART2) ? __USART2_CLK_DISABLE() : \
-  (x == USART6) ? __USART6_CLK_DISABLE() : \
-  NULL)
-#endif
 
 #if (defined(MX_USART1_RX_DMA_Instance) || \
      defined(MX_USART2_RX_DMA_Instance) || \
@@ -895,15 +826,10 @@
 #endif
 
 // USART BRR macro
-#ifdef USART_ASYNC
-#define __USART_BRR __UART_BRR_SAMPLING16
-#endif
-#ifdef USART_IRDA
-#define __USART_BRR __IRDA_BRR
-#endif
-#ifdef USART_SMARTCARD
-#define __USART_BRR __SMARTCARD_BRR
-#endif
+#define USART_DIVIDER(_PCLK_, _BAUD_)           (((_PCLK_)*25)/(4*(_BAUD_)))
+#define USART_DIVIDER_MANTISA(_PCLK_, _BAUD_)     (USART_DIVIDER((_PCLK_), (_BAUD_))/100)
+#define USART_DIVIDER_FRACTION(_PCLK_, _BAUD_)  (((USART_DIVIDER((_PCLK_), (_BAUD_)) - (USART_DIVIDER_MANTISA((_PCLK_), (_BAUD_)) * 100)) * 16 + 50) / 100)
+#define USART_BAUDRATE_DIVIDER(_PCLK_, _BAUD_)   ((USART_DIVIDER_MANTISA((_PCLK_), (_BAUD_)) << 4)|(USART_DIVIDER_FRACTION((_PCLK_), (_BAUD_)) & 0x0F))
 
 // USART flags
 #define USART_FLAG_INITIALIZED      ((uint8_t)(1U))
@@ -911,7 +837,6 @@
 #define USART_FLAG_CONFIGURED       ((uint8_t)(1U << 2))
 #define USART_FLAG_TX_ENABLED       ((uint8_t)(1U << 3))
 #define USART_FLAG_RX_ENABLED       ((uint8_t)(1U << 4))
-#define USART_FLAG_SEND_ACTIVE      ((uint8_t)(1U << 5))
 
 // USART synchronous xfer modes
 #define USART_SYNC_MODE_TX           ( 1UL )
@@ -962,12 +887,23 @@ typedef struct _USART_TRANSFER_INFO {
   uint16_t              def_val;        // Default transfer value
   uint32_t              sync_mode;      // Synchronous mode flag
   uint8_t               break_flag;     // Transmit break flag
+  uint8_t               send_active;    // Send active flag
 } USART_TRANSFER_INFO;
+
+typedef struct _USART_STATUS {
+  uint8_t tx_busy;                      // Transmitter busy flag
+  uint8_t rx_busy;                      // Receiver busy flag
+  uint8_t tx_underflow;                 // Transmit data underflow detected (cleared on start of next send operation)
+  uint8_t rx_overflow;                  // Receive data overflow detected (cleared on start of next receive operation)
+  uint8_t rx_break;                     // Break detected on receive (cleared on start of next receive operation)
+  uint8_t rx_framing_error;             // Framing error detected on receive (cleared on start of next receive operation)
+  uint8_t rx_parity_error;              // Parity error detected on receive (cleared on start of next receive operation)
+} USART_STATUS;
 
 // USART Information (Run-time)
 typedef struct _USART_INFO {
   ARM_USART_SignalEvent_t cb_event;            // Event Callback
-  ARM_USART_STATUS        status;              // Status flags
+  USART_STATUS            status;              // Status flags
   uint8_t                 flags;               // Current USART flags
   uint32_t                mode;                // Current USART mode
   uint32_t                flow_control;        // Flow control
