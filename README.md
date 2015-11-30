@@ -47,6 +47,10 @@ The actual files used by the package are in the `xpack` branch.
 
 Most of the files should be unchanged.
 
+The following files were patched to silence warnings:
+
+* stm32f446xx.h
+
 ## Vectors
 
 The `vectors_*.c` files were created using the ARM assembly files.
