@@ -9,7 +9,7 @@
   *          This file contains:
   *           - Data structures and the address mapping for all peripherals
   *           - Peripheral's registers declarations and bits definition
-  *           - Macros to access peripheral’s registers hardware
+  *           - Macros to access peripheral's registers hardware
   *
   ******************************************************************************
   * @attention
@@ -762,6 +762,12 @@ typedef struct
   * @brief SPDIFRX-RX Interface
   */
 
+// [ILG]
+#if defined ( __GNUC__ )
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpadded"
+#endif
+
 typedef struct
 {
   __IO uint32_t   CR;           /*!< Control register,                   Address offset: 0x00 */
@@ -775,6 +781,11 @@ typedef struct
    __IO uint32_t  DIR;          /*!< Debug Information register,         Address offset: 0x18 */
   uint16_t        RESERVED2;    /*!< Reserved,  0x1A                                          */   
 } SPDIFRX_TypeDef;
+
+// [ILG]
+#if defined ( __GNUC__ )
+#pragma GCC diagnostic pop
+#endif
 
 /** 
   * @brief TIM
