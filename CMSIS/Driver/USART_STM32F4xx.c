@@ -162,19 +162,19 @@ static const USART_RESOURCES USART1_Resources = {
 #if (MX_USART1_VM == VM_ASYNC)
   &huart1,
 #ifdef MX_USART1_SINGLE_WIRE
-  USART_VM_ASYNC_SINGLE_WIRE,
+  VM_ASYNC_SINGLE_WIRE,
 #else
-  USART_VM_ASYNC,
+  VM_ASYNC,
 #endif
 #elif (MX_USART1_VM == VM_SYNC)
   &husart1,
-  USART_VM_SYNC,
+  VM_SYNC,
 #elif (MX_USART1_VM == VM_IRDA)
   &hirda1,
-  USART_VM_IRDA,
+  VM_IRDA,
 #elif (MX_USART1_VM == VM_SMARTCARD)
   &hsc1,
-  USART_VM_SMARTCARD,
+  VM_SMARTCARD,
 #endif
 #endif
   {     // Capabilities
@@ -355,19 +355,19 @@ static const USART_RESOURCES USART2_Resources = {
 #if (MX_USART2_VM == VM_ASYNC)
   &huart2,
 #ifdef MX_USART2_SINGLE_WIRE
-  USART_VM_ASYNC_SINGLE_WIRE,
+  VM_ASYNC_SINGLE_WIRE,
 #else
-  USART_VM_ASYNC,
+  VM_ASYNC,
 #endif
 #elif (MX_USART2_VM == VM_SYNC)
   &husart2,
-  USART_VM_SYNC,
+  VM_SYNC,
 #elif (MX_USART2_VM == VM_IRDA)
   &hirda2,
-  USART_VM_IRDA,
+  VM_IRDA,
 #elif (MX_USART2_VM == VM_SMARTCARD)
   &hsc2,
-  USART_VM_SMARTCARD,
+  VM_SMARTCARD,
 #endif
 #endif
   {     // Capabilities
@@ -548,19 +548,19 @@ static const USART_RESOURCES USART3_Resources = {
 #if (MX_USART3_VM == VM_ASYNC)
   &huart3,
 #ifdef MX_USART3_SINGLE_WIRE
-  USART_VM_ASYNC_SINGLE_WIRE,
+  VM_ASYNC_SINGLE_WIRE,
 #else
-  USART_VM_ASYNC,
+  VM_ASYNC,
 #endif
 #elif (MX_USART3_VM == VM_SYNC)
   &husart3,
-  USART_VM_SYNC,
+  VM_SYNC,
 #elif (MX_USART3_VM == VM_IRDA)
   &hirda3,
-  USART_VM_IRDA,
+  VM_IRDA,
 #elif (MX_USART3_VM == VM_SMARTCARD)
   &hsc3,
-  USART_VM_SMARTCARD,
+  VM_SMARTCARD,
 #endif
 #endif
   {     // Capabilities
@@ -728,13 +728,13 @@ static const USART_RESOURCES USART4_Resources = {
 #if (MX_UART4_VM == Asynchronous)
   &huart4,
 #ifdef MX_UART4_SINGLE_WIRE
-  USART_VM_ASYNC_SINGLE_WIRE,
+  VM_ASYNC_SINGLE_WIRE,
 #else
-  USART_VM_ASYNC,
+  VM_ASYNC,
 #endif
 #elif (MX_UART4_VM == IrDA)
   &hirda4,
-  USART_VM_IRDA,
+  VM_IRDA,
 #endif
 #endif
   {     // Capabilities
@@ -870,13 +870,13 @@ static const USART_RESOURCES USART5_Resources = {
 #if (MX_UART5_VM == Asynchronous)
   &huart5,
 #ifdef MX_USART5_SINGLE_WIRE
-  USART_VM_ASYNC_SINGLE_WIRE,
+  VM_ASYNC_SINGLE_WIRE,
 #else
-  USART_VM_ASYNC,
+  VM_ASYNC,
 #endif
 #elif (MX_UART5_VM == IrDA)
   &hirda5,
-  USART_VM_IRDA,
+  VM_IRDA,
 #endif
 #endif
   {     // Capabilities
@@ -1025,19 +1025,19 @@ static const USART_RESOURCES USART6_Resources = {
 #if (MX_USART6_VM == VM_ASYNC)
   &huart6,
 #ifdef MX_USART6_SINGLE_WIRE
-  USART_VM_ASYNC_SINGLE_WIRE,
+  VM_ASYNC_SINGLE_WIRE,
 #else
-  USART_VM_ASYNC,
+  VM_ASYNC,
 #endif
 #elif (MX_USART6_VM == VM_SYNC)
   &husart6,
-  USART_VM_SYNC,
+  VM_SYNC,
 #elif (MX_USART6_VM == VM_IRDA)
   &hirda6,
-  USART_VM_IRDA,
+  VM_IRDA,
 #elif (MX_USART6_VM == VM_SMARTCARD)
   &hsc6,
-  USART_VM_SMARTCARD,
+  VM_SMARTCARD,
 #endif
 #endif
   {     // Capabilities
@@ -1205,13 +1205,13 @@ static const USART_RESOURCES USART7_Resources = {
 #if (MX_UART7_VM == Asynchronous)
   &huart7,
 #ifdef MX_UART7_SINGLE_WIRE
-  USART_VM_ASYNC_SINGLE_WIRE,
+  VM_ASYNC_SINGLE_WIRE,
 #else
-  USART_VM_ASYNC,
+  VM_ASYNC,
 #endif
 #elif (MX_UART7_VM == IrDA)
   &hirda7,
-  USART_VM_IRDA,
+  VM_IRDA,
 #endif
 #endif
   {     // Capabilities
@@ -1347,13 +1347,13 @@ static const USART_RESOURCES USART8_Resources = {
 #if (MX_UART8_VM == Asynchronous)
   &huart8,
 #ifdef MX_UART8_SINGLE_WIRE
-  USART_VM_ASYNC_SINGLE_WIRE,
+  VM_ASYNC_SINGLE_WIRE,
 #else
-  USART_VM_ASYNC,
+  VM_ASYNC,
 #endif
 #elif (MX_UART8_VM == IrDA)
   &hirda8,
-  USART_VM_IRDA,
+  VM_IRDA,
 #endif
 #endif
   {     // Capabilities
@@ -1601,26 +1601,26 @@ static int32_t USART_Initialize (      ARM_USART_SignalEvent_t  cb_event,
 #else
   switch (usart->vmode) {
 #ifdef USART_ASYNC
-    case USART_VM_ASYNC:
-    case USART_VM_ASYNC_SINGLE_WIRE:
+    case VM_ASYNC:
+    case VM_ASYNC_SINGLE_WIRE:
       ((UART_HandleTypeDef*)usart->h)->Instance = usart->reg;
       HAL_UART_MspInit ((UART_HandleTypeDef*) usart->h);
       break;
 #endif
 #ifdef USART_SYNC
-    case USART_VM_SYNC:
+    case VM_SYNC:
       ((USART_HandleTypeDef*)usart->h)->Instance = usart->reg;
       HAL_USART_MspInit ((USART_HandleTypeDef*) usart->h);
       break;
 #endif
 #ifdef USART_IRDA
-    case USART_VM_IRDA:
+    case VM_IRDA:
       ((IRDA_HandleTypeDef*)usart->h)->Instance = usart->reg;
       HAL_IRDA_MspInit ((IRDA_HandleTypeDef*) usart->h);
       break;
 #endif
-#ifdef VM_SMARTCARD
-    case USART_VM_SMARTCARD:
+#ifdef USART_SMARTCARD
+    case VM_SMARTCARD:
       ((SMARTCARD_HandleTypeDef*)usart->h)->Instance = usart->reg;
       HAL_SMARTCARD_MspInit ((SMARTCARD_HandleTypeDef*) usart->h);
       break;
@@ -1685,23 +1685,23 @@ static int32_t USART_Uninitialize (const USART_RESOURCES *usart) {
 #else
   switch (usart->vmode) {
 #ifdef USART_ASYNC
-    case USART_VM_ASYNC:
-    case USART_VM_ASYNC_SINGLE_WIRE:
+    case VM_ASYNC:
+    case VM_ASYNC_SINGLE_WIRE:
       HAL_UART_MspDeInit ((UART_HandleTypeDef*) usart->h);
       break;
 #endif
 #ifdef USART_SYNC
-    case USART_VM_SYNC:
+    case VM_SYNC:
       HAL_USART_MspDeInit ((USART_HandleTypeDef*) usart->h);
       break;
 #endif
 #ifdef USART_IRDA
-    case USART_VM_IRDA:
+    case VM_IRDA:
       HAL_IRDA_MspDeInit ((IRDA_HandleTypeDef*) usart->h);
       break;
 #endif
-#ifdef VM_SMARTCARD
-    case USART_VM_SMARTCARD:
+#ifdef USART_SMARTCARD
+    case VM_SMARTCARD:
       HAL_SMARTCARD_MspDeInit ((SMARTCARD_HandleTypeDef*) usart->h);
       break;
 #endif
@@ -2302,13 +2302,13 @@ static int32_t USART_Control (      uint32_t          control,
   switch (control & ARM_USART_CONTROL_Msk) {
     case ARM_USART_MODE_ASYNCHRONOUS:
 #ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
-      if (usart->vmode != USART_VM_ASYNC) { return ARM_USART_ERROR_MODE; }
+      if (usart->vmode != VM_ASYNC) { return ARM_USART_ERROR_MODE; }
 #endif
       mode = ARM_USART_MODE_ASYNCHRONOUS;
       break;
     case ARM_USART_MODE_SYNCHRONOUS_MASTER:
 #ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
-      if (usart->vmode != USART_VM_SYNC) { return ARM_USART_ERROR_MODE; }
+      if (usart->vmode != VM_SYNC) { return ARM_USART_ERROR_MODE; }
 #endif
       if (usart->capabilities.synchronous_master) {
           // Enable Clock pin
@@ -2323,7 +2323,7 @@ static int32_t USART_Control (      uint32_t          control,
       return ARM_USART_ERROR_MODE;
     case ARM_USART_MODE_SINGLE_WIRE:
 #ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
-      if (usart->vmode != USART_VM_ASYNC_SINGLE_WIRE) { return ARM_USART_ERROR_MODE; }
+      if (usart->vmode != VM_ASYNC_SINGLE_WIRE) { return ARM_USART_ERROR_MODE; }
 #endif
       // Enable Half duplex
       cr3 |= USART_CR3_HDSEL;
@@ -2331,7 +2331,7 @@ static int32_t USART_Control (      uint32_t          control,
       break;
     case ARM_USART_MODE_IRDA:
 #ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
-      if (usart->vmode != USART_VM_IRDA) { return ARM_USART_ERROR_MODE; }
+      if (usart->vmode != VM_IRDA) { return ARM_USART_ERROR_MODE; }
 #endif
       // Enable IrDA mode
       cr3 |= USART_CR3_IREN;
@@ -2339,7 +2339,7 @@ static int32_t USART_Control (      uint32_t          control,
       break;
     case ARM_USART_MODE_SMART_CARD:
 #ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
-      if (usart->vmode != USART_VM_SMARTCARD) { return ARM_USART_ERROR_MODE; }
+      if (usart->vmode != VM_SMARTCARD) { return ARM_USART_ERROR_MODE; }
 #endif
       if (usart->capabilities.smart_card) {
         // Enable Smart card mode

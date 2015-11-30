@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013-2014 ARM Ltd.
+ * Copyright (c) 2013-2015 ARM Ltd.
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        27. November 2014
- * $Revision:    V2.04
+ * $Date:        30. January 2015
+ * $Revision:    V2.06
  *
  * Driver:       Driver_USBD0
  * Configured:   via RTE_Device.h configuration file
@@ -34,6 +34,10 @@
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.06
+ *    Corrected IN ZLP sending
+ *  Version 2.05
+ *    VBUS sensing disabled if ARM_USBD_VBUS_DETECT is not enabled
  *  Version 2.04
  *    Reorganized, common endpoint structure for IN and OUT endpoints
  *  Version 2.03
@@ -58,7 +62,7 @@
 /* STM32CubeMX configuration:
  *
  * Pinout tab:
- *   - Select USB_OTG_FS peripheral and enable mode Host mode for proper PHY
+ *   - Select USB_OTG_FS peripheral and enable Device mode for proper PHY
  * Clock Configuration tab:
  *   - Configure clock
  * Configuration tab:
@@ -145,6 +149,7 @@ typedef struct {
   uint32_t  dataSize;
   uint32_t  maxPacketSize;
   uint8_t   in_NAK;
+  uint8_t   in_ZLP;
   uint8_t   flags;
 } ENDPOINT;
 
@@ -324,7 +329,7 @@ static int32_t USBD_ReadFromFifo (uint8_t ep_addr, uint32_t sz) {
   // which this payload was received = 1, then data is valid
      if ((OTG_DOEPTSIZ(ep_num) & (OTG_FS_DOEPTSIZx_PKTCNT_MSK | OTG_FS_DOEPTSIZx_RXDPID_MSK)) != 0) {
        sz = 0U;
-     }
+    }
   }
 
   // Copy data from FIFO
@@ -395,6 +400,7 @@ static void USBD_WriteToFifo (uint8_t ep_addr) {
 
   ptr_ep->bufferIndex += sz;
   ptr_ep->dataSize    -= sz;
+  ptr_ep->in_ZLP       = 0U;
   i = (sz+3U)>>2U;
   // Copy data to FIFO
   while (i--) {
@@ -480,8 +486,7 @@ static int32_t USBD_PowerControl (ARM_POWER_STATE state) {
       OTG->GAHBCFG  &= ~OTG_FS_GAHBCFG_GINTMSK;         // Disable global interrupt mask
 
       OTG->DCTL     |=  OTG_FS_DCTL_SDIS;               // Soft disconnect enabled
-      OTG->GCCFG    &= ~(OTG_FS_GCCFG_VBUSBSEN |        // Disable VBUS sensing device "B"
-                         OTG_FS_GCCFG_PWRDWN);          // Power down activated
+      OTG->GCCFG     =  0U;                             // Reset core configuration
 
       RCC->AHB2ENR  &= ~RCC_AHB2ENR_OTGFSEN;            // Disable OTG FS Clock
       break;
@@ -505,7 +510,11 @@ static int32_t USBD_PowerControl (ARM_POWER_STATE state) {
       osDelay(10);
 
       OTG->GAHBCFG  &= ~OTG_FS_GAHBCFG_GINTMSK;         // Disable global interrupt mask
-      OTG->GCCFG    |=  OTG_FS_GCCFG_VBUSBSEN;          // Enable VBUS sensing device "B"
+#if  (defined(ARM_USBD_VBUS_DETECT) && defined (MX_USB_OTG_FS_VBUS_Pin))
+      OTG->GCCFG    |=  OTG_FS_GCCFG_VBUSBSEN;          // Enable  VBUS sensing device "B"
+#else
+      OTG->GCCFG    |=  OTG_FS_GCCFG_NOVBUSSENS;        // Disable VBUS sensing device "B"
+#endif
       OTG->DCTL     |=  OTG_FS_DCTL_SDIS;               // Soft disconnect enabled
 
       // Set turnaround time and force device mode
@@ -796,7 +805,7 @@ static int32_t USBD_EndpointUnconfigure (uint8_t ep_addr) {
   ep_num =  EP_NUM(ep_addr);
   ep_dir = (ep_addr & ARM_USB_ENDPOINT_DIRECTION_MASK) == ARM_USB_ENDPOINT_DIRECTION_MASK;
 
-  OTG->DAINTMSK &= ~(1U << (ep_num + ((ep_dir ^ 1U) << 4U)));        // Disable Endpoint interrupt
+  OTG->DAINTMSK &= ~(1U << (ep_num + ((ep_dir ^ 1U) << 4U)));           // Disable Endpoint interrupt
 
   ptr_ep->flags &= ~USBD_EP_FLAG_CONFIGURED;            // Clear Endpoint configured flag
 
@@ -813,7 +822,7 @@ static int32_t USBD_EndpointUnconfigure (uint8_t ep_addr) {
         }
       }
       // If Last Active Isochronous IN Endpoint, Disable IISOIXFR
-      if (IsoEpEnCnt == 1) { OTG->GINTMSK &= ~OTG_FS_GINTMSK_IISOIXFRM; }
+      if (IsoEpEnCnt == 1U) { OTG->GINTMSK &= ~OTG_FS_GINTMSK_IISOIXFRM; }
     }
 
     if (OTG_DIEPCTL(ep_num) & OTG_FS_DIEPCTLx_EPENA) {
@@ -822,7 +831,7 @@ static int32_t USBD_EndpointUnconfigure (uint8_t ep_addr) {
 
     OTG_DIEPCTL(ep_num)    |=  OTG_FS_DIEPCTLx_SNAK;    // Set Endpoint NAK
 
-    if (ep_num) OTG_DIEPCTL(ep_num)  &= ~OTG_FS_DIEPCTLx_USBAEP;      // Deactivate Endpoint
+    if (ep_num) { OTG_DIEPCTL(ep_num)  &= ~OTG_FS_DIEPCTLx_USBAEP; }     // Deactivate Endpoint
   } else {                              // OUT Endpoint
     // Count Active Isochronous OUT Endpoints
     if (OTG_EP_OUT_TYPE(ep_num) == ARM_USB_ENDPOINT_ISOCHRONOUS) {
@@ -964,6 +973,9 @@ static int32_t USBD_EndpointTransfer (uint8_t ep_addr, uint8_t *data, uint32_t n
   if (ep_dir) {                         // IN Endpoint
     ep_num = EP_NUM(ep_addr);
 
+    if (num == 0) {
+      ptr_ep->in_ZLP     =  1U;                         // Send IN ZLP requested
+    }
     ptr_ep->in_NAK       =  1U;                         // Set IN Endpoint NAK flag
     OTG_DIEPCTL(ep_num) |=  OTG_FS_DIEPCTLx_CNAK;       // Clear NAK
     OTG_DIEPCTL(ep_num) |=  OTG_FS_DIEPCTLx_SNAK;       // Set NAK
@@ -981,7 +993,7 @@ static int32_t USBD_EndpointTransfer (uint8_t ep_addr, uint8_t *data, uint32_t n
   \param[in]   ep_addr  Endpoint Address
                 - ep_addr.0..3: Address
                 - ep_addr.7:    Direction
-  \return      number of successfully transfered data bytes
+  \return      number of successfully transferred data bytes
 */
 static uint32_t USBD_EndpointTransferGetResult (uint8_t ep_addr) {
   return ep[EP_ID(ep_addr)].bufferIndex;
@@ -1016,6 +1028,9 @@ static int32_t USBD_EndpointTransferAbort (uint8_t ep_addr) {
     }
 
     OTG_DIEPCTL(ep_num)     |= OTG_FS_DIEPCTLx_SNAK;    // Set NAK
+
+    ptr_ep->in_NAK           =  0U;                     // Clear IN Endpoint NAK flag
+    ptr_ep->in_ZLP           =  0U;                     // Clear IN ZLP request
 
     USBD_FlushInEpFifo (ep_addr);
   } else {
@@ -1215,7 +1230,7 @@ void USBD_FS_IRQ (uint32_t gintsts) {
             if (!val) { OTG->DIEPMSK &= ~OTG_FS_DIEPMSK_INEPNEM; }
 
             // If Data available, write Data
-            if ( ptr_ep->dataSize || (!ptr_ep->buffer && !ptr_ep->dataSize)) {
+            if (ptr_ep->dataSize || ptr_ep->in_ZLP) {
               USBD_WriteToFifo(num | ARM_USB_ENDPOINT_DIRECTION_MASK);
             }
           }
