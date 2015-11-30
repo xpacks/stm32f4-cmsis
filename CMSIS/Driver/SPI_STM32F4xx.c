@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *   
  *
- * $Date:        24. September 2014
- * $Revision:    V2.00
+ * $Date:        18. November 2014
+ * $Revision:    V2.01
  *
  * Driver:       Driver_SPI1, Driver_SPI2, Driver_SPI3,
  *               Driver_SPI4, Driver_SPI5, Driver_SPI6
@@ -40,6 +40,8 @@
  * -------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.01
+ *    STM32CubeMX generated code can also be used to configure the driver.
  *  Version 2.00
  *    Updated to CMSIS Driver API V2.00
  *    Added SPI4 and SPI6
@@ -55,9 +57,28 @@
  *  Version 1.00
  *    Initial release
  */
+
+/* STM32CubeMX configuration:
+ *
+ * Pinout tab:
+ *   - Select SPIx peripheral and enable mode
+ * Clock Configuration tab:
+ *   - Configure clock (APB2 is used for SPIx)
+ * Configuration tab:
+ *   - Select SPIx under Connectivity section which opens SPIx Configuration window:
+ *       - Parameter Settings tab: settings are unused by this driver
+ *       - NVIC Settings: enable SPIx global interrupt
+ *       - GPIO Settings: configure as needed
+ *       - DMA Settings:  to enable DMA transfers you need to
+ *           - add SPIx_RX and SPIx_TX DMA Request
+ *           - select Normal DMA mode (for RX and TX)
+ *           - deselect Use Fifo option (for RX and TX)
+ *           - go to NVIC Settings tab and enable RX and TX stream global interrupt
+ */
+
 #include "SPI_STM32F4xx.h"
 
-#define ARM_SPI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,00)
+#define ARM_SPI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,01)
 
 // Driver Version
 static const ARM_DRIVER_VERSION DriverVersion = { ARM_SPI_API_VERSION, ARM_SPI_DRV_VERSION };
@@ -72,6 +93,10 @@ static const ARM_SPI_CAPABILITIES DriverCapabilities = {
 
 
 #ifdef MX_SPI1
+
+#ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
+extern SPI_HandleTypeDef hspi1;
+#endif
 
 // SPI1 Run-Time Information
 static SPI_INFO          SPI1_Info = {0};
@@ -94,18 +119,49 @@ static SPI_TRANSFER_INFO SPI1_TransfefInfo = {0};
 #ifdef MX_SPI1_RX_DMA_Instance
   void SPI1_RX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
-  static DMA_HandleTypeDef  hdma_spi1_rx;
-  static SPI_DMA SPI1_DMA_Rx = {&hdma_spi1_rx, MX_SPI1_RX_DMA_Instance, SPI1_RX_DMA_Complete, MX_SPI1_RX_DMA_Channel, MX_SPI1_RX_DMA_Priority, MX_SPI1_RX_DMA_IRQn};
-#endif 
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+  static
+#else
+  extern
+#endif
+  DMA_HandleTypeDef  hdma_spi1_rx;
+  static SPI_DMA SPI1_DMA_Rx = {
+    &hdma_spi1_rx,
+    SPI1_RX_DMA_Complete,
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+    MX_SPI1_RX_DMA_Instance,
+    MX_SPI1_RX_DMA_Channel,
+    MX_SPI1_RX_DMA_Priority,
+    MX_SPI1_RX_DMA_IRQn
+#endif
+  };
+#endif
 #ifdef MX_SPI1_TX_DMA_Instance
   void SPI1_TX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
-  static DMA_HandleTypeDef hdma_spi1_tx;
-  static SPI_DMA SPI1_DMA_Tx = {&hdma_spi1_tx, MX_SPI1_TX_DMA_Instance, SPI1_TX_DMA_Complete, MX_SPI1_TX_DMA_Channel, MX_SPI1_TX_DMA_Priority, MX_SPI1_TX_DMA_IRQn};
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+  static
+#else
+  extern
+#endif
+  DMA_HandleTypeDef hdma_spi1_tx;
+  static SPI_DMA SPI1_DMA_Tx = {
+    &hdma_spi1_tx,
+    SPI1_TX_DMA_Complete,
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+    MX_SPI1_TX_DMA_Instance,
+    MX_SPI1_TX_DMA_Channel,
+    MX_SPI1_TX_DMA_Priority,
+    MX_SPI1_TX_DMA_IRQn
+#endif
+  };
 #endif
 
 // SPI1 Resources
-static SPI_RESOURCES SPI1_Resources = {
+static const SPI_RESOURCES SPI1_Resources = {
+#ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
+  &hspi1,
+#endif
   SPI1,
   HAL_RCC_GetPCLK2Freq,
 
@@ -154,6 +210,10 @@ static SPI_RESOURCES SPI1_Resources = {
 
 #ifdef MX_SPI2
 
+#ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
+extern SPI_HandleTypeDef hspi2;
+#endif
+
 // SPI2 Run-Time Information
 static SPI_INFO          SPI2_Info = {0};
 static SPI_TRANSFER_INFO SPI2_TransfefInfo = {0};
@@ -175,18 +235,49 @@ static SPI_TRANSFER_INFO SPI2_TransfefInfo = {0};
 #ifdef MX_SPI2_RX_DMA_Instance
   void SPI2_RX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
-  static DMA_HandleTypeDef hdma_spi2_rx;
-  static SPI_DMA SPI2_DMA_Rx = {&hdma_spi2_rx, MX_SPI2_RX_DMA_Instance, SPI2_RX_DMA_Complete, MX_SPI2_RX_DMA_Channel, MX_SPI2_RX_DMA_Priority, MX_SPI2_RX_DMA_IRQn};
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+  static
+#else
+  extern
+#endif
+  DMA_HandleTypeDef hdma_spi2_rx;
+  static SPI_DMA SPI2_DMA_Rx = {
+    &hdma_spi2_rx,
+    SPI2_RX_DMA_Complete,
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+    MX_SPI2_RX_DMA_Instance,
+    MX_SPI2_RX_DMA_Channel,
+    MX_SPI2_RX_DMA_Priority,
+    MX_SPI2_RX_DMA_IRQn
+#endif
+  };
 #endif 
 #ifdef MX_SPI2_TX_DMA_Instance
   void SPI2_TX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
-  static DMA_HandleTypeDef hdma_spi2_tx;
-  static SPI_DMA SPI2_DMA_Tx = {&hdma_spi2_tx, MX_SPI2_TX_DMA_Instance, SPI2_TX_DMA_Complete, MX_SPI2_TX_DMA_Channel, MX_SPI2_TX_DMA_Priority, MX_SPI2_TX_DMA_IRQn};
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+  static
+#else
+  extern
+#endif
+  DMA_HandleTypeDef hdma_spi2_tx;
+  static SPI_DMA SPI2_DMA_Tx = {
+    &hdma_spi2_tx,
+    SPI2_TX_DMA_Complete,
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+    MX_SPI2_TX_DMA_Instance,
+    MX_SPI2_TX_DMA_Channel,
+    MX_SPI2_TX_DMA_Priority,
+    MX_SPI2_TX_DMA_IRQn
+#endif
+  };
 #endif
 
 // SPI2 Resources
-static SPI_RESOURCES SPI2_Resources = {
+static const SPI_RESOURCES SPI2_Resources = {
+#ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
+  &hspi2,
+#endif
   SPI2,
   HAL_RCC_GetPCLK2Freq,
 
@@ -235,6 +326,10 @@ static SPI_RESOURCES SPI2_Resources = {
 
 #ifdef MX_SPI3
 
+#ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
+extern SPI_HandleTypeDef hspi3;
+#endif
+
 // SPI3 Run-Time Information
 static SPI_INFO          SPI3_Info = {0};
 static SPI_TRANSFER_INFO SPI3_TransfefInfo = {0};
@@ -256,18 +351,49 @@ static SPI_TRANSFER_INFO SPI3_TransfefInfo = {0};
 #ifdef MX_SPI3_RX_DMA_Instance
   void SPI3_RX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
-  static DMA_HandleTypeDef hdma_spi3_rx;
-  static SPI_DMA SPI3_DMA_Rx = {&hdma_spi3_rx, MX_SPI3_RX_DMA_Instance, SPI3_RX_DMA_Complete, MX_SPI3_RX_DMA_Channel, MX_SPI3_RX_DMA_Priority, MX_SPI3_RX_DMA_IRQn};
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+  static
+#else
+  extern
+#endif
+  DMA_HandleTypeDef hdma_spi3_rx;
+  static SPI_DMA SPI3_DMA_Rx = {
+    &hdma_spi3_rx,
+    SPI3_RX_DMA_Complete,
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+    MX_SPI3_RX_DMA_Instance,
+    MX_SPI3_RX_DMA_Channel,
+    MX_SPI3_RX_DMA_Priority,
+    MX_SPI3_RX_DMA_IRQn
+#endif
+  };
 #endif 
 #ifdef MX_SPI3_TX_DMA_Instance
   void SPI3_TX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
-  static DMA_HandleTypeDef hdma_spi3_tx;
-  static SPI_DMA SPI3_DMA_Tx = {&hdma_spi3_tx, MX_SPI3_TX_DMA_Instance, SPI3_TX_DMA_Complete, MX_SPI3_TX_DMA_Channel, MX_SPI3_TX_DMA_Priority, MX_SPI3_TX_DMA_IRQn};
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+  static
+#else
+  extern
+#endif
+  DMA_HandleTypeDef hdma_spi3_tx;
+  static SPI_DMA SPI3_DMA_Tx = {
+    &hdma_spi3_tx,
+    SPI3_TX_DMA_Complete,
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+    MX_SPI3_TX_DMA_Instance,
+    MX_SPI3_TX_DMA_Channel,
+    MX_SPI3_TX_DMA_Priority,
+    MX_SPI3_TX_DMA_IRQn
+#endif
+  };
 #endif
 
 // SPI3 Resources
-static SPI_RESOURCES SPI3_Resources = {
+static const SPI_RESOURCES SPI3_Resources = {
+#ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
+  &hspi3,
+#endif
   SPI3,
   HAL_RCC_GetPCLK2Freq,
 
@@ -316,6 +442,10 @@ static SPI_RESOURCES SPI3_Resources = {
 
 #ifdef MX_SPI4
 
+#ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
+extern SPI_HandleTypeDef hspi4;
+#endif
+
 // SPI4 Run-Time Information
 static SPI_INFO          SPI4_Info = {0};
 static SPI_TRANSFER_INFO SPI4_TransfefInfo = {0};
@@ -337,18 +467,49 @@ static SPI_TRANSFER_INFO SPI4_TransfefInfo = {0};
 #ifdef MX_SPI4_RX_DMA_Instance
   void SPI4_RX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
-  static DMA_HandleTypeDef hdma_spi4_rx;
-  static SPI_DMA SPI4_DMA_Rx = {&hdma_spi4_rx, MX_SPI4_RX_DMA_Instance, SPI4_RX_DMA_Complete, MX_SPI4_RX_DMA_Channel, MX_SPI4_RX_DMA_Priority, MX_SPI4_RX_DMA_IRQn};
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+  static
+#else
+  extern
+#endif
+  DMA_HandleTypeDef hdma_spi4_rx;
+  static SPI_DMA SPI4_DMA_Rx = {
+    &hdma_spi4_rx,
+    SPI4_RX_DMA_Complete,
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+    MX_SPI4_RX_DMA_Instance,
+    MX_SPI4_RX_DMA_Channel,
+    MX_SPI4_RX_DMA_Priority,
+    MX_SPI4_RX_DMA_IRQn
+#endif
+  };
 #endif 
 #ifdef MX_SPI4_TX_DMA_Instance
   void SPI4_TX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
-  static DMA_HandleTypeDef hdma_spi4_tx;
-  static SPI_DMA SPI4_DMA_Tx = {&hdma_spi4_tx, MX_SPI4_TX_DMA_Instance, SPI4_TX_DMA_Complete, MX_SPI4_TX_DMA_Channel, MX_SPI4_TX_DMA_Priority, MX_SPI4_TX_DMA_IRQn};
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+  static
+#else
+  extern
+#endif
+  DMA_HandleTypeDef hdma_spi4_tx;
+  static SPI_DMA SPI4_DMA_Tx = {
+    &hdma_spi4_tx,
+    SPI4_TX_DMA_Complete,
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+    MX_SPI4_TX_DMA_Instance,
+    MX_SPI4_TX_DMA_Channel,
+    MX_SPI4_TX_DMA_Priority,
+    MX_SPI4_TX_DMA_IRQn
+#endif
+  };
 #endif
 
 // SPI4 Resources
-static SPI_RESOURCES SPI4_Resources = {
+static const SPI_RESOURCES SPI4_Resources = {
+#ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
+  &hspi4,
+#endif
   SPI4,
   HAL_RCC_GetPCLK2Freq,
 
@@ -397,6 +558,10 @@ static SPI_RESOURCES SPI4_Resources = {
 
 #ifdef MX_SPI5
 
+#ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
+extern SPI_HandleTypeDef hspi5;
+#endif
+
 // SPI5 Run-Time Information
 static SPI_INFO          SPI5_Info = {0};
 static SPI_TRANSFER_INFO SPI5_TransfefInfo = {0};
@@ -418,18 +583,49 @@ static SPI_TRANSFER_INFO SPI5_TransfefInfo = {0};
 #ifdef MX_SPI5_RX_DMA_Instance
   void SPI5_RX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
-  static DMA_HandleTypeDef hdma_spi5_rx;
-  static SPI_DMA SPI5_DMA_Rx = {&hdma_spi5_rx, MX_SPI5_RX_DMA_Instance, SPI5_RX_DMA_Complete, MX_SPI5_RX_DMA_Channel, MX_SPI5_RX_DMA_Priority, MX_SPI5_RX_DMA_IRQn};
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+  static
+#else
+  extern
+#endif
+  DMA_HandleTypeDef hdma_spi5_rx;
+  static SPI_DMA SPI5_DMA_Rx = {
+    &hdma_spi5_rx,
+    SPI5_RX_DMA_Complete,
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+    MX_SPI5_RX_DMA_Instance,
+    MX_SPI5_RX_DMA_Channel,
+    MX_SPI5_RX_DMA_Priority,
+    MX_SPI5_RX_DMA_IRQn
+#endif
+  };
 #endif 
 #ifdef MX_SPI5_TX_DMA_Instance
   void SPI5_TX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
-  static DMA_HandleTypeDef hdma_spi5_tx;
-  static SPI_DMA SPI5_DMA_Tx = {&hdma_spi5_tx, MX_SPI5_TX_DMA_Instance, SPI5_TX_DMA_Complete, MX_SPI5_TX_DMA_Channel, MX_SPI5_TX_DMA_Priority, MX_SPI5_TX_DMA_IRQn};
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+  static
+#else
+  extern
+#endif
+  DMA_HandleTypeDef hdma_spi5_tx;
+  static SPI_DMA SPI5_DMA_Tx = {
+    &hdma_spi5_tx,
+    SPI5_TX_DMA_Complete,
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+    MX_SPI5_TX_DMA_Instance,
+    MX_SPI5_TX_DMA_Channel,
+    MX_SPI5_TX_DMA_Priority,
+    MX_SPI5_TX_DMA_IRQn
+#endif
+  };
 #endif
 
 // SPI5 Resources
-static SPI_RESOURCES SPI5_Resources = {
+static const SPI_RESOURCES SPI5_Resources = {
+#ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
+  &hspi5,
+#endif
   SPI5,
   HAL_RCC_GetPCLK2Freq,
 
@@ -478,6 +674,10 @@ static SPI_RESOURCES SPI5_Resources = {
 
 #ifdef MX_SPI6
 
+#ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
+extern SPI_HandleTypeDef hspi6;
+#endif
+
 // SPI6 Run-Time Information
 static SPI_INFO          SPI6_Info = {0};
 static SPI_TRANSFER_INFO SPI6_TransfefInfo = {0};
@@ -499,18 +699,49 @@ static SPI_TRANSFER_INFO SPI6_TransfefInfo = {0};
 #ifdef MX_SPI6_RX_DMA_Instance
   void SPI6_RX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
-  static DMA_HandleTypeDef hdma_spi6_rx;
-  static SPI_DMA SPI6_DMA_Rx = {&hdma_spi6_rx, MX_SPI6_RX_DMA_Instance, SPI6_RX_DMA_Complete, MX_SPI6_RX_DMA_Channel, MX_SPI6_RX_DMA_Priority, MX_SPI6_RX_DMA_IRQn};
-#endif 
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+  static
+#else
+  extern
+#endif
+  DMA_HandleTypeDef hdma_spi6_rx;
+  static SPI_DMA SPI6_DMA_Rx = {
+    &hdma_spi6_rx,
+    SPI6_RX_DMA_Complete,
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+    MX_SPI6_RX_DMA_Instance,
+    MX_SPI6_RX_DMA_Channel,
+    MX_SPI6_RX_DMA_Priority,
+    MX_SPI6_RX_DMA_IRQn
+#endif
+  };
+#endif
 #ifdef MX_SPI6_TX_DMA_Instance
   void SPI6_TX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
-  static DMA_HandleTypeDef hdma_spi6_tx;
-  static SPI_DMA SPI6_DMA_Tx = {&hdma_spi6_tx, MX_SPI6_TX_DMA_Instance, SPI6_TX_DMA_Complete, MX_SPI6_TX_DMA_Channel, MX_SPI6_TX_DMA_Priority, MX_SPI6_TX_DMA_IRQn};
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+  static
+#else
+  extern
+#endif
+  DMA_HandleTypeDef hdma_spi6_tx;
+  static SPI_DMA SPI6_DMA_Tx = {
+    &hdma_spi6_tx,
+    SPI6_TX_DMA_Complete,
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+    MX_SPI6_TX_DMA_Instance,
+    MX_SPI6_TX_DMA_Channel,
+    MX_SPI6_TX_DMA_Priority,
+    MX_SPI6_TX_DMA_IRQn
+#endif
+  };
 #endif
 
 // SPI6 Resources
-static SPI_RESOURCES SPI6_Resources = {
+static const SPI_RESOURCES SPI6_Resources = {
+#ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
+  &hspi6,
+#endif
   SPI6,
   HAL_RCC_GetPCLK2Freq,
 
@@ -557,7 +788,16 @@ static SPI_RESOURCES SPI6_Resources = {
 };
 #endif /* MX_SPI6 */
 
+// Function prototypes
+void SPI_IRQHandler (const SPI_RESOURCES *spi);
+#ifdef __SPI_DMA_TX
+void SPI_TX_DMA_Complete(const SPI_RESOURCES *spi);
+#endif
+#ifdef __SPI_DMA_RX
+void SPI_RX_DMA_Complete(const SPI_RESOURCES *spi);
+#endif
 
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
 /**
   \fn          void Enable_GPIO_Clock (GPIO_TypeDef *port)
   \brief       Enable GPIO clock
@@ -591,6 +831,7 @@ static void Enable_GPIO_Clock (GPIO_TypeDef *GPIOx) {
   if (GPIOx == GPIOI) __GPIOI_CLK_ENABLE();
 #endif
 }
+#endif
 
 /**
   \fn          ARM_DRIVER_VERSION SPIX_GetVersion (void)
@@ -613,27 +854,30 @@ static ARM_SPI_CAPABILITIES SPIX_GetCapabilities (void) {
 
 
 /**
-  \fn          int32_t SPI_Initialize (ARM_SPI_SignalEvent_t cb_event, SPI_RESOURCES *spi)
+  \fn          int32_t SPI_Initialize (ARM_SPI_SignalEvent_t cb_event, const SPI_RESOURCES *spi)
   \brief       Initialize SPI Interface.
   \param[in]   cb_event  Pointer to \ref ARM_SPI_SignalEvent
   \param[in]   spi       Pointer to SPI resources
   \return      \ref execution_status
 */
-static int32_t SPI_Initialize (ARM_SPI_SignalEvent_t cb_event, SPI_RESOURCES *spi) {
+static int32_t SPI_Initialize (ARM_SPI_SignalEvent_t cb_event, const SPI_RESOURCES *spi) {
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
   GPIO_InitTypeDef GPIO_InitStruct;
+#endif
 
-  if (spi->info->state & SPI_INITIALIZED) return ARM_DRIVER_OK;
-  if (spi->info->state & SPI_POWERED)     return ARM_DRIVER_ERROR;
+  if (spi->info->state & SPI_INITIALIZED) { return ARM_DRIVER_OK; }
+  if (spi->info->state & SPI_POWERED)     { return ARM_DRIVER_ERROR; }
 
   // Initialize SPI Run-Time Resources
   spi->info->cb_event = cb_event;
-  spi->info->status.busy       = 0;
-  spi->info->status.data_lost  = 0;
-  spi->info->status.mode_fault = 0;
+  spi->info->status.busy       = 0U;
+  spi->info->status.data_lost  = 0U;
+  spi->info->status.mode_fault = 0U;
 
   // Clear transfer information
   memset(spi->xfer, 0, sizeof(SPI_TRANSFER_INFO));
-
+  
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
   // Configure SPI SCK pin
   Enable_GPIO_Clock (spi->io.sck->port);
   GPIO_InitStruct.Pin       = spi->io.sck->pin;
@@ -662,9 +906,9 @@ static int32_t SPI_Initialize (ARM_SPI_SignalEvent_t cb_event, SPI_RESOURCES *sp
   HAL_GPIO_Init(spi->io.miso->port, &GPIO_InitStruct);
 
 #ifdef __SPI_DMA
-  if (spi->rx_dma || spi->tx_dma) {
+  if ((spi->rx_dma != NULL) || (spi->tx_dma != NULL)) {
 
-    if (spi->rx_dma) {
+    if (spi->rx_dma != NULL) {
       // Initialize SPI RX DMA Resources
       spi->rx_dma->hdma->Instance             = spi->rx_dma->stream;
       spi->rx_dma->hdma->Init.Channel         = spi->rx_dma->channel;
@@ -685,7 +929,7 @@ static int32_t SPI_Initialize (ARM_SPI_SignalEvent_t cb_event, SPI_RESOURCES *sp
       HAL_NVIC_EnableIRQ (spi->rx_dma->irq_num);
     }
 
-    if (spi->tx_dma) {
+    if (spi->tx_dma != NULL) {
       // Initialize SPI TX DMA Resources
       spi->tx_dma->hdma->Instance             = spi->tx_dma->stream;
       spi->tx_dma->hdma->Init.Channel         = spi->tx_dma->channel;
@@ -715,7 +959,19 @@ static int32_t SPI_Initialize (ARM_SPI_SignalEvent_t cb_event, SPI_RESOURCES *sp
       __DMA2_CLK_ENABLE();
     }
   }
-#endif 
+#endif
+#else
+  spi->h->Instance = spi->reg;
+  HAL_SPI_MspInit (spi->h);
+
+  if (spi->rx_dma != NULL) {
+    spi->rx_dma->hdma->XferCpltCallback = spi->rx_dma->cb_complete;
+  }
+  if (spi->tx_dma != NULL) {
+    spi->tx_dma->hdma->XferCpltCallback = spi->tx_dma->cb_complete;
+  }
+#endif
+  
 
   spi->info->state = SPI_INITIALIZED;
 
@@ -723,32 +979,33 @@ static int32_t SPI_Initialize (ARM_SPI_SignalEvent_t cb_event, SPI_RESOURCES *sp
 }
 
 /**
-  \fn          int32_t SPI_Uninitialize (SPI_RESOURCES *spi)
+  \fn          int32_t SPI_Uninitialize (const SPI_RESOURCES *spi)
   \brief       De-initialize SPI Interface.
   \param[in]   spi  Pointer to SPI resources
   \return      \ref execution_status
 */
-static int32_t SPI_Uninitialize (SPI_RESOURCES *spi) {
+static int32_t SPI_Uninitialize (const SPI_RESOURCES *spi) {
 
-  if (!(spi->info->state & SPI_INITIALIZED)) return ARM_DRIVER_OK;
-  if (  spi->info->state & SPI_POWERED)      return ARM_DRIVER_ERROR;
+  if ((spi->info->state & SPI_INITIALIZED) == 0U) { return ARM_DRIVER_OK; }
+  if ( spi->info->state & SPI_POWERED)            { return ARM_DRIVER_ERROR; }
 
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
   // Unconfigure SPI pins
-  if (spi->io.mosi) HAL_GPIO_DeInit(spi->io.mosi->port, spi->io.mosi->pin);
-  if (spi->io.miso) HAL_GPIO_DeInit(spi->io.miso->port, spi->io.miso->pin);
-  if (spi->io.sck)  HAL_GPIO_DeInit(spi->io.sck->port,  spi->io.sck->pin);
-  if (spi->io.nss)  HAL_GPIO_DeInit(spi->io.nss->port,  spi->io.nss->pin);
+  if (spi->io.mosi != NULL) { HAL_GPIO_DeInit(spi->io.mosi->port, spi->io.mosi->pin); }
+  if (spi->io.miso != NULL) { HAL_GPIO_DeInit(spi->io.miso->port, spi->io.miso->pin); }
+  if (spi->io.sck  != NULL) { HAL_GPIO_DeInit(spi->io.sck->port,  spi->io.sck->pin); }
+  if (spi->io.nss  != NULL) { HAL_GPIO_DeInit(spi->io.nss->port,  spi->io.nss->pin); }
 
 #ifdef __SPI_DMA
-  if (spi->rx_dma || spi->tx_dma) {
-    if (spi->rx_dma) {
+  if ((spi->rx_dma != NULL) || (spi->tx_dma != NULL)) {
+    if (spi->rx_dma != NULL) {
       // Disable DMA IRQ in NVIC
       HAL_NVIC_DisableIRQ (spi->rx_dma->irq_num);
       // Deinitialize DMA
       HAL_DMA_DeInit (spi->rx_dma->hdma);
     }
 
-    if (spi->tx_dma) {
+    if (spi->tx_dma != NULL) {
       // Disable DMA IRQ in NVIC
       HAL_NVIC_DisableIRQ (spi->tx_dma->irq_num);
       // Deinitialize DMA
@@ -756,39 +1013,47 @@ static int32_t SPI_Uninitialize (SPI_RESOURCES *spi) {
     }
   }
 #endif
+#else
+  HAL_SPI_MspDeInit (spi->h);
+#endif
 
   // Clear SPI state
-  spi->info->state = 0;
+  spi->info->state = 0U;
 
   return ARM_DRIVER_OK;
-}           
+}
 
 /**
-  \fn          int32_t SPI_PowerControl (ARM_POWER_STATE state, SPI_RESOURCES *spi)
+  \fn          int32_t SPI_PowerControl (ARM_POWER_STATE state, const SPI_RESOURCES *spi)
   \brief       Control SPI Interface Power.
   \param[in]   state  Power state
   \param[in]   spi    Pointer to SPI resources
   \return      \ref execution_status
 */
-static int32_t SPI_PowerControl (ARM_POWER_STATE state, SPI_RESOURCES *spi) {
+static int32_t SPI_PowerControl (ARM_POWER_STATE state, const SPI_RESOURCES *spi) {
 
-  if (!(spi->info->state & SPI_INITIALIZED)) return ARM_DRIVER_ERROR;
-  if (  spi->info->status.busy)              return ARM_DRIVER_ERROR_BUSY;
+  if ((spi->info->state & SPI_INITIALIZED) == 0U) { return ARM_DRIVER_ERROR; }
+  if ( spi->info->status.busy)                    { return ARM_DRIVER_ERROR_BUSY; }
 
   switch (state) {
     case ARM_POWER_OFF:
       // Check if SPI is already powered off
-      if (!(spi->info->state & SPI_POWERED)) return ARM_DRIVER_OK;
+      if ((spi->info->state & SPI_POWERED) == 0U) { return ARM_DRIVER_OK; }
 
       // Disable SPI Interrupts
-      spi->reg->CR2 = 0;
+      spi->reg->CR2 = 0U;
+
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
       HAL_NVIC_DisableIRQ (spi->irq_num);
+#endif
 
       // Disable SPI peripheral
-      spi->reg->CR1 = 0;
+      spi->reg->CR1 = 0U;
 
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
       // Disable SPI clock
       __SPIx_CLK_DISABLE(spi->reg);
+#endif
 
       // Clear powered flag
       spi->info->state = SPI_INITIALIZED;
@@ -796,60 +1061,65 @@ static int32_t SPI_PowerControl (ARM_POWER_STATE state, SPI_RESOURCES *spi) {
 
     case ARM_POWER_FULL:
       // Check if SPI already powered
-      if (spi->info->state & SPI_POWERED)    return ARM_DRIVER_OK;
+      if (spi->info->state & SPI_POWERED) { return ARM_DRIVER_OK; }
 
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
       // Enable SPI clock
       __SPIx_CLK_ENABLE(spi->reg);
+#endif
 
       // Disable SPI interrupts
-      spi->reg->CR2 = 0;
+      spi->reg->CR2 = 0U;
 
       // Ready for operation - set powered flag
       spi->info->state |= SPI_POWERED;
 
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
       HAL_NVIC_ClearPendingIRQ (spi->irq_num);
       HAL_NVIC_EnableIRQ (spi->irq_num);
+#endif
       break;
 
+    case ARM_POWER_LOW:
     default: return ARM_DRIVER_ERROR_UNSUPPORTED;
   }
   return ARM_DRIVER_OK;
 }
 
 /**
-  \fn          int32_t SPI_Send (const void *data, uint32_t num, SPI_RESOURCES *spi)
+  \fn          int32_t SPI_Send (const void *data, uint32_t num, const SPI_RESOURCES *spi)
   \brief       Start sending data to SPI transmitter.
   \param[in]   data  Pointer to buffer with data to send to SPI transmitter
   \param[in]   num   Number of data items to send
   \param[in]   spi   Pointer to SPI resources
   \return      \ref execution_status
 */
-static int32_t SPI_Send (const void *data, uint32_t num, SPI_RESOURCES *spi) {
+static int32_t SPI_Send (const void *data, uint32_t num, const SPI_RESOURCES *spi) {
 
-  if ((data == NULL) || (num == 0))         return ARM_DRIVER_ERROR_PARAMETER;
-  if (!(spi->info->state & SPI_CONFIGURED)) return ARM_DRIVER_ERROR;
-  if (  spi->info->status.busy)             return ARM_DRIVER_ERROR_BUSY;
+  if ((data == NULL) || (num == 0U))             { return ARM_DRIVER_ERROR_PARAMETER; }
+  if ((spi->info->state & SPI_CONFIGURED) == 0U) { return ARM_DRIVER_ERROR; }
+  if ( spi->info->status.busy)                   { return ARM_DRIVER_ERROR_BUSY; }
 
   // Check if transmit pin available
-  if (!((spi->io.mosi && ((spi->info->mode & ARM_SPI_CONTROL_Msk) == ARM_SPI_MODE_MASTER)) ||
-       (spi->io.miso && ((spi->info->mode & ARM_SPI_CONTROL_Msk) == ARM_SPI_MODE_SLAVE )))) {
+  if ((((spi->io.mosi != NULL) && ((spi->info->mode & ARM_SPI_CONTROL_Msk) == ARM_SPI_MODE_MASTER)) ||
+       ((spi->io.miso != NULL) && ((spi->info->mode & ARM_SPI_CONTROL_Msk) == ARM_SPI_MODE_SLAVE ))) == 0U) {
     return ARM_DRIVER_ERROR;
   }
 
   // Update SPI statuses
-  spi->info->status.busy       = 1;
-  spi->info->status.data_lost  = 0;
-  spi->info->status.mode_fault = 0;
+  spi->info->status.busy       = 1U;
+  spi->info->status.data_lost  = 0U;
+  spi->info->status.mode_fault = 0U;
 
   // Save transfer info
   spi->xfer->rx_buf = NULL;
   spi->xfer->tx_buf = (uint8_t *)data;
   spi->xfer->num    = num;
-  spi->xfer->rx_cnt = 0;
-  spi->xfer->tx_cnt = 0;
+  spi->xfer->rx_cnt = 0U;
+  spi->xfer->tx_cnt = 0U;
 
 #ifdef __SPI_DMA_RX
-  if (spi->rx_dma) {
+  if (spi->rx_dma != NULL) {
     // DMA mode
     // Prepare DMA to receive dummy RX data
     spi->rx_dma->hdma->Init.PeriphInc             = DMA_PINC_DISABLE;
@@ -864,9 +1134,10 @@ static int32_t SPI_Send (const void *data, uint32_t num, SPI_RESOURCES *spi) {
       spi->rx_dma->hdma->Init.MemDataAlignment    = DMA_PDATAALIGN_BYTE;
     }
     // Initialize and start SPI RX DMA Stream
-    if (HAL_DMA_Init     (spi->rx_dma->hdma) != HAL_OK) return ARM_DRIVER_ERROR;
-    if (HAL_DMA_Start_IT (spi->rx_dma->hdma, (uint32_t)(&spi->reg->DR), (uint32_t)(&spi->xfer->dump_val), num) != HAL_OK)
+    if (HAL_DMA_Init     (spi->rx_dma->hdma) != HAL_OK) { return ARM_DRIVER_ERROR; }
+    if (HAL_DMA_Start_IT (spi->rx_dma->hdma, (uint32_t)(&spi->reg->DR), (uint32_t)(&spi->xfer->dump_val), num) != HAL_OK) {
       return ARM_DRIVER_ERROR;
+    }
 
     // RX Buffer DMA enable
     spi->reg->CR2 |= SPI_CR2_RXDMAEN;
@@ -879,7 +1150,7 @@ static int32_t SPI_Send (const void *data, uint32_t num, SPI_RESOURCES *spi) {
   }
 
 #ifdef __SPI_DMA_TX
-  if (spi->tx_dma) {
+  if (spi->tx_dma != NULL) {
     // Prepare DMA to send TX data
     spi->tx_dma->hdma->Init.PeriphInc             = DMA_PINC_DISABLE;
     spi->tx_dma->hdma->Init.MemInc                = DMA_MINC_ENABLE; 
@@ -894,9 +1165,10 @@ static int32_t SPI_Send (const void *data, uint32_t num, SPI_RESOURCES *spi) {
     }
 
     // Initialize and start SPI TX DMA Stream
-    if (HAL_DMA_Init     (spi->tx_dma->hdma) != HAL_OK) return ARM_DRIVER_ERROR;
-    if (HAL_DMA_Start_IT (spi->tx_dma->hdma, (uint32_t)spi->xfer->tx_buf, (uint32_t)(&spi->reg->DR), num) != HAL_OK)
+    if (HAL_DMA_Init     (spi->tx_dma->hdma) != HAL_OK) { return ARM_DRIVER_ERROR; }
+    if (HAL_DMA_Start_IT (spi->tx_dma->hdma, (uint32_t)spi->xfer->tx_buf, (uint32_t)(&spi->reg->DR), num) != HAL_OK) {
       return ARM_DRIVER_ERROR;
+    }
 
     // TX Buffer DMA enable
     spi->reg->CR2 |= SPI_CR2_TXDMAEN;
@@ -911,40 +1183,40 @@ static int32_t SPI_Send (const void *data, uint32_t num, SPI_RESOURCES *spi) {
 }
 
 /**
-  \fn          int32_t SPI_Receive (void *data, uint32_t num, SPI_RESOURCES *spi)
+  \fn          int32_t SPI_Receive (void *data, uint32_t num, const SPI_RESOURCES *spi)
   \brief       Start receiving data from SPI receiver.
   \param[out]  data  Pointer to buffer for data to receive from SPI receiver
   \param[in]   num   Number of data items to receive
   \param[in]   spi   Pointer to SPI resources
   \return      \ref execution_status
 */
-static int32_t SPI_Receive (void *data, uint32_t num, SPI_RESOURCES *spi) {
+static int32_t SPI_Receive (void *data, uint32_t num, const SPI_RESOURCES *spi) {
 
-  if ((data == NULL) || (num == 0))         return ARM_DRIVER_ERROR_PARAMETER;
-  if (!(spi->info->state & SPI_CONFIGURED)) return ARM_DRIVER_ERROR;
-  if (  spi->info->status.busy)             return ARM_DRIVER_ERROR_BUSY;
+  if ((data == NULL) || (num == 0U))             { return ARM_DRIVER_ERROR_PARAMETER; }
+  if ((spi->info->state & SPI_CONFIGURED) == 0U) { return ARM_DRIVER_ERROR; }
+  if ( spi->info->status.busy)                   { return ARM_DRIVER_ERROR_BUSY; }
 
   // Check if receive pin available
-  if (!((spi->io.miso && ((spi->info->mode & ARM_SPI_CONTROL_Msk) == ARM_SPI_MODE_MASTER)) ||
-       (spi->io.mosi && ((spi->info->mode & ARM_SPI_CONTROL_Msk) == ARM_SPI_MODE_SLAVE )))) {
+  if ((((spi->io.miso != NULL) && ((spi->info->mode & ARM_SPI_CONTROL_Msk) == ARM_SPI_MODE_MASTER)) ||
+       ((spi->io.mosi != NULL) && ((spi->info->mode & ARM_SPI_CONTROL_Msk) == ARM_SPI_MODE_SLAVE ))) == 0U) {
     return ARM_DRIVER_ERROR;
   }
 
   // Update SPI statuses
-  spi->info->status.busy       = 1;
-  spi->info->status.data_lost  = 0;
-  spi->info->status.mode_fault = 0;
+  spi->info->status.busy       = 1U;
+  spi->info->status.data_lost  = 0U;
+  spi->info->status.mode_fault = 0U;
 
   // Save transfer info
   spi->xfer->rx_buf = (uint8_t *)data;
   spi->xfer->tx_buf = NULL;
   spi->xfer->num    = num;
-  spi->xfer->rx_cnt = 0;
-  spi->xfer->tx_cnt = 0;
+  spi->xfer->rx_cnt = 0U;
+  spi->xfer->tx_cnt = 0U;
 
 #ifdef __SPI_DMA_RX
   // DMA mode
-  if (spi->rx_dma) {
+  if (spi->rx_dma != NULL) {
     // Prepare DMA to receive RX data
     spi->rx_dma->hdma->Init.PeriphInc             = DMA_PINC_DISABLE;
     spi->rx_dma->hdma->Init.MemInc                = DMA_MINC_ENABLE; 
@@ -958,9 +1230,10 @@ static int32_t SPI_Receive (void *data, uint32_t num, SPI_RESOURCES *spi) {
       spi->rx_dma->hdma->Init.MemDataAlignment    = DMA_PDATAALIGN_BYTE;
     }
     // Initialize and start SPI RX DMA Stream
-    if (HAL_DMA_Init     (spi->rx_dma->hdma) != HAL_OK) return ARM_DRIVER_ERROR;
-    if (HAL_DMA_Start_IT (spi->rx_dma->hdma, (uint32_t)(&spi->reg->DR), (uint32_t)spi->xfer->rx_buf, num) != HAL_OK)
+    if (HAL_DMA_Init     (spi->rx_dma->hdma) != HAL_OK) { return ARM_DRIVER_ERROR; }
+    if (HAL_DMA_Start_IT (spi->rx_dma->hdma, (uint32_t)(&spi->reg->DR), (uint32_t)spi->xfer->rx_buf, num) != HAL_OK) {
       return ARM_DRIVER_ERROR;
+    }
 
     // RX Buffer DMA enable
     spi->reg->CR2 |= SPI_CR2_RXDMAEN;
@@ -974,7 +1247,7 @@ static int32_t SPI_Receive (void *data, uint32_t num, SPI_RESOURCES *spi) {
 
 #ifdef __SPI_DMA_TX
   // DMA mode
-  if (spi->tx_dma) {
+  if (spi->tx_dma != NULL) {
     // Prepare DMA to send dummy TX data
     spi->tx_dma->hdma->Init.PeriphInc             = DMA_PINC_DISABLE;
     spi->tx_dma->hdma->Init.MemInc                = DMA_MINC_DISABLE; 
@@ -989,9 +1262,10 @@ static int32_t SPI_Receive (void *data, uint32_t num, SPI_RESOURCES *spi) {
     }
 
     // Initialize and start SPI TX DMA Stream
-    if (HAL_DMA_Init     (spi->tx_dma->hdma) != HAL_OK) return ARM_DRIVER_ERROR;
-    if (HAL_DMA_Start_IT (spi->tx_dma->hdma, (uint32_t)&spi->xfer->def_val, (uint32_t)(&spi->reg->DR), num) != HAL_OK)
+    if (HAL_DMA_Init     (spi->tx_dma->hdma) != HAL_OK) { return ARM_DRIVER_ERROR; }
+    if (HAL_DMA_Start_IT (spi->tx_dma->hdma, (uint32_t)&spi->xfer->def_val, (uint32_t)(&spi->reg->DR), num) != HAL_OK) {
       return ARM_DRIVER_ERROR;
+    }
 
     // TX Buffer DMA enable
     spi->reg->CR2 |= SPI_CR2_TXDMAEN;
@@ -1007,7 +1281,7 @@ static int32_t SPI_Receive (void *data, uint32_t num, SPI_RESOURCES *spi) {
 }
 
 /**
-  \fn          int32_t SPI_Transfer (const void *data_out, void *data_in, uint32_t num, SPI_RESOURCES *spi)
+  \fn          int32_t SPI_Transfer (const void *data_out, void *data_in, uint32_t num, const SPI_RESOURCES *spi)
   \brief       Start sending/receiving data to/from SPI transmitter/receiver.
   \param[in]   data_out  Pointer to buffer with data to send to SPI transmitter
   \param[out]  data_in   Pointer to buffer for data to receive from SPI receiver
@@ -1015,34 +1289,34 @@ static int32_t SPI_Receive (void *data, uint32_t num, SPI_RESOURCES *spi) {
   \param[in]   spi       Pointer to SPI resources
   \return      \ref execution_status
 */
-static int32_t SPI_Transfer (const void *data_out, void *data_in, uint32_t num, SPI_RESOURCES *spi) {
+static int32_t SPI_Transfer (const void *data_out, void *data_in, uint32_t num, const SPI_RESOURCES *spi) {
 
-  if ((data_out == NULL) || (data_in == NULL) || (num == 0)) return ARM_DRIVER_ERROR_PARAMETER;
-  if (!(spi->info->state & SPI_CONFIGURED))                  return ARM_DRIVER_ERROR;
-  if (  spi->info->status.busy)                              return ARM_DRIVER_ERROR_BUSY;
+  if ((data_out == NULL) || (data_in == NULL) || (num == 0U)) { return ARM_DRIVER_ERROR_PARAMETER; }
+  if ((spi->info->state & SPI_CONFIGURED) == 0U)              { return ARM_DRIVER_ERROR; }
+  if ( spi->info->status.busy)                                { return ARM_DRIVER_ERROR_BUSY; }
 
-  // Check if receive pins available
-  if (!(spi->io.miso && spi->io.mosi)) {
+  // Check if receive and transmit pins available
+  if ((spi->io.miso == NULL) || (spi->io.mosi == NULL)) {
     return ARM_DRIVER_ERROR;
   }
 
   // Update SPI statuses
-  spi->info->status.busy       = 1;
-  spi->info->status.data_lost  = 0;
-  spi->info->status.mode_fault = 0;
+  spi->info->status.busy       = 1U;
+  spi->info->status.data_lost  = 0U;
+  spi->info->status.mode_fault = 0U;
 
   // Save transfer info
   spi->xfer->rx_buf = (uint8_t *)data_in;
   spi->xfer->tx_buf = (uint8_t *)data_out;
   spi->xfer->num    = num;
-  spi->xfer->rx_cnt = 0;
-  spi->xfer->tx_cnt = 0;
+  spi->xfer->rx_cnt = 0U;
+  spi->xfer->tx_cnt = 0U;
 
 #ifdef __SPI_DMA
-  if (spi->rx_dma || spi->tx_dma) {
+  if ((spi->rx_dma != NULL) || (spi->tx_dma != NULL)) {
     // DMA mode
 
-    if (spi->rx_dma) {
+    if (spi->rx_dma != NULL) {
       // Prepare DMA to receive RX data
       spi->rx_dma->hdma->Init.PeriphInc             = DMA_PINC_DISABLE;
       spi->rx_dma->hdma->Init.MemInc                = DMA_MINC_ENABLE; 
@@ -1056,18 +1330,19 @@ static int32_t SPI_Transfer (const void *data_out, void *data_in, uint32_t num, 
         spi->rx_dma->hdma->Init.MemDataAlignment    = DMA_PDATAALIGN_BYTE;
       }
       // Initialize and start SPI RX DMA Stream
-      if (HAL_DMA_Init     (spi->rx_dma->hdma) != HAL_OK) return ARM_DRIVER_ERROR;
-      if (HAL_DMA_Start_IT (spi->rx_dma->hdma, (uint32_t)(&spi->reg->DR), (uint32_t)spi->xfer->rx_buf, num) != HAL_OK)
+      if (HAL_DMA_Init     (spi->rx_dma->hdma) != HAL_OK) { return ARM_DRIVER_ERROR; }
+      if (HAL_DMA_Start_IT (spi->rx_dma->hdma, (uint32_t)(&spi->reg->DR), (uint32_t)spi->xfer->rx_buf, num) != HAL_OK) {
         return ARM_DRIVER_ERROR;
+      }
 
       // RX Buffer DMA enable
       spi->reg->CR2 |= SPI_CR2_RXDMAEN;
     }
 
-    if (spi->tx_dma) {
+    if (spi->tx_dma != NULL) {
       // Prepare DMA to send TX data
       spi->tx_dma->hdma->Init.PeriphInc             = DMA_PINC_DISABLE;
-      spi->tx_dma->hdma->Init.MemInc                = DMA_MINC_ENABLE; 
+      spi->tx_dma->hdma->Init.MemInc                = DMA_MINC_ENABLE;
       if (spi->reg->CR1 & SPI_CR1_DFF) {
         // 16 - bit data frame
         spi->tx_dma->hdma->Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
@@ -1079,9 +1354,10 @@ static int32_t SPI_Transfer (const void *data_out, void *data_in, uint32_t num, 
       }
 
       // Initialize and start SPI TX DMA Stream
-      if (HAL_DMA_Init     (spi->tx_dma->hdma) != HAL_OK) return ARM_DRIVER_ERROR;
-      if (HAL_DMA_Start_IT (spi->tx_dma->hdma, (uint32_t)spi->xfer->tx_buf, (uint32_t)(&spi->reg->DR), num) != HAL_OK)
+      if (HAL_DMA_Init     (spi->tx_dma->hdma) != HAL_OK) { return ARM_DRIVER_ERROR; }
+      if (HAL_DMA_Start_IT (spi->tx_dma->hdma, (uint32_t)spi->xfer->tx_buf, (uint32_t)(&spi->reg->DR), num) != HAL_OK) {
         return ARM_DRIVER_ERROR;
+      }
 
       // TX Buffer DMA enable
       spi->reg->CR2 |= SPI_CR2_TXDMAEN;
@@ -1098,38 +1374,38 @@ static int32_t SPI_Transfer (const void *data_out, void *data_in, uint32_t num, 
 }
 
 /**
-  \fn          uint32_t SPI_GetDataCount (SPI_RESOURCES *spi)
+  \fn          uint32_t SPI_GetDataCount (const SPI_RESOURCES *spi)
   \brief       Get transferred data count.
   \param[in]   spi  Pointer to SPI resources
   \return      number of data items transferred
 */
-static uint32_t SPI_GetDataCount (SPI_RESOURCES *spi) {
+static uint32_t SPI_GetDataCount (const SPI_RESOURCES *spi) {
   return (spi->xfer->rx_cnt);
 }
 
 /**
-  \fn          int32_t SPI_Control (uint32_t control, uint32_t arg, SPI_RESOURCES *spi)
+  \fn          int32_t SPI_Control (uint32_t control, uint32_t arg, const SPI_RESOURCES *spi)
   \brief       Control SPI Interface.
   \param[in]   control  operation
   \param[in]   arg      argument of operation (optional)
   \param[in]   spi      Pointer to SPI resources
   \return      \ref execution_status
 */
-static int32_t SPI_Control (uint32_t control, uint32_t arg, SPI_RESOURCES *spi) {
+static int32_t SPI_Control (uint32_t control, uint32_t arg, const SPI_RESOURCES *spi) {
   uint32_t           mode, val, pclk;
   uint32_t           cr1, cr2;
   GPIO_InitTypeDef   GPIO_InitStruct;
 
-  mode  = 0;
-  val   = 0;
-  cr1   = 0;
-  cr2   = 0;
+  mode  = 0U;
+  val   = 0U;
+  cr1   = 0U;
+  cr2   = 0U;
 
-  if (!(spi->info->state & SPI_POWERED)) return ARM_DRIVER_ERROR;
+  if ((spi->info->state & SPI_POWERED) == 0U) { return ARM_DRIVER_ERROR; }
 
   if ((control & ARM_SPI_CONTROL_Msk) == ARM_SPI_ABORT_TRANSFER) {
     // Send abort
-    if (spi->tx_dma) {
+    if (spi->tx_dma != NULL) {
       // DMA mode
       // TX buffer DMA disable
       spi->reg->CR2 &= ~SPI_CR2_TXDMAEN;
@@ -1143,7 +1419,7 @@ static int32_t SPI_Control (uint32_t control, uint32_t arg, SPI_RESOURCES *spi) 
     }
 
     // Receive abort
-    if (spi->rx_dma) {
+    if (spi->rx_dma != NULL) {
       // DMA mode
       // RX buffer DMA disable
       spi->reg->CR2 &= ~SPI_CR2_RXDMAEN;
@@ -1157,12 +1433,12 @@ static int32_t SPI_Control (uint32_t control, uint32_t arg, SPI_RESOURCES *spi) 
     }
 
     memset(spi->xfer, 0, sizeof(SPI_TRANSFER_INFO));
-    spi->info->status.busy = 0;
+    spi->info->status.busy = 0U;
     return ARM_DRIVER_OK;
   }
 
   // Check for busy flag
-  if (spi->info->status.busy) return ARM_DRIVER_ERROR_BUSY;
+  if (spi->info->status.busy) { return ARM_DRIVER_ERROR_BUSY; }
 
   switch (control & ARM_SPI_CONTROL_Msk) {
     case ARM_SPI_MODE_INACTIVE:
@@ -1189,21 +1465,21 @@ static int32_t SPI_Control (uint32_t control, uint32_t arg, SPI_RESOURCES *spi) 
     case ARM_SPI_SET_BUS_SPEED:
       // Set SPI Bus Speed 
       pclk = spi->periph_clock();
-      for (val = 1; val < 8; val++) {
-        if (arg >= (pclk >> val)) break;
+      for (val = 1U; val < 8U; val++) {
+        if (arg >= (pclk >> val)) { break; }
       }
       // Disable SPI, update prescaler and enable SPI
       spi->reg->CR1 &= ~SPI_CR1_SPE;
-      spi->reg->CR1 |= (val - 1) << 3;
+      spi->reg->CR1 |= (val - 1U) << 3U;
       spi->reg->CR1 |=  SPI_CR1_SPE;
       return ARM_DRIVER_OK;
 
     case ARM_SPI_GET_BUS_SPEED:
       // Return current bus speed
-      return (spi->periph_clock() >> (((spi->reg->CR1 & SPI_CR1_BR) >> 3) + 1));
+      return (spi->periph_clock() >> (((spi->reg->CR1 & SPI_CR1_BR) >> 3U) + 1U));
 
     case ARM_SPI_SET_DEFAULT_TX_VALUE:
-      spi->xfer->def_val = (uint16_t)(arg & 0xFFFF);
+      spi->xfer->def_val = (uint16_t)(arg & 0xFFFFU);
       return ARM_DRIVER_OK;
 
     case ARM_SPI_CONTROL_SS:
@@ -1213,7 +1489,7 @@ static int32_t SPI_Control (uint32_t control, uint32_t arg, SPI_RESOURCES *spi) 
         val = spi->info->mode & ARM_SPI_SS_MASTER_MODE_Msk;
         // Check if NSS pin is available and
         // software slave select master is selected
-        if (spi->io.nss && (val == ARM_SPI_SS_MASTER_SW)) {
+        if ((spi->io.nss != NULL) && (val == ARM_SPI_SS_MASTER_SW)) {
           // Set/Clear NSS pin
           if (arg == ARM_SPI_SS_INACTIVE)
             HAL_GPIO_WritePin (spi->io.nss->port, spi->io.nss->pin, GPIO_PIN_SET);
@@ -1227,13 +1503,15 @@ static int32_t SPI_Control (uint32_t control, uint32_t arg, SPI_RESOURCES *spi) 
         val = spi->info->mode & ARM_SPI_SS_SLAVE_MODE_Msk;
         // Check if slave select slave mode is selected
         if (val == ARM_SPI_SS_MASTER_SW) {
-          if (arg == ARM_SPI_SS_ACTIVE)
+          if (arg == ARM_SPI_SS_ACTIVE) {
             spi->reg->CR1 |= SPI_CR1_SSI;
-          else
+          }
+          else {
             spi->reg->CR1 &= ~SPI_CR1_SSI;
+          }
           return ARM_DRIVER_OK;
-        } else return ARM_DRIVER_ERROR;
-      } else return ARM_DRIVER_ERROR;
+        } else { return ARM_DRIVER_ERROR; }
+      } else { return ARM_DRIVER_ERROR; }
 
     default:
       return ARM_DRIVER_ERROR_UNSUPPORTED;
@@ -1262,9 +1540,9 @@ static int32_t SPI_Control (uint32_t control, uint32_t arg, SPI_RESOURCES *spi) 
 
   // Data Bits
   switch (control & ARM_SPI_DATA_BITS_Msk) {
-    case ARM_SPI_DATA_BITS(8):
+    case ARM_SPI_DATA_BITS(8U):
       break;
-    case ARM_SPI_DATA_BITS(16):
+    case ARM_SPI_DATA_BITS(16U):
       cr1 |= SPI_CR1_DFF;
       break;
     default: return ARM_SPI_ERROR_DATA_BITS;
@@ -1279,7 +1557,7 @@ static int32_t SPI_Control (uint32_t control, uint32_t arg, SPI_RESOURCES *spi) 
   if (mode == ARM_SPI_MODE_MASTER) {
     switch (control & ARM_SPI_SS_MASTER_MODE_Msk) {
       case ARM_SPI_SS_MASTER_UNUSED:
-        if (spi->io.nss) {
+        if (spi->io.nss != NULL) {
           // Unconfigure NSS pin
           HAL_GPIO_DeInit (spi->io.nss->port, spi->io.nss->pin);
         }
@@ -1292,7 +1570,9 @@ static int32_t SPI_Control (uint32_t control, uint32_t arg, SPI_RESOURCES *spi) 
       case ARM_SPI_SS_MASTER_HW_INPUT:
         if (spi->io.nss) {
           // Configure NSS pin
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
           Enable_GPIO_Clock (spi->io.nss->port);
+#endif
           GPIO_InitStruct.Pin       = spi->io.nss->pin;
           GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
           GPIO_InitStruct.Pull      = GPIO_NOPULL;
@@ -1309,7 +1589,9 @@ static int32_t SPI_Control (uint32_t control, uint32_t arg, SPI_RESOURCES *spi) 
       case ARM_SPI_SS_MASTER_SW:
         if (spi->io.nss) {
           // Configure NSS pin as GPIO output
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
           Enable_GPIO_Clock (spi->io.nss->port);
+#endif
           GPIO_InitStruct.Pin       = spi->io.nss->pin;
           GPIO_InitStruct.Mode      = GPIO_MODE_OUTPUT_PP;
           GPIO_InitStruct.Pull      = GPIO_NOPULL;
@@ -1329,7 +1611,9 @@ static int32_t SPI_Control (uint32_t control, uint32_t arg, SPI_RESOURCES *spi) 
       case ARM_SPI_SS_MASTER_HW_OUTPUT:
         if (spi->io.nss) {
           // Configure NSS pin - SPI NSS alternative function
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
           Enable_GPIO_Clock (spi->io.nss->port);
+#endif
           GPIO_InitStruct.Pin       = spi->io.nss->pin;
           GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
           GPIO_InitStruct.Pull      = GPIO_NOPULL;
@@ -1385,23 +1669,24 @@ static int32_t SPI_Control (uint32_t control, uint32_t arg, SPI_RESOURCES *spi) 
 
   // Set SPI Bus Speed 
   pclk = spi->periph_clock();
-  for (val = 1; val < 8; val++) {
+  for (val = 1U; val < 8U; val++) {
     if (arg >= (pclk >> val)) break;
   }
   // Save prescaler value
-  cr1 |= (val - 1) << 3;
+  cr1 |= (val - 1U) << 3U;
 
   spi->info->mode = mode;
 
   // Configure registers
   spi->reg->CR1 &= ~SPI_CR1_SPE;
   spi->reg->CR2  = cr2 | SPI_CR2_ERRIE;
-  spi->reg->CR1  = cr1; 
+  spi->reg->CR1  = cr1;
 
-  if ((mode & ARM_SPI_CONTROL_Msk) == ARM_SPI_MODE_INACTIVE)
+  if ((mode & ARM_SPI_CONTROL_Msk) == ARM_SPI_MODE_INACTIVE) {
     spi->info->state &= ~SPI_CONFIGURED;
-  else
+  } else {
     spi->info->state |=  SPI_CONFIGURED;
+  }
 
   // Enable SPI
   spi->reg->CR1 |= SPI_CR1_SPE;
@@ -1410,49 +1695,49 @@ static int32_t SPI_Control (uint32_t control, uint32_t arg, SPI_RESOURCES *spi) 
 }
 
 /**
-  \fn          ARM_SPI_STATUS SPI_GetStatus (SPI_RESOURCES *spi)
+  \fn          ARM_SPI_STATUS SPI_GetStatus (const SPI_RESOURCES *spi)
   \brief       Get SPI status.
   \param[in]   spi  Pointer to SPI resources
   \return      SPI status \ref ARM_SPI_STATUS
 */
-static ARM_SPI_STATUS SPI_GetStatus (SPI_RESOURCES *spi) {
+static ARM_SPI_STATUS SPI_GetStatus (const SPI_RESOURCES *spi) {
   return (spi->info->status);
 }
 
 /*SPI IRQ Handler */
-void SPI_IRQHandler (SPI_RESOURCES *spi) {
+void SPI_IRQHandler (const SPI_RESOURCES *spi) {
   uint16_t data, sr;
   uint32_t event;
 
   // Save status register
   sr = spi->reg->SR;
 
-  event = 0;
+  event = 0U;
 
-  if (sr & SPI_SR_OVR) {
+  if ((sr & SPI_SR_OVR) != 0U) {
     // Overrrun flag is set
-    spi->info->status.data_lost = 1;
+    spi->info->status.data_lost = 1U;
     event |=ARM_SPI_EVENT_DATA_LOST;
   }
-  if (sr & SPI_SR_UDR) {
+  if ((sr & SPI_SR_UDR) != 0U) {
     // Underrun flag is set
-    spi->info->status.data_lost = 1;
+    spi->info->status.data_lost = 1U;
     event |= ARM_SPI_EVENT_DATA_LOST;
   }
-  if (sr & SPI_SR_MODF) {
+  if ((sr & SPI_SR_MODF) != 0U) {
     // Mode fault flag is set
-    spi->info->status.mode_fault = 1;
+    spi->info->status.mode_fault = 1U;
     event |= ARM_SPI_EVENT_MODE_FAULT;
   }
 
-  if ((sr & SPI_SR_TXE) && (spi->reg->CR2 & SPI_CR2_TXEIE)) {
+  if (((sr & SPI_SR_TXE) != 0U) && ((spi->reg->CR2 & SPI_CR2_TXEIE) != 0U)) {
     if (spi->xfer->num) {
-      if (spi->xfer->tx_buf) {
+      if (spi->xfer->tx_buf != NULL) {
         // Send buffered data
         data = *(spi->xfer->tx_buf++);
         if (spi->reg->CR1 & SPI_CR1_DFF) {
           // 16-bit data frame format
-          data |= *(spi->xfer->tx_buf++) << 8;
+          data |= *(spi->xfer->tx_buf++) << 8U;
         }
       } else {
         // Send default transfer value
@@ -1474,16 +1759,16 @@ void SPI_IRQHandler (SPI_RESOURCES *spi) {
     }
   }
 
-  if ((sr & SPI_SR_RXNE) && (spi->reg->CR2 & SPI_CR2_RXNEIE)) {
+  if (((sr & SPI_SR_RXNE) != 0U) && ((spi->reg->CR2 & SPI_CR2_RXNEIE) != 0U)) {
     // Receive Buffer Not Empty
     data = spi->reg->DR;
 
-    if (spi->xfer->num) {
-      if (spi->xfer->rx_buf) {
+    if (spi->xfer->num != 0U) {
+      if ((spi->xfer->rx_buf) != NULL) {
         // Put data into buffer
         *(spi->xfer->rx_buf++) = (uint8_t)data;
         if (spi->reg->CR1 & SPI_CR1_DFF) {
-          *(spi->xfer->rx_buf++) = (uint8_t)(data >> 8);
+          *(spi->xfer->rx_buf++) = (uint8_t)(data >> 8U);
         }
       }
       spi->xfer->rx_cnt++;
@@ -1494,9 +1779,9 @@ void SPI_IRQHandler (SPI_RESOURCES *spi) {
         spi->reg->CR2 &= ~SPI_CR2_RXNEIE;
         HAL_NVIC_ClearPendingIRQ (spi->irq_num);
 
-        spi->xfer->num = 0;
+        spi->xfer->num = 0U;
         // Clear busy flag
-        spi->info->status.busy = 0;
+        spi->info->status.busy = 0U;
 
         // Transfer completed
         event |= ARM_SPI_EVENT_TRANSFER_COMPLETE;
@@ -1509,25 +1794,35 @@ void SPI_IRQHandler (SPI_RESOURCES *spi) {
   }
 
   // Send event
-  if (event && (spi->info->cb_event)) {
+  if ((event != 0U) && ((spi->info->cb_event != NULL))) {
     spi->info->cb_event(event);
   }
 }
 
 #ifdef __SPI_DMA_TX
-void SPI_TX_DMA_Complete(SPI_RESOURCES *spi) {
+void SPI_TX_DMA_Complete(const SPI_RESOURCES *spi) {
+
+  if ((__HAL_DMA_GET_COUNTER(spi->tx_dma->hdma) != 0) && (spi->xfer->num != 0)) {
+    // TX DMA Complete caused by transfer abort
+    return;
+  }
 
   spi->xfer->tx_cnt = spi->xfer->num;
 }
 #endif
 
 #ifdef __SPI_DMA_RX
-void SPI_RX_DMA_Complete(SPI_RESOURCES *spi) {
+void SPI_RX_DMA_Complete(const SPI_RESOURCES *spi) {
+
+  if ((__HAL_DMA_GET_COUNTER(spi->rx_dma->hdma) != 0) && (spi->xfer->num != 0)) {
+    // RX DMA Complete caused by transfer abort
+    return;
+  }
 
   spi->xfer->tx_cnt = spi->xfer->num;
 
-  spi->info->status.busy = 0;
-  if (spi->info->cb_event) {
+  spi->info->status.busy = 0U;
+  if (spi->info->cb_event != NULL) {
     spi->info->cb_event(ARM_SPI_EVENT_TRANSFER_COMPLETE);
   }
 }
@@ -1549,18 +1844,22 @@ static ARM_SPI_STATUS SPI1_GetStatus           (void)                           
 #ifdef MX_SPI1_TX_DMA_Instance
       void            SPI1_TX_DMA_Complete     (DMA_HandleTypeDef *hdma)                           {        SPI_TX_DMA_Complete (&SPI1_Resources); }
 
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
 void SPI1_TX_DMA_Handler (void) {
   HAL_NVIC_ClearPendingIRQ(MX_SPI1_TX_DMA_IRQn);
   HAL_DMA_IRQHandler(&hdma_spi1_tx);
 }
 #endif
+#endif
 #ifdef MX_SPI1_RX_DMA_Instance
       void            SPI1_RX_DMA_Complete     (DMA_HandleTypeDef *hdma)                           {        SPI_RX_DMA_Complete(&SPI1_Resources); }
 
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
 void SPI1_RX_DMA_Handler (void) {
   HAL_NVIC_ClearPendingIRQ(MX_SPI1_RX_DMA_IRQn);
   HAL_DMA_IRQHandler(&hdma_spi1_rx);
 }
+#endif
 #endif
 
 ARM_DRIVER_SPI Driver_SPI1 = {
@@ -1594,18 +1893,22 @@ static ARM_SPI_STATUS SPI2_GetStatus           (void)                           
 #ifdef MX_SPI2_TX_DMA_Instance
       void            SPI2_TX_DMA_Complete     (DMA_HandleTypeDef *hdma)                           {        SPI_TX_DMA_Complete (&SPI2_Resources); }
 
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
 void SPI2_TX_DMA_Handler (void) {
   HAL_NVIC_ClearPendingIRQ(MX_SPI2_TX_DMA_IRQn);
   HAL_DMA_IRQHandler(&hdma_spi2_tx);
 }
 #endif
+#endif
 #ifdef MX_SPI2_RX_DMA_Instance
       void            SPI2_RX_DMA_Complete     (DMA_HandleTypeDef *hdma)                           {        SPI_RX_DMA_Complete(&SPI2_Resources); }
 
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
 void SPI2_RX_DMA_Handler (void) {
   HAL_NVIC_ClearPendingIRQ(MX_SPI2_RX_DMA_IRQn);
   HAL_DMA_IRQHandler(&hdma_spi2_rx);
 }
+#endif
 #endif
 
 ARM_DRIVER_SPI Driver_SPI2 = {
@@ -1639,18 +1942,22 @@ static ARM_SPI_STATUS SPI3_GetStatus           (void)                           
 #ifdef MX_SPI3_TX_DMA_Instance
       void            SPI3_TX_DMA_Complete     (DMA_HandleTypeDef *hdma)                           {        SPI_TX_DMA_Complete (&SPI3_Resources); }
 
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
 void SPI3_TX_DMA_Handler (void) {
   HAL_NVIC_ClearPendingIRQ(MX_SPI3_TX_DMA_IRQn);
   HAL_DMA_IRQHandler(&hdma_spi3_tx);
 }
 #endif
+#endif
 #ifdef MX_SPI3_RX_DMA_Instance
       void            SPI3_RX_DMA_Complete     (DMA_HandleTypeDef *hdma)                           {        SPI_RX_DMA_Complete(&SPI3_Resources); }
 
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
 void SPI3_RX_DMA_Handler (void) {
   HAL_NVIC_ClearPendingIRQ(MX_SPI3_RX_DMA_IRQn);
   HAL_DMA_IRQHandler(&hdma_spi3_rx);
 }
+#endif
 #endif
 
 ARM_DRIVER_SPI Driver_SPI3 = {
@@ -1684,18 +1991,22 @@ static ARM_SPI_STATUS SPI4_GetStatus           (void)                           
 #ifdef MX_SPI4_TX_DMA_Instance
       void            SPI4_TX_DMA_Complete     (DMA_HandleTypeDef *hdma)                           {        SPI_TX_DMA_Complete (&SPI4_Resources); }
 
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
 void SPI4_TX_DMA_Handler (void) {
   HAL_NVIC_ClearPendingIRQ(MX_SPI4_TX_DMA_IRQn);
   HAL_DMA_IRQHandler(&hdma_spi4_tx);
 }
 #endif
+#endif
 #ifdef MX_SPI4_RX_DMA_Instance
       void            SPI4_RX_DMA_Complete     (DMA_HandleTypeDef *hdma)                           {        SPI_RX_DMA_Complete(&SPI4_Resources); }
 
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
 void SPI4_RX_DMA_Handler (void) {
   HAL_NVIC_ClearPendingIRQ(MX_SPI4_RX_DMA_IRQn);
   HAL_DMA_IRQHandler(&hdma_spi4_rx);
 }
+#endif
 #endif
 
 ARM_DRIVER_SPI Driver_SPI4 = {
@@ -1729,18 +2040,22 @@ static ARM_SPI_STATUS SPI5_GetStatus           (void)                           
 #ifdef MX_SPI5_TX_DMA_Instance
       void            SPI5_TX_DMA_Complete     (DMA_HandleTypeDef *hdma)                           {        SPI_TX_DMA_Complete (&SPI5_Resources); }
 
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
 void SPI5_TX_DMA_Handler (void) {
   HAL_NVIC_ClearPendingIRQ(MX_SPI5_TX_DMA_IRQn);
   HAL_DMA_IRQHandler(&hdma_spi5_tx);
 }
 #endif
+#endif
 #ifdef MX_SPI5_RX_DMA_Instance
       void            SPI5_RX_DMA_Complete     (DMA_HandleTypeDef *hdma)                           {        SPI_RX_DMA_Complete(&SPI5_Resources); }
 
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
 void SPI5_RX_DMA_Handler (void) {
   HAL_NVIC_ClearPendingIRQ(MX_SPI5_RX_DMA_IRQn);
   HAL_DMA_IRQHandler(&hdma_spi5_rx);
 }
+#endif
 #endif
 
 ARM_DRIVER_SPI Driver_SPI5 = {
@@ -1774,18 +2089,22 @@ static ARM_SPI_STATUS SPI6_GetStatus           (void)                           
 #ifdef MX_SPI6_TX_DMA_Instance
       void            SPI6_TX_DMA_Complete     (DMA_HandleTypeDef *hdma)                           {        SPI_TX_DMA_Complete (&SPI6_Resources); }
 
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
 void SPI6_TX_DMA_Handler (void) {
   HAL_NVIC_ClearPendingIRQ(MX_SPI6_TX_DMA_IRQn);
   HAL_DMA_IRQHandler(&hdma_spi6_tx);
 }
 #endif
+#endif
 #ifdef MX_SPI6_RX_DMA_Instance
       void            SPI6_RX_DMA_Complete     (DMA_HandleTypeDef *hdma)                           {        SPI_RX_DMA_Complete(&SPI6_Resources); }
 
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
 void SPI6_RX_DMA_Handler (void) {
   HAL_NVIC_ClearPendingIRQ(MX_SPI6_RX_DMA_IRQn);
   HAL_DMA_IRQHandler(&hdma_spi6_rx);
 }
+#endif
 #endif
 
 ARM_DRIVER_SPI Driver_SPI6 = {

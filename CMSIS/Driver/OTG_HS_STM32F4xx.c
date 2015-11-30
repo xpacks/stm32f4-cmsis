@@ -18,14 +18,17 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        11. September 2014
- * $Revision:    V2.00
+ * $Date:        9. December 2014
+ * $Revision:    V2.01
  *
  * Project:      OTG High-Speed Common Driver for ST STM32F4xx
  * Configured:   via RTE_Device.h configuration file
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.01
+ *    VBUS Power pin active high/low functionality added
+ *    Overcurrent state functionality (without event) added
  *  Version 2.00
  *    Integrated with Cube
  *  Version 1.04
@@ -262,6 +265,14 @@ void OTG_HS_PinsConfigure (uint8_t pins_mask) {
   if (pins_mask & ARM_USB_PIN_VBUS) {
     if (otg_hs_role == ARM_USB_ROLE_HOST) {
       __GPIOx_CLK_ENABLE          (MX_USB_OTG_HS_VBUS_Power_GPIOx);
+
+      // Initial Host VBUS Power Off
+#if  (USB_OTG_HS_VBUS_Power_Pin_Active == 0)
+      HAL_GPIO_WritePin (MX_USB_OTG_HS_VBUS_Power_GPIOx, MX_USB_OTG_HS_VBUS_Power_GPIO_Pin, GPIO_PIN_SET);
+#else
+      HAL_GPIO_WritePin (MX_USB_OTG_HS_VBUS_Power_GPIOx, MX_USB_OTG_HS_VBUS_Power_GPIO_Pin, GPIO_PIN_RESET);
+#endif
+
       GPIO_InitStruct.Pin       =  MX_USB_OTG_HS_VBUS_Power_GPIO_Pin;
       GPIO_InitStruct.Mode      =  MX_USB_OTG_HS_VBUS_Power_GPIO_Mode;
       GPIO_InitStruct.Pull      =  MX_USB_OTG_HS_VBUS_Power_GPIO_PuPd;
@@ -390,7 +401,32 @@ void OTG_HS_PinVbusOnOff (bool state) {
 
 #ifdef MX_USB_OTG_HS_VBUS_Power_Pin
   if (otg_hs_role == ARM_USB_ROLE_HOST) {
+#if   (USB_OTG_HS_VBUS_Power_Pin_Active == 0)
     HAL_GPIO_WritePin (MX_USB_OTG_HS_VBUS_Power_GPIOx, MX_USB_OTG_HS_VBUS_Power_GPIO_Pin, ((state == true) ? GPIO_PIN_RESET : GPIO_PIN_SET));
+#else
+    HAL_GPIO_WritePin (MX_USB_OTG_HS_VBUS_Power_GPIOx, MX_USB_OTG_HS_VBUS_Power_GPIO_Pin, ((state == true) ? GPIO_PIN_SET   : GPIO_PIN_RESET));
+#endif
   }
+#endif
+}
+
+/**
+  \fn          bool OTG_HS_PinGetOC (void)
+  \brief       Get state of OverCurrent Pin.
+  \return      overcurrent state (true = Overcurrent active, false = No overcurrent)
+*/
+bool OTG_HS_PinGetOC (void) {
+
+#ifdef MX_USB_OTG_HS_Overcurrent_Pin
+  if (otg_hs_role == ARM_USB_ROLE_HOST) {
+#if   (USB_OTG_HS_Overcurrent_Pin_Active == 0)
+    return ((HAL_GPIO_ReadPin (MX_USB_OTG_HS_Overcurrent_GPIOx, MX_USB_OTG_HS_Overcurrent_GPIO_Pin) == GPIO_PIN_RESET) ? true : false);
+#else
+    return ((HAL_GPIO_ReadPin (MX_USB_OTG_HS_Overcurrent_GPIOx, MX_USB_OTG_HS_Overcurrent_GPIO_Pin) == GPIO_PIN_SET)   ? true : false);
+#endif
+  }
+  return false;
+#else
+  return false;
 #endif
 }

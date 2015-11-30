@@ -7,6 +7,24 @@
   <url>http://www.keil.com/pack</url>
 
   <releases>
+    <release version="2.3.0" date="2014-12-11">
+      Updated drivers:
+      - I2C: corrected slave mode and 10-bit addressing mode, I2C2 SDA pin configuration, Enable_GPIO_Clock() function
+      - USB Host:
+      -- corrected interrupt pipe behaviour, and PING on high-speed driver, init/deinit and power control
+      -- added VBUS Power pin active high/low functionality, overcurrent state functionality (without event) added
+      - USB Device: prevent simultaneous IN writes to FIFO
+      - USART and SPI: corrected DMA transfer abort
+      - MCI: corrected setting of bus width
+      - EMAC: implemented function 'GetMacAddress'
+      - EMAC, I2C, MCI, USART, SPI and USBD: corrected some basic MISRA 2004 compliances like signedness, boolean operation on logical operators
+      Updated RTE_Device.h: added Receive and transmit DMA configuration for SDIO peripheral
+      Renamed SDIO component in 'Device::STM32Cube HAL' to 'SD' to match HAL component name
+      Updated examples:
+      - File_Demo and USB Host MassStorage examples updated due to the new fdelete() API in File System Version 6.2
+      - MCBSTM32F400 USB Host Keyboard example (removed USB High-speed usage)
+      - STM32F429I-Discovery Board USB Host examples config files and removed USB High-speed usage from Keyboard example
+    </release>
     <release version="2.2.0" date="2014-10-16">
       PACK based on STMicroelectronics STM32CubeF4 Firmware Package V1.3.0
       - STD Peripheral Library components removed
@@ -1428,7 +1446,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <image small="MDK\Boards\Keil\MCBSTM32F400\Documentation\mcbstm32f400_board.jpg" large="MDK\Boards\Keil\MCBSTM32F400\Documentation\MCBSTM32F200_F400.png"/>
       <book category="overview"  name="http://www.keil.com/mcbstm32f400/" title="MCBSTM32F400 Evaluation Board Web Page"/>
       <book category="schematic" name="MDK\Boards\Keil\MCBSTM32F400\Documentation\mcbstm32f400-schematics.pdf" title="Schematics"/>
-      <book category="manual"    name="MDK\Boards\Keil\MCBSTM32F400\Documentation\mcbstm32f400.chm" title="User Manual"/>
+      <book category="manual"    name="MDK\Boards\Keil\MCBSTM32F400\Documentation\mcbstm32f200.chm" title="User Manual"/>
       <mountedDevice    deviceIndex="0" Dvendor="STMicroelectronics:13" Dname="STM32F407IG"/>
       <compatibleDevice deviceIndex="0" Dvendor="STMicroelectronics:13" DsubFamily="STM32F407"/>
       <compatibleDevice deviceIndex="0" Dvendor="STMicroelectronics:13" DsubFamily="STM32F417"/>
@@ -2551,7 +2569,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
         #define RTE_DEVICE_FRAMEWORK_CLASSIC
       </RTE_Components_h>
       <files>
-        <file category="header"  name="CMSIS\Driver\Config\RTE_Device.h" attr="config" version="2.00"/>
+        <file category="header"  name="CMSIS\Driver\Config\RTE_Device.h" attr="config" version="2.01"/>
         <file category="header"  name="MDK\Templates\Inc\stm32f4xx_hal_conf.h" attr="config"/>
         <file category="source"  name="MDK\Templates\Src\stm32f4xx_hal_msp.c"  attr="template" select="MCU Specific HAL Initialization / De-Initialization"/>
         <file category="header"  name="MDK\Templates\Inc\stm32f4xx_it.h" attr="template" select="Exception Handlers and Peripheral IRQ"/>
@@ -2876,10 +2894,10 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SDIO" Cversion="1.1.0" condition="STM32F4 HAL">
-      <description>Secure digital (SDIO) interface HAL driver</description>
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SD" Cversion="1.1.0" condition="STM32F4 HAL">
+      <description>Secure digital (SD) interface HAL driver</description>
       <RTE_Components_h>
-        #define RTE_DEVICE_HAL_SDIO
+        #define RTE_DEVICE_HAL_SD
       </RTE_Components_h>
       <files>
         <file category="source" name="Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_sd.c"/>
@@ -2973,7 +2991,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
 
     <!-- END: STMicroelectronics STM32CubeF4 HAL -->
 
-    <component Cclass="CMSIS Driver" Cgroup="SPI" Capiversion="2.01"  Cversion="2.00" condition="STM32F4 CMSIS_Driver SPI">
+    <component Cclass="CMSIS Driver" Cgroup="SPI" Capiversion="2.01"  Cversion="2.01" condition="STM32F4 CMSIS_Driver SPI">
       <description>SPI Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_SPI1                /* Driver SPI1 */
@@ -2988,7 +3006,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="CMSIS Driver" Cgroup="USART" Capiversion="2.01" Cversion="2.00" condition="STM32F4 CMSIS_Driver USART">
+    <component Cclass="CMSIS Driver" Cgroup="USART" Capiversion="2.01" Cversion="2.01" condition="STM32F4 CMSIS_Driver USART">
       <description>USART Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_USART1              /* Driver USART1 */
@@ -3005,7 +3023,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
     
-    <component Cclass="CMSIS Driver" Cgroup="I2C" Capiversion="2.02" Cversion="2.00" condition="STM32F4 CMSIS_Driver I2C">
+    <component Cclass="CMSIS Driver" Cgroup="I2C" Capiversion="2.02" Cversion="2.01" condition="STM32F4 CMSIS_Driver I2C">
       <description>I2C Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_I2C1                /* Driver I2C1 */
@@ -3017,7 +3035,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="CMSIS Driver" Cgroup="MCI" Capiversion="2.02" Cversion="2.00" condition="STM32F4 CMSIS_Driver MCI">
+    <component Cclass="CMSIS Driver" Cgroup="MCI" Capiversion="2.02" Cversion="2.01" condition="STM32F4 CMSIS_Driver MCI">
       <description>MCI Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_MCI0                /* Driver MCI0 */
@@ -3027,7 +3045,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="CMSIS Driver" Cgroup="Ethernet MAC" Capiversion="2.01" Cversion="2.00" condition="STM32F4 CMSIS_Driver ETH_MAC">
+    <component Cclass="CMSIS Driver" Cgroup="Ethernet MAC" Capiversion="2.01" Cversion="2.01" condition="STM32F4 CMSIS_Driver ETH_MAC">
       <description>Ethernet MAC Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_ETH_MAC0            /* Driver ETH_MAC0 */
@@ -3037,7 +3055,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="CMSIS Driver" Cgroup="USB Device" Csub="Full-speed" Capiversion="2.01" Cversion="2.02" condition="STM32F4 CMSIS_Driver USB0">
+    <component Cclass="CMSIS Driver" Cgroup="USB Device" Csub="Full-speed" Capiversion="2.01" Cversion="2.04" condition="STM32F4 CMSIS_Driver USB0">
       <description>USB Device Full-Speed Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_USBD0               /* Driver USBD0 */
@@ -3048,7 +3066,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="CMSIS Driver" Cgroup="USB Device" Csub="High-speed" Capiversion="2.01" Cversion="2.02" condition="STM32F4 CMSIS_Driver USB1">
+    <component Cclass="CMSIS Driver" Cgroup="USB Device" Csub="High-speed" Capiversion="2.01" Cversion="2.04" condition="STM32F4 CMSIS_Driver USB1">
       <description>USB Device High-Speed Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_USBD1               /* Driver USBD1 */
@@ -3059,7 +3077,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="CMSIS Driver" Cgroup="USB Host" Csub="Full-speed" Capiversion="2.00" Cversion="2.04" condition="STM32F4 CMSIS_Driver USB0">
+    <component Cclass="CMSIS Driver" Cgroup="USB Host" Csub="Full-speed" Capiversion="2.00" Cversion="2.07" condition="STM32F4 CMSIS_Driver USB0">
       <description>USB Host Full-Speed Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_USBH0               /* Driver USBH0 */
@@ -3070,7 +3088,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="CMSIS Driver" Cgroup="USB Host" Csub="High-speed" Capiversion="2.00" Cversion="2.04" condition="STM32F4 CMSIS_Driver USB1">
+    <component Cclass="CMSIS Driver" Cgroup="USB Host" Csub="High-speed" Capiversion="2.00" Cversion="2.07" condition="STM32F4 CMSIS_Driver USB1">
       <description>USB Host High-Speed Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_USBH1               /* Driver USBH1 */
@@ -3084,7 +3102,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
     <!-- MCBSTM32F400 Development Board -->
     <bundle Cbundle="MCBSTM32F400" Cclass="Board Support" Cversion="2.0.0">
       <description>Keil Development Board MCBSTM32F400</description>
-      <doc>MDK\Boards\Keil\MCBSTM32F400\Documentation\mcbstm32f400.chm</doc>
+      <doc>MDK\Boards\Keil\MCBSTM32F400\Documentation\mcbstm32f200.chm</doc>
       <component Cgroup="LED" condition="STM32F4 HAL GPIO">
         <description>LED Interface for Keil MCBSTM32F400 Development Board</description>
         <files>
