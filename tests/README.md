@@ -11,5 +11,5 @@ cd stm32f4-cmsis-pack
 bash ../../../scripts/run-tests.sh
 ```
 
-The script will create `build/test`, copy the source files and compile them.
+The script will create `build/testa`, copy the source files and compile them.
 

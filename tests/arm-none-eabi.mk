@@ -20,7 +20,7 @@ CPPWARNFLAGS=-Wabi -Wctor-dtor-privacy -Wnoexcept -Wnon-virtual-dtor \
 CPU=-mcpu=cortex-m4 -mthumb -mfloat-abi=soft 
 
 INCLUDES=-I"$(PARENT)/Drivers/CMSIS/Device/ST/STM32F4xx/Include" 
-INCLUDES+=-I"$(PARENT)/test/include"
+INCLUDES+=-I"$(PARENT)/tests/include"
 INCLUDES+=-I"$(PARENT)/../../arm/arm-cmsis-xpack/CMSIS/Include"
 
 %.o: %.c
