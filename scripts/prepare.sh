@@ -19,6 +19,7 @@ ARCHIVE_URL="http://www.keil.com/pack/${ARCHIVE_NAME}"
 
 LOCAL_ARCHIVE_FILE="/tmp/xpacks/${ARCHIVE_NAME}"
 
+echo "Cleaning previous files..."
 for f in *
 do
   if [ "${f}" == "scripts" ]
@@ -35,8 +36,10 @@ then
   curl -o "${LOCAL_ARCHIVE_FILE}" -L "${ARCHIVE_URL}"
 fi
 
+echo "Unpacking '${ARCHIVE_NAME}'..."
 unzip -q "${LOCAL_ARCHIVE_FILE}"
 
+echo "Removing unnecessary files..."
 rm -rf \
 _htmresc \
 CMSIS/Flash \
@@ -61,6 +64,7 @@ package.xml
 
 find . -name '*.exe' -exec rm \{} \;
 
+echo "Creating README.md..."
 cat <<EOF >README.md
 # ${FAMILY} CMSIS
 
@@ -78,7 +82,7 @@ The latest CMSIS documentation is available from
 
 ## Original files
 
-The original files are available from the \`originals\` branch.
+The original files are available in the \`originals\` branch.
 
 These files were extracted from \`${ARCHIVE_NAME}\`.
 
@@ -98,7 +102,7 @@ To save space, the following folders/files were removed:
 * Drivers/CMSIS/Lib
 * Drivers/CMSIS/RTOS
 * Drivers/CMSIS/SVD
-* Drivers/STM32F?xx_HAL_Driver/
+* Drivers/STM32F?xx\_HAL\_Driver/
 * MDK
 * Middlewares
 * Projects
@@ -106,3 +110,5 @@ To save space, the following folders/files were removed:
 * package.xml
 
 EOF
+
+echo "Done."
