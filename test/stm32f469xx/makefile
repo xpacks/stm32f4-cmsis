@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2015 Liviu Ionescu
+# Copyright (c) 2015 Liviu Ionescu.
 # This file is part of the xPacks project (https://xpacks.github.io).
 #
 # Cross compile the CMSIS Core files with GCC.

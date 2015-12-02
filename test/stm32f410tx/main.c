@@ -1,7 +1,7 @@
-/*
- * Copyright (c) 2015 Liviu Ionescu
- * This file is part of the xPacks project (https://xpacks.github.io).
- */
+//
+// Copyright (c) 2015 Liviu Ionescu.
+// This file is part of the xPacks project (https://xpacks.github.io).
+//
 
 /*
  * Compile test for the STM32F4 CMSIS core header.
