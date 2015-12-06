@@ -142,8 +142,12 @@
 
 #endif                                          // #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
 
+// [Lix]
+#if defined ( __CC_ARM )
 #pragma push
 #pragma anon_unions
+#endif
+
 
 // OTG_FS
 typedef struct
@@ -533,10 +537,24 @@ typedef struct
 #define OTG_FS_DFIFO7         (((uint32_t *) OTG_FS_DFIFO7_BASE) )
 
 // OTG_FS Host Channel
+
+// [Lix]
+#if defined ( __CC_ARM )
 typedef __packed struct {               // Host Channel typedef (HC)
+#else
+typedef struct __packed {               // Host Channel typedef (HC)
+#endif
+
   __packed union {
     uint32_t HCCHAR;                    // Channel Characteristics
-    __packed struct {
+
+// [Lix]
+#if defined ( __CC_ARM )
+	__packed struct {
+#else
+    struct __packed {
+#endif
+
       uint32_t MPSIZ     : 11;          // Endpoint Maximum Packet Size
       uint32_t EPNUM     :  4;          // Endpoint Number
       uint32_t EPDIR     :  1;          // Endpoint Direction
@@ -553,7 +571,14 @@ typedef __packed struct {               // Host Channel typedef (HC)
   uint32_t Reserved1;                   // Reserved
   __packed union {
     uint32_t HCINT;                     // Channel Interrupt
-    __packed struct {
+
+// [Lix]
+#if defined ( __CC_ARM )
+	__packed struct {
+#else
+    struct __packed {
+#endif
+
       uint32_t XFCR      :  1;          // Transfer Completed
       uint32_t CHH       :  1;          // Channel Halted
       uint32_t Reserved2 :  1;          // Reserved
@@ -569,7 +594,14 @@ typedef __packed struct {               // Host Channel typedef (HC)
   };
   __packed union {
     uint32_t HCINTMSK;                  // Channel Interrupt Mask
-    __packed struct {
+
+// [Lix]
+#if defined ( __CC_ARM )
+	__packed struct {
+#else
+    struct __packed {
+#endif
+
       uint32_t XFCRM     :  1;          // Transfer Completed Mask
       uint32_t CHHM      :  1;          // Channel Halted Mask
       uint32_t Reserved4 :  1;          // Reserved
@@ -585,7 +617,14 @@ typedef __packed struct {               // Host Channel typedef (HC)
   };
   __packed union {
     uint32_t HCTSIZ;                    // Channel Transfer Size
-    __packed struct {
+
+// [Lix]
+#if defined ( __CC_ARM )
+	__packed struct {
+#else
+    struct __packed {
+#endif
+
       uint32_t XFRSIZ    : 19;          // Transfer Size
       uint32_t PKTCNT    : 10;          // Packet Count
       uint32_t DPID      :  2;          // Data PID
@@ -597,7 +636,10 @@ typedef __packed struct {               // Host Channel typedef (HC)
   uint32_t Reserved9;                   // Reserved
 } OTG_FS_HC;
 
+// [Lix]
+#if defined ( __CC_ARM )
 #pragma pop
+#endif
 
 // OTG_FS control and status register (OTG_FS_GOTGCTL)
 #define  OTG_FS_GOTGCTL_SRQSCS              ((uint32_t)    1U       )
