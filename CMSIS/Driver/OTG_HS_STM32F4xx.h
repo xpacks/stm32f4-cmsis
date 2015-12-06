@@ -257,8 +257,11 @@
 
 #endif                                          // #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
 
+// [Lix]
+#if defined ( __CC_ARM )
 #pragma push
 #pragma anon_unions
+#endif
 
 // OTG_HS
 typedef struct
@@ -723,8 +726,13 @@ typedef struct
 #define OTG_HS_DFIFO14        (((uint32_t *) OTG_HS_DFIFO14_BASE))
 #define OTG_HS_DFIFO15        (((uint32_t *) OTG_HS_DFIFO15_BASE))
 
-// OTG_HS Host Channel
+// [Lix]
+#if defined ( __CC_ARM )
 typedef __packed struct {               // Host Channel typedef (HC)
+#else
+typedef struct __packed {               // Host Channel typedef (HC)
+#endif
+
   __packed union {
     uint32_t HCCHAR;                    // Channel Characteristics
     __packed struct {
@@ -743,7 +751,14 @@ typedef __packed struct {               // Host Channel typedef (HC)
   };
   __packed union {
     uint32_t HCSPLT;                    // Split Control
+
+// [Lix]
+#if defined ( __CC_ARM )
     __packed struct {
+#else
+    struct __packed {
+#endif
+
       uint32_t PRTADDR   :  7;          // Port Address
       uint32_t HUBADDR   :  7;          // HUB Address
       uint32_t XACTPOS   :  2;          // Transaction Position
@@ -755,7 +770,14 @@ typedef __packed struct {               // Host Channel typedef (HC)
 
   __packed union {
     uint32_t HCINT;                     // Channel Interrupt
+
+// [Lix]
+#if defined ( __CC_ARM )
     __packed struct {
+#else
+    struct __packed {
+#endif
+
       uint32_t XFCR      :  1;          // Transfer Completed
       uint32_t CHH       :  1;          // Channel Halted
       uint32_t AHBERR    :  1;          // AHB Error
@@ -771,7 +793,14 @@ typedef __packed struct {               // Host Channel typedef (HC)
   };
   __packed union {
     uint32_t HCINTMSK;                  // Channel Interrupt Mask
+
+// [Lix]
+#if defined ( __CC_ARM )
     __packed struct {
+#else
+    struct __packed {
+#endif
+
       uint32_t XFCRM     :  1;          // Transfer Completed Mask
       uint32_t CHHM      :  1;          // Channel Halted Mask
       uint32_t AHBERRM   :  1;          // AHB Error
@@ -787,7 +816,14 @@ typedef __packed struct {               // Host Channel typedef (HC)
   };
   __packed union {
     uint32_t HCTSIZ;                    // Channel Transfer Size
+
+// [Lix]
+#if defined ( __CC_ARM )
     __packed struct {
+#else
+      struct __packed {
+#endif
+
       uint32_t XFRSIZ    : 19;          // Transfer Size
       uint32_t PKTCNT    : 10;          // Packet Count
       uint32_t DPID      :  2;          // Data PID
@@ -799,7 +835,10 @@ typedef __packed struct {               // Host Channel typedef (HC)
   uint32_t Reserved9;                   // Reserved
 } OTG_HS_HC;
 
+// [Lix]
+#if defined ( __CC_ARM )
 #pragma pop
+#endif
 
 // OTG_HS control and status register (OTG_HS_GOTGCTL)
 #define  OTG_HS_GOTGCTL_SRQSCS              ((uint32_t)    1U       )
