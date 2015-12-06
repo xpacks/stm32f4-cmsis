@@ -726,6 +726,7 @@ typedef struct
 #define OTG_HS_DFIFO14        (((uint32_t *) OTG_HS_DFIFO14_BASE))
 #define OTG_HS_DFIFO15        (((uint32_t *) OTG_HS_DFIFO15_BASE))
 
+// OTG_HS Host Channel
 // [Lix]
 #if defined ( __CC_ARM )
 typedef __packed struct {               // Host Channel typedef (HC)
