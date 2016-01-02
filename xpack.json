@@ -53,8 +53,8 @@
 
 	"dependencies": [
 		{
-			"name": "ilg_arm_cmsis",
-			"version": ">=1.0.0"
+			"name": "ilg-posix-io",
+			"version": ">=0.1.0"
 		}
 	]
 }
