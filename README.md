@@ -76,3 +76,11 @@ startup_stm32f469xx.s -> vectors_stm32f469xx.c
 startup_stm32f479xx.s -> vectors_stm32f479xx.c
 ```
 
+## Warnings
+
+To silence warnings when compiling the CMSIS drivers, use:
+
+```
+-Wno-aggregate-return -Wno-conversion -Wno-missing-prototypes \
+-Wno-missing-declarations -Wno-unused-parameter -Wno-padded
+```
