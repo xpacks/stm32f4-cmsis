@@ -142,12 +142,11 @@
 
 #endif                                          // #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
 
-// [Lix]
+// [LNP]
 #if defined ( __CC_ARM )
 #pragma push
 #pragma anon_unions
 #endif
-
 
 // OTG_FS
 typedef struct
@@ -538,7 +537,7 @@ typedef struct
 
 // OTG_FS Host Channel
 
-// [Lix]
+// [LNP]
 #if defined ( __CC_ARM )
 typedef __packed struct {               // Host Channel typedef (HC)
 #else
@@ -548,7 +547,7 @@ typedef struct __packed {               // Host Channel typedef (HC)
   __packed union {
     uint32_t HCCHAR;                    // Channel Characteristics
 
-// [Lix]
+// [LNP]
 #if defined ( __CC_ARM )
 	__packed struct {
 #else
@@ -572,7 +571,7 @@ typedef struct __packed {               // Host Channel typedef (HC)
   __packed union {
     uint32_t HCINT;                     // Channel Interrupt
 
-// [Lix]
+// [LNP]
 #if defined ( __CC_ARM )
 	__packed struct {
 #else
@@ -595,7 +594,7 @@ typedef struct __packed {               // Host Channel typedef (HC)
   __packed union {
     uint32_t HCINTMSK;                  // Channel Interrupt Mask
 
-// [Lix]
+// [LNP]
 #if defined ( __CC_ARM )
 	__packed struct {
 #else
@@ -618,7 +617,7 @@ typedef struct __packed {               // Host Channel typedef (HC)
   __packed union {
     uint32_t HCTSIZ;                    // Channel Transfer Size
 
-// [Lix]
+// [LNP]
 #if defined ( __CC_ARM )
 	__packed struct {
 #else
@@ -636,7 +635,7 @@ typedef struct __packed {               // Host Channel typedef (HC)
   uint32_t Reserved9;                   // Reserved
 } OTG_FS_HC;
 
-// [Lix]
+// [LNP]
 #if defined ( __CC_ARM )
 #pragma pop
 #endif

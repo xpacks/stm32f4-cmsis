@@ -829,12 +829,12 @@ static ARM_USBH_PIPE_HANDLE USBH_PipeCreate (uint8_t dev_addr, uint8_t dev_speed
   PIPE_t    *ptr_pipe;
   OTG_HS_HC *ptr_ch;
 
-  // [Lix]
+  // [LNP]
   if (hw_powered == false) { return 0; }
 
   ptr_ch = USBH_CH_FindFree ();                 // Find free Channel
 
-  // [Lix]
+  // [LNP]
   if (ptr_ch == 0U) { return 0; }            // If no free
 
   ptr_pipe = (PIPE_t *)(&pipe[USBH_CH_GetIndexFromAddress (ptr_ch)]);
