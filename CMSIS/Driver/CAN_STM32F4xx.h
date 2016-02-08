@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        14. September 2015
- * $Revision:    V1.0
+ * $Date:        8. October 2015
+ * $Revision:    V1.1
  *
  * Driver:       Driver_CAN1/2
  * Configured:   via RTE_Device.h configuration file
@@ -53,6 +53,8 @@
 #endif
 
 #if    (RTE_CAN1 != 0)
+#define MX_CAN1                         1
+
 /* Pin CAN1_RX */
 #define MX_CAN1_RX_Pin                  1
 #define MX_CAN1_RX_GPIO_Speed           GPIO_SPEED_HIGH
@@ -73,10 +75,12 @@
 #endif
 
 #if    (RTE_CAN2 != 0)
+#define MX_CAN2                         1
+
 /* Pin CAN2_RX */
 #define MX_CAN2_RX_Pin                  1
 #define MX_CAN2_RX_GPIO_Speed           GPIO_SPEED_HIGH
-#define MX_CAN2_RX_GPIOx                RTE_CAN1_RX_PORT
+#define MX_CAN2_RX_GPIOx                RTE_CAN2_RX_PORT
 #define MX_CAN2_RX_GPIO_PuPd            GPIO_NOPULL
 #define MX_CAN2_RX_GPIO_Pin             RTE_CAN2_RX_BIT
 #define MX_CAN2_RX_GPIO_AF              GPIO_AF9_CAN2

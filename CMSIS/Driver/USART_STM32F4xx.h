@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        1. September 2015
- * $Revision:    V2.4
+ * $Date:        16. October 2015
+ * $Revision:    V2.5
  *
  * Project:      USART Driver definitions for ST STM32F4xx
  * -------------------------------------------------------------------------- */
@@ -35,184 +35,39 @@
 #include "stm32f4xx_hal.h"
 
 #include "RTE_Components.h"
-
-#ifdef   RTE_DEVICE_FRAMEWORK_CUBE_MX
-#define  VM_ASYNC                        (1UL)
-#define  VM_SYNC                         (2UL)
-#define  VM_IRDA                         (3UL)
-#define  VM_SMARTCARD                    (4UL)
-#define  Asynchronous                    VM_ASYNC
-#define  IrDA                            VM_IRDA
-#include "MX_Device.h"
-
-#ifdef USART6
-  #ifndef RCC_APB2RSTR_USART6RST
-    #define  RCC_APB2RSTR_USART6RST ((uint32_t)0x00000020)
-  #endif
-#endif
-
-// MX macros
-#ifdef MX_USART1
-
-#if (MX_USART1_VM == VM_ASYNC)
-#ifndef USART_ASYNC
-#define USART_ASYNC                      (1UL)
-#endif
-#elif (MX_USART1_VM == VM_SYNC)
-#ifndef USART_SYNC
-#define USART_SYNC                       (1UL)
-#endif
-#elif (MX_USART1_VM == VM_IRDA)
-#ifndef USART_IRDA
-#define USART_IRDA                       (1UL)
-#endif
-#elif (MX_USART1_VM == VM_SMARTCARD)
-#ifndef USART_SMARTCARD
-#define USART_SMARTCARD                  (1UL)
-#endif
-#endif
-#endif
-
-
-#ifdef MX_USART2
-
-#if (MX_USART2_VM == VM_ASYNC)
-#ifndef USART_ASYNC
-#define USART_ASYNC                      (1UL)
-#endif
-#elif (MX_USART2_VM == VM_SYNC)
-#ifndef USART_SYNC
-#define USART_SYNC                       (1UL)
-#endif
-#elif (MX_USART2_VM == VM_IRDA)
-#ifndef USART_IRDA
-#define USART_IRDA                       (1UL)
-#endif
-#elif (MX_USART2_VM == VM_SMARTCARD)
-#ifndef USART_SMARTCARD
-#define USART_SMARTCARD                  (1UL)
-#endif
-#endif
-#endif
-
-
-#ifdef MX_USART3
-
-#if (MX_USART3_VM == VM_ASYNC)
-#ifndef USART_ASYNC
-#define USART_ASYNC                      (1UL)
-#endif
-#elif (MX_USART3_VM == VM_SYNC)
-#ifndef USART_SYNC
-#define USART_SYNC                       (1UL)
-#endif
-#elif (MX_USART3_VM == VM_IRDA)
-#ifndef USART_IRDA
-#define USART_IRDA                       (1UL)
-#endif
-#elif (MX_USART3_VM == VM_SMARTCARD)
-#ifndef USART_SMARTCARD
-#define USART_SMARTCARD                  (1UL)
-#endif
-#endif
-#endif
-
-
-#ifdef MX_UART4
-
-#if (MX_UART4_VM == VM_ASYNC)
-#ifndef USART_ASYNC
-#define USART_ASYNC                      (1UL)
-#endif
-#elif (MX_UART4_VM == VM_IRDA)
-#ifndef USART_IRDA
-#define USART_IRDA                       (1UL)
-#endif
-#endif
-#endif
-
-
-#ifdef MX_UART5
-
-#if (MX_UART5_VM == VM_ASYNC)
-#ifndef USART_ASYNC
-#define USART_ASYNC                      (1UL)
-#endif
-#elif (MX_UART5_VM == VM_IRDA)
-#ifndef USART_IRDA
-#define USART_IRDA                       (1UL)
-#endif
-#endif
-#endif
-
-
-#ifdef MX_USART6
-
-#if (MX_USART6_VM == VM_ASYNC)
-#ifndef USART_ASYNC
-#define USART_ASYNC                      (1UL)
-#endif
-#elif (MX_USART6_VM == VM_SYNC)
-#ifndef USART_SYNC
-#define USART_SYNC                       (1UL)
-#endif
-#elif (MX_USART6_VM == VM_IRDA)
-#ifndef USART_IRDA
-#define USART_IRDA                       (1UL)
-#endif
-#elif (MX_USART6_VM == VM_SMARTCARD)
-#ifndef USART_SMARTCARD
-#define USART_SMARTCARD                  (1UL)
-#endif
-#endif
-#endif
-
-
-#ifdef MX_UART7
-
-#if (MX_UART7_VM == VM_ASYNC)
-#ifndef USART_ASYNC
-#define USART_ASYNC                      (1UL)
-#endif
-#elif (MX_UART7_VM == VM_IRDA)
-#ifndef USART_IRDA
-#define USART_IRDA                       (1UL)
-#endif
-#endif
-#endif
-
-
-#ifdef MX_UART8
-
-#if (MX_UART8_VM == VM_ASYNC)
-#ifndef USART_ASYNC
-#define USART_ASYNC                      (1UL)
-#endif
-#elif (MX_UART8_VM == VM_IRDA)
-#ifndef USART_IRDA
-#define USART_IRDA                       (1UL)
-#endif
-#endif
-#endif
-
-
-#else
+#if   defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
 #include "RTE_Device.h"
-
-#if ((defined(RTE_Drivers_USART1) || defined(RTE_Drivers_USART2) || \
-      defined(RTE_Drivers_USART3) || defined(RTE_Drivers_USART4) || \
-      defined(RTE_Drivers_USART5) || defined(RTE_Drivers_USART6) || \
-      defined(RTE_Drivers_USART7) || defined(RTE_Drivers_USART8))   \
-     && (RTE_USART1 == 0)   \
-     && (RTE_USART2 == 0)   \
-     && (RTE_USART3 == 0)   \
-     && (RTE_USART4 == 0)   \
-     && (RTE_USART5 == 0)   \
-     && (RTE_USART6 == 0)   \
-     && (RTE_USART7 == 0)   \
-     && (RTE_USART8 == 0))
-  #error "USART not configured in RTE_Device.h!"
+#elif defined(RTE_DEVICE_FRAMEWORK_CUBE_MX)
+  #define  VM_ASYNC                      (1UL)
+  #define  VM_SYNC                       (2UL)
+  #define  VM_IRDA                       (3UL)
+  #define  VM_SMARTCARD                  (4UL)
+  #define  Asynchronous                  VM_ASYNC
+  #define  IrDA                          VM_IRDA
+#include "MX_Device.h"
+#else
+#error "::Device:STM32Cube Framework: not selected in RTE"
 #endif
+
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+  #if ((defined(RTE_Drivers_USART1) || \
+        defined(RTE_Drivers_USART2) || \
+        defined(RTE_Drivers_USART3) || \
+        defined(RTE_Drivers_UART4 ) || \
+        defined(RTE_Drivers_UART5 ) || \
+        defined(RTE_Drivers_USART6) || \
+        defined(RTE_Drivers_UART7 ) || \
+        defined(RTE_Drivers_UART8 ))   \
+       && (RTE_USART1 == 0)            \
+       && (RTE_USART2 == 0)            \
+       && (RTE_USART3 == 0)            \
+       && (RTE_UART4  == 0)            \
+       && (RTE_UART5  == 0)            \
+       && (RTE_USART6 == 0)            \
+       && (RTE_UART7  == 0)            \
+       && (RTE_UART8  == 0))
+    #error "USART not configured in RTE_Device.h!"
+  #endif
 
 // RTE macros
 #define _DMA_CHANNEL_x(x)               DMA_CHANNEL_##x
@@ -298,7 +153,7 @@
   #endif
 
 
-  #if (RTE_USART1_CTS == 1)
+  #if (RTE_USART1_RTS == 1)
     #if defined (STM32F410Tx)
       // USART1 CTS pin is not available
       #error "USART1 CTS pin is not available on selected device!"
@@ -311,7 +166,7 @@
     #define MX_USART1_RTS_GPIO_AF   GPIO_AF7_USART1
   #endif
 
-  #if (RTE_USART1_RTS == 1)
+  #if (RTE_USART1_CTS == 1)
     #define MX_USART1_CTS_Pin       1
     #define MX_USART1_CTS_GPIOx     RTE_USART1_CTS_PORT
     #define MX_USART1_CTS_GPIO_Pin  (1U << RTE_USART1_CTS_BIT)
@@ -386,7 +241,7 @@
   #endif
 
 
-  #if (RTE_USART2_CTS == 1)
+  #if (RTE_USART2_RTS == 1)
     #if defined(STM32F410Tx) || defined(STM32F410Cx) || defined(STM32F410Rx)
       // USART2 CTS available on pin: PA0
       #if ((RTE_USART2_CTS_ID != 0) && (RTE_USART2_CTS_ID != 1))
@@ -401,7 +256,7 @@
     #define MX_USART2_RTS_GPIO_AF   GPIO_AF7_USART2
   #endif
 
-  #if (RTE_USART2_RTS == 1)
+  #if (RTE_USART2_CTS == 1)
     #if defined(STM32F410Tx)
       // USART2 RTS is not available
       #error "USART2 RTS pin is not available on selected device!"
@@ -467,7 +322,7 @@
   #endif
 
 
-  #if (RTE_USART3_CTS == 1)
+  #if (RTE_USART3_RTS == 1)
     #define MX_USART3_RTS_Pin       1
     #define MX_USART3_RTS_GPIOx     RTE_USART3_RTS_PORT
     #define MX_USART3_RTS_GPIO_Pin  (1U << RTE_USART3_RTS_BIT)
@@ -475,7 +330,7 @@
     #define MX_USART3_RTS_GPIO_AF   GPIO_AF7_USART3
   #endif
 
-  #if (RTE_USART3_RTS == 1)
+  #if (RTE_USART3_CTS == 1)
     #define MX_USART3_CTS_Pin       1
     #define MX_USART3_CTS_GPIOx     RTE_USART3_CTS_PORT
     #define MX_USART3_CTS_GPIO_Pin  (1U << RTE_USART3_CTS_BIT)
@@ -671,7 +526,7 @@
     #define MX_USART6_CK_GPIO_AF   GPIO_AF8_USART6
   #endif
 
-  #if (RTE_USART6_CTS == 1)
+  #if (RTE_USART6_RTS == 1)
     #if defined (STM32F401xC) || defined (STM32F401xE) || defined (STM32F411xE) || \
         defined (STM32F410Cx) || defined (STM32F410Rx)
       #error "CTS line not available on selected device!"
@@ -683,7 +538,7 @@
     #define MX_USART6_RTS_GPIO_AF   GPIO_AF8_USART6
   #endif
 
-  #if (RTE_USART6_RTS == 1)
+  #if (RTE_USART6_CTS == 1)
     #if defined (STM32F401xC) || defined (STM32F401xE) || defined (STM32F411xE) || \
         defined (STM32F410Cx) || defined (STM32F410Rx)
       #error "RTS line not available on selected device!"
@@ -774,7 +629,179 @@
   #define MX_UART8_RX_GPIO_AF   GPIO_AF8_UART8
 #endif
 
+#endif /* RTE_DEVICE_FRAMEWORK_CLASSIC */
+
+#if defined(RTE_DEVICE_FRAMEWORK_CUBE_MX)
+  #if ((defined(RTE_Drivers_USART1) || \
+        defined(RTE_Drivers_USART2) || \
+        defined(RTE_Drivers_USART3) || \
+        defined(RTE_Drivers_UART4 ) || \
+        defined(RTE_Drivers_UART5 ) || \
+        defined(RTE_Drivers_USART6) || \
+        defined(RTE_Drivers_UART7 ) || \
+        defined(RTE_Drivers_UART8 ))   \
+        && (!defined (MX_USART1))      \
+        && (!defined (MX_USART2))      \
+        && (!defined (MX_USART3))      \
+        && (!defined (MX_UART4 ))      \
+        && (!defined (MX_UART5 ))      \
+        && (!defined (MX_USART6))      \
+        && (!defined (MX_UART7 ))      \
+        && (!defined (MX_UART8 )))
+    #error "USART not configured in STM32CubeMX!"
+  #endif
+
+#ifdef USART6
+  #ifndef RCC_APB2RSTR_USART6RST
+    #define  RCC_APB2RSTR_USART6RST ((uint32_t)0x00000020)
+  #endif
 #endif
+
+// MX macros
+#ifdef MX_USART1
+
+#if (MX_USART1_VM == VM_ASYNC)
+#ifndef USART_ASYNC
+#define USART_ASYNC                      (1UL)
+#endif
+#elif (MX_USART1_VM == VM_SYNC)
+#ifndef USART_SYNC
+#define USART_SYNC                       (1UL)
+#endif
+#elif (MX_USART1_VM == VM_IRDA)
+#ifndef USART_IRDA
+#define USART_IRDA                       (1UL)
+#endif
+#elif (MX_USART1_VM == VM_SMARTCARD)
+#ifndef USART_SMARTCARD
+#define USART_SMARTCARD                  (1UL)
+#endif
+#endif
+#endif
+
+
+#ifdef MX_USART2
+
+#if (MX_USART2_VM == VM_ASYNC)
+#ifndef USART_ASYNC
+#define USART_ASYNC                      (1UL)
+#endif
+#elif (MX_USART2_VM == VM_SYNC)
+#ifndef USART_SYNC
+#define USART_SYNC                       (1UL)
+#endif
+#elif (MX_USART2_VM == VM_IRDA)
+#ifndef USART_IRDA
+#define USART_IRDA                       (1UL)
+#endif
+#elif (MX_USART2_VM == VM_SMARTCARD)
+#ifndef USART_SMARTCARD
+#define USART_SMARTCARD                  (1UL)
+#endif
+#endif
+#endif
+
+
+#ifdef MX_USART3
+
+#if (MX_USART3_VM == VM_ASYNC)
+#ifndef USART_ASYNC
+#define USART_ASYNC                      (1UL)
+#endif
+#elif (MX_USART3_VM == VM_SYNC)
+#ifndef USART_SYNC
+#define USART_SYNC                       (1UL)
+#endif
+#elif (MX_USART3_VM == VM_IRDA)
+#ifndef USART_IRDA
+#define USART_IRDA                       (1UL)
+#endif
+#elif (MX_USART3_VM == VM_SMARTCARD)
+#ifndef USART_SMARTCARD
+#define USART_SMARTCARD                  (1UL)
+#endif
+#endif
+#endif
+
+
+#ifdef MX_UART4
+
+#if (MX_UART4_VM == VM_ASYNC)
+#ifndef USART_ASYNC
+#define USART_ASYNC                      (1UL)
+#endif
+#elif (MX_UART4_VM == VM_IRDA)
+#ifndef USART_IRDA
+#define USART_IRDA                       (1UL)
+#endif
+#endif
+#endif
+
+
+#ifdef MX_UART5
+
+#if (MX_UART5_VM == VM_ASYNC)
+#ifndef USART_ASYNC
+#define USART_ASYNC                      (1UL)
+#endif
+#elif (MX_UART5_VM == VM_IRDA)
+#ifndef USART_IRDA
+#define USART_IRDA                       (1UL)
+#endif
+#endif
+#endif
+
+
+#ifdef MX_USART6
+
+#if (MX_USART6_VM == VM_ASYNC)
+#ifndef USART_ASYNC
+#define USART_ASYNC                      (1UL)
+#endif
+#elif (MX_USART6_VM == VM_SYNC)
+#ifndef USART_SYNC
+#define USART_SYNC                       (1UL)
+#endif
+#elif (MX_USART6_VM == VM_IRDA)
+#ifndef USART_IRDA
+#define USART_IRDA                       (1UL)
+#endif
+#elif (MX_USART6_VM == VM_SMARTCARD)
+#ifndef USART_SMARTCARD
+#define USART_SMARTCARD                  (1UL)
+#endif
+#endif
+#endif
+
+
+#ifdef MX_UART7
+
+#if (MX_UART7_VM == VM_ASYNC)
+#ifndef USART_ASYNC
+#define USART_ASYNC                      (1UL)
+#endif
+#elif (MX_UART7_VM == VM_IRDA)
+#ifndef USART_IRDA
+#define USART_IRDA                       (1UL)
+#endif
+#endif
+#endif
+
+
+#ifdef MX_UART8
+
+#if (MX_UART8_VM == VM_ASYNC)
+#ifndef USART_ASYNC
+#define USART_ASYNC                      (1UL)
+#endif
+#elif (MX_UART8_VM == VM_IRDA)
+#ifndef USART_IRDA
+#define USART_IRDA                       (1UL)
+#endif
+#endif
+#endif
+
+#endif  /* RTE_DEVICE_FRAMEWORK_CUBE_MX */
 
 #ifdef MX_USART1
 #if (defined(MX_USART1_RX_DMA_Instance) || defined(MX_USART1_TX_DMA_Instance))

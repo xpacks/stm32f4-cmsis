@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        14. September 2015
- * $Revision:    V1.00
+ * $Date:        16. October 2015
+ * $Revision:    V1.2
  *
  * Driver:       Driver_CAN1/2
  * Configured:   via RTE_Device.h configuration file
@@ -46,6 +46,13 @@
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 1.2
+ *    Corrected PowerControl function for:
+ *      - Unconditional Power Off
+ *      - Conditional Power full (driver must be initialized)
+ *  Version 1.1
+ *    Corrected option for selecting only CAN1
+ *    Added clock enable before power off
  *  Version 1.0
  *    Initial release
  */
@@ -117,7 +124,7 @@ Configuration tab
           :--------|:--------------|:------------|:-------------------|:------------|:----------
           PB5      | CAN2_RX       | Alternate ..| No pull-up and no..| High        |.
           PB13     | CAN2_TX       | Alternate ..| No pull-up and no..| High        |.
-     - Click \b OK to close the CAN1 Configuration dialog
+     - Click \b OK to close the CAN2 Configuration dialog
 */
 
 /*! \cond */
@@ -187,7 +194,7 @@ static void Enable_GPIO_Clock (const GPIO_TypeDef *GPIOx) {
 
 // CAN Driver ******************************************************************
 
-#define ARM_CAN_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(1,0) // CAN driver version
+#define ARM_CAN_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(1,2) // CAN driver version
 
 // Driver Version
 static const ARM_DRIVER_VERSION can_driver_version = { ARM_CAN_API_VERSION, ARM_CAN_DRV_VERSION };
@@ -258,6 +265,7 @@ extern CAN_HandleTypeDef hcan2;
 
 // Local variables and Structures
 static uint8_t                          can_driver_powered[CAN_CTRL_NUM];
+static uint8_t                          can_driver_initialized[CAN_CTRL_NUM];
 static uint8_t                          can_obj_cfg       [CAN_CTRL_NUM][CAN_TOT_OBJ_NUM];
 static ARM_CAN_SignalUnitEvent_t        CAN1_SignalUnitEvent   = NULL;
 static ARM_CAN_SignalObjectEvent_t      CAN1_SignalObjectEvent = NULL;
@@ -628,13 +636,15 @@ static int32_t CANx_Initialize (ARM_CAN_SignalUnitEvent_t   cb_unit_event,
   GPIO_InitTypeDef GPIO_InitStruct;
 #endif
 
-  if (x >= CAN_CTRL_NUM) { return ARM_DRIVER_ERROR; }
+  if (can_driver_initialized[x] == true) { return ARM_DRIVER_OK;    }
+  if (x >= CAN_CTRL_NUM)                 { return ARM_DRIVER_ERROR; }
 
   switch (x) {
     case 0:
       CAN1_SignalUnitEvent      = cb_unit_event;
       CAN1_SignalObjectEvent    = cb_object_event;
 
+#ifdef MX_CAN1
 #if defined (RTE_DEVICE_FRAMEWORK_CLASSIC)
 #if defined (MX_CAN1_RX_Pin)
       Enable_GPIO_Clock          (MX_CAN1_RX_GPIOx);
@@ -657,11 +667,13 @@ static int32_t CANx_Initialize (ARM_CAN_SignalUnitEvent_t   cb_unit_event,
 #else
       hcan1.Instance = CAN1;
 #endif
+#endif
       break;
     case 1:
       CAN2_SignalUnitEvent      = cb_unit_event;
       CAN2_SignalObjectEvent    = cb_object_event;
 
+#ifdef MX_CAN2
 #if defined (RTE_DEVICE_FRAMEWORK_CLASSIC)
 #if defined (MX_CAN2_RX_Pin)
       Enable_GPIO_Clock          (MX_CAN2_RX_GPIOx);
@@ -684,8 +696,11 @@ static int32_t CANx_Initialize (ARM_CAN_SignalUnitEvent_t   cb_unit_event,
 #else
       hcan2.Instance = CAN2;
 #endif
+#endif
       break;
   }
+
+  can_driver_initialized[x] = true;
 
   return ARM_DRIVER_OK;
 }
@@ -706,6 +721,7 @@ static int32_t CANx_Uninitialize (uint8_t x) {
   if (x >= CAN_CTRL_NUM) { return ARM_DRIVER_ERROR; }
 
   switch (x) {
+#ifdef MX_CAN1
     case 0:
 #if defined (RTE_DEVICE_FRAMEWORK_CLASSIC)
 #if defined (MX_CAN1_RX_Pin)
@@ -724,8 +740,12 @@ static int32_t CANx_Uninitialize (uint8_t x) {
       GPIO_InitStruct.Alternate = 0U;
       HAL_GPIO_Init              (MX_CAN1_TX_GPIOx, &GPIO_InitStruct);
 #endif
+#else
+      hcan1.Instance            = NULL;
 #endif
       break;
+#endif
+#ifdef MX_CAN2
     case 1:
 #if defined (RTE_DEVICE_FRAMEWORK_CLASSIC)
 #if defined (MX_CAN2_RX_Pin)
@@ -744,9 +764,16 @@ static int32_t CANx_Uninitialize (uint8_t x) {
       GPIO_InitStruct.Alternate = 0U;
       HAL_GPIO_Init              (MX_CAN2_TX_GPIOx, &GPIO_InitStruct);
 #endif
+#else
+      hcan2.Instance            = NULL;
 #endif
       break;
+#endif
+    default:
+      break;
   }
+
+  can_driver_initialized[x] = false;
 
   return ARM_DRIVER_OK;
 }
@@ -780,20 +807,43 @@ static int32_t CANx_PowerControl (ARM_POWER_STATE state, uint8_t x) {
       can_driver_powered[x] = 0U;
 #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
       switch (x) {
+#ifdef MX_CAN1
         case 0:
           NVIC_DisableIRQ (CAN1_TX_IRQn);
           NVIC_DisableIRQ (CAN1_RX0_IRQn);
           NVIC_DisableIRQ (CAN1_RX1_IRQn);
           NVIC_DisableIRQ (CAN1_SCE_IRQn);
           break;
+#endif
+#ifdef MX_CAN2
         case 1:
           NVIC_DisableIRQ (CAN2_TX_IRQn);
           NVIC_DisableIRQ (CAN2_RX0_IRQn);
           NVIC_DisableIRQ (CAN2_RX1_IRQn);
           NVIC_DisableIRQ (CAN2_SCE_IRQn);
           break;
+#endif
+        default:
+          break;
       }
 #endif
+
+      switch (x) {
+#ifdef MX_CAN1
+        case 0:
+          // Enable clock for CAN1 peripheral
+          RCC->APB1ENR  |=  RCC_APB1ENR_CAN1EN;
+          break;
+#endif
+#ifdef MX_CAN2
+        case 1:
+          // Enable clock for CAN2 peripheral
+          RCC->APB1ENR  |=  RCC_APB1ENR_CAN2EN;
+          break;
+#endif
+        default:
+          break;
+      }
 
       ptr_CAN->IER = 0U;                        // Disable Interrupts
 
@@ -804,31 +854,39 @@ static int32_t CANx_PowerControl (ARM_POWER_STATE state, uint8_t x) {
 
       switch (x) {
         case 0:
+#ifdef MX_CAN1
 #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
-          RCC->APB1ENR  |=  RCC_APB1ENR_CAN1EN;
           RCC->APB1RSTR |=  RCC_APB1RSTR_CAN1RST;
           __NOP(); __NOP(); __NOP(); __NOP(); 
+          RCC->APB1ENR  &= ~RCC_APB1ENR_CAN1EN;
 #else
-          HAL_CAN_DeInit (&hcan1);
+          if (hcan1.Instance != NULL) { HAL_CAN_DeInit (&hcan1); }
 #endif
           break;
+#endif
+#ifdef MX_CAN2
         case 1:
 #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
-          RCC->APB1ENR  |=  RCC_APB1ENR_CAN2EN;
           RCC->APB1RSTR |=  RCC_APB1RSTR_CAN2RST;
           __NOP(); __NOP(); __NOP(); __NOP(); 
+          RCC->APB1ENR  &= ~RCC_APB1ENR_CAN2EN;
 #else
-          HAL_CAN_DeInit (&hcan2);
+          if (hcan2.Instance != NULL) { HAL_CAN_DeInit (&hcan2); }
 #endif
+          break;
+#endif
+        default:
           break;
       }
       break;
 
     case ARM_POWER_FULL:
-      if (can_driver_powered[x] != 0U) { return ARM_DRIVER_OK; }
+      if (can_driver_initialized[x] == 0U) { return ARM_DRIVER_ERROR; }
+      if (can_driver_powered[x]     != 0U) { return ARM_DRIVER_OK; }
       can_driver_powered[x] = 1U;
 
       switch (x) {
+#ifdef MX_CAN1
         case 0:
 #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
           RCC->APB1ENR  |=  RCC_APB1ENR_CAN1EN;
@@ -839,6 +897,8 @@ static int32_t CANx_PowerControl (ARM_POWER_STATE state, uint8_t x) {
           HAL_CAN_MspInit(&hcan1);
 #endif
           break;
+#endif
+#ifdef MX_CAN2
         case 1:
 #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
           RCC->APB1ENR  |=  RCC_APB1ENR_CAN2EN;
@@ -848,6 +908,9 @@ static int32_t CANx_PowerControl (ARM_POWER_STATE state, uint8_t x) {
 #else
           HAL_CAN_MspInit(&hcan2);
 #endif
+          break;
+#endif
+        default:
           break;
       }
 
@@ -882,6 +945,7 @@ static int32_t CANx_PowerControl (ARM_POWER_STATE state, uint8_t x) {
 
 #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
       switch (x) {
+#ifdef MX_CAN1
         case 0:
           NVIC_ClearPendingIRQ (CAN1_TX_IRQn);
           NVIC_EnableIRQ       (CAN1_TX_IRQn);
@@ -892,6 +956,8 @@ static int32_t CANx_PowerControl (ARM_POWER_STATE state, uint8_t x) {
           NVIC_ClearPendingIRQ (CAN1_SCE_IRQn);
           NVIC_EnableIRQ       (CAN1_SCE_IRQn);
           break;
+#endif
+#ifdef MX_CAN2
         case 1:
           NVIC_ClearPendingIRQ (CAN2_TX_IRQn);
           NVIC_EnableIRQ       (CAN2_TX_IRQn);
@@ -901,6 +967,9 @@ static int32_t CANx_PowerControl (ARM_POWER_STATE state, uint8_t x) {
           NVIC_EnableIRQ       (CAN2_RX1_IRQn);
           NVIC_ClearPendingIRQ (CAN2_SCE_IRQn);
           NVIC_EnableIRQ       (CAN2_SCE_IRQn);
+          break;
+#endif
+        default:
           break;
       }
 #endif

@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        27. August 2015
- * $Revision:    V2.10
+ * $Date:        24. November 2015
+ * $Revision:    V2.13
  *
  * Driver:       Driver_USBD0
  * Configured:   via RTE_Device.h configuration file
@@ -48,6 +48,14 @@
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.13
+ *    Updated Isochronous transfer
+ *  Version 2.12
+ *    Updated IN Endpoint FIFO flush procedure
+ *  Version 2.11
+ *    Corrected PowerControl function for:
+ *      - Unconditional Power Off
+ *      - Conditional Power full (driver must be initialized)
  *  Version 2.10
  *    STM32CubeMX generated code can also be used to configure the driver.
  *  Version 2.9
@@ -160,7 +168,7 @@ extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 // USBD Driver *****************************************************************
 
-#define ARM_USBD_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,10)
+#define ARM_USBD_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,13)
 
 // Driver Version
 static const ARM_DRIVER_VERSION usbd_driver_version = { ARM_USBD_API_VERSION, ARM_USBD_DRV_VERSION };
@@ -184,11 +192,21 @@ static const ARM_USBD_CAPABILITIES usbd_driver_capabilities = {
 #define EP_ID(ep_addr)          ((EP_NUM(ep_addr) * 2U) + (((ep_addr) >> 7) & 1U))
 
 // FIFO sizes in bytes (total available memory for FIFOs is 1.25 kB)
+#ifndef OTG_RX_FIFO_SIZE
 #define OTG_RX_FIFO_SIZE        640U
+#endif
+#ifndef OTG_TX0_FIFO_SIZE
 #define OTG_TX0_FIFO_SIZE       160U
+#endif
+#ifndef OTG_TX1_FIFO_SIZE
 #define OTG_TX1_FIFO_SIZE       160U
+#endif
+#ifndef OTG_TX2_FIFO_SIZE
 #define OTG_TX2_FIFO_SIZE       160U
+#endif
+#ifndef OTG_TX3_FIFO_SIZE
 #define OTG_TX3_FIFO_SIZE       160U
+#endif
 
 #define OTG_TX_FIFO(n)          *((volatile uint32_t *)(OTG_FS_BASE + 0x1000U + (n * 0x1000U)))
 #define OTG_RX_FIFO             *((volatile uint32_t *)(OTG_FS_BASE + 0x1000U))
@@ -213,12 +231,14 @@ typedef struct {                        // Endpoint structure definition
   uint8_t   active;
   uint8_t   in_nak;
   uint8_t   in_zlp;
+  uint8_t   in_flush;
 } ENDPOINT_t;
 
 static ARM_USBD_SignalDeviceEvent_t   SignalDeviceEvent;
 static ARM_USBD_SignalEndpointEvent_t SignalEndpointEvent;
 
-static bool                hw_powered = false;
+static bool                hw_powered     = false;
+static bool                hw_initialized = false;
 static ARM_USBD_STATE      usbd_state;
 static uint32_t            setup_packet[2];     // Setup packet data
 static volatile uint8_t    setup_received;      // Setup packet received
@@ -233,16 +253,19 @@ static uint16_t USBD_GetFrameNumber (void);
 // Auxiliary functions
 
 /**
-  \fn          void USBD_FlushInEpFifo (uint8_t ep_addr)
+  \fn          void USBD_FlushInEpFifo (uint8_t FIFO_num)
   \brief       Flush IN Endpoint FIFO
-  \param[in]   ep_addr  Endpoint Address
-                - ep_addr.0..3: Address
-                - ep_addr.7:    Direction
+  \param[in]   FIFO_num  IN Endpoint FIFO number
+                - FIFO_num.0..3: IN Endpoint FIFO to Flush
+                - FIFO_num.4:    All IN Endpoint FIFOs to Flush
 */
-static void USBD_FlushInEpFifo (uint8_t ep_addr) {
-  OTG->GRSTCTL = (OTG->GRSTCTL & ~OTG_FS_GRSTCTL_TXFNUM_MSK)                              |
-                  OTG_FS_GRSTCTL_TXFNUM((uint32_t)ep_addr & ARM_USB_ENDPOINT_NUMBER_MASK) |
-                  OTG_FS_GRSTCTL_TXFFLSH                                                  ;
+static void USBD_FlushInEpFifo (uint8_t FIFO_num) {
+
+  while ((OTG->GRSTCTL & OTG_FS_GRSTCTL_TXFFLSH) != 0U);
+  OTG->GRSTCTL  = (OTG->GRSTCTL & ~OTG_FS_GRSTCTL_TXFNUM_MSK) | OTG_FS_GRSTCTL_TXFNUM(FIFO_num);
+  OTG->GRSTCTL |= OTG_FS_GRSTCTL_TXFFLSH;
+  while ((OTG->GRSTCTL & OTG_FS_GRSTCTL_TXFFLSH) != 0U);
+
 }
 
 /**
@@ -250,7 +273,8 @@ static void USBD_FlushInEpFifo (uint8_t ep_addr) {
   \brief       Reset USB Endpoint settings and variables.
 */
 static void USBD_Reset (void) {
-  uint8_t i;
+  uint8_t  i;
+  uint32_t epctl;
 
   // Reset global variables
   setup_packet[0] = 0U;
@@ -264,15 +288,21 @@ static void USBD_Reset (void) {
   OTG->DIEPMSK = 0U;
 
   for (i = 1U; i <= USBD_MAX_ENDPOINT_NUM; i++) {
+    // Endpoint set NAK
+    epctl = OTG_FS_DOEPCTLx_SNAK;
     if ((OTG_DOEPCTL(i) & OTG_FS_DOEPCTLx_EPENA) != 0U) {
-      OTG_DOEPCTL(i)   = OTG_FS_DOEPCTLx_EPDIS |        // Endpoint disable
-                         OTG_FS_DOEPCTLx_SNAK  ;        // Endpoint set NAK
+      // Disable enabled Endpoint
+      epctl |= OTG_FS_DOEPCTLx_EPDIS;
     }
+    OTG_DOEPCTL(i) = epctl;
+
+    // Endpoint set NAK
+    epctl = OTG_FS_DIEPCTLx_SNAK;
     if ((OTG_DIEPCTL(i) & OTG_FS_DIEPCTLx_EPENA) != 0U) {
-      OTG_DIEPCTL(i)   = OTG_FS_DIEPCTLx_EPDIS |        // Endpoint disable
-                         OTG_FS_DIEPCTLx_SNAK  ;        // Endpoint set NAK
+      // Disable enabled Endpoint
+      epctl |= OTG_FS_DIEPCTLx_EPDIS;
     }
-    USBD_FlushInEpFifo(i);
+    OTG_DIEPCTL(i) = epctl;
 
     // Clear IN Endpoint interrupts
     OTG_DIEPINT(i) = OTG_FS_DIEPINTx_XFCR    |
@@ -289,6 +319,9 @@ static void USBD_Reset (void) {
                      OTG_FS_DOEPINTx_OTEPDIS |
                      OTG_FS_DOEPINTx_B2BSTUP ;
   }
+
+  // Flush all IN Endpoint FIFOs
+  USBD_FlushInEpFifo (0x10U);
 
   // Set device address to 0
   OTG->DCFG       = (OTG->DCFG & ~OTG_FS_DCFG_DAD_MSK);
@@ -510,6 +543,10 @@ static ARM_USBD_CAPABILITIES USBD_GetCapabilities (void) { return usbd_driver_ca
 static int32_t USBD_Initialize (ARM_USBD_SignalDeviceEvent_t   cb_device_event,
                                 ARM_USBD_SignalEndpointEvent_t cb_endpoint_event) {
 
+  if (hw_initialized == true) {
+    return ARM_DRIVER_OK;
+  }
+
   SignalDeviceEvent   = cb_device_event;
   SignalEndpointEvent = cb_endpoint_event;
 
@@ -521,6 +558,8 @@ static int32_t USBD_Initialize (ARM_USBD_SignalDeviceEvent_t   cb_device_event,
 #ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
   hpcd_USB_OTG_FS.Instance = USB_OTG_FS;
 #endif
+
+  hw_initialized = true;
 
   return ARM_DRIVER_OK;
 }
@@ -534,8 +573,13 @@ static int32_t USBD_Uninitialize (void) {
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
   OTG_FS_PinsUnconfigure (ARM_USB_PIN_DP | ARM_USB_PIN_DM);
+#else
+  hpcd_USB_OTG_FS.Instance = NULL;
 #endif
+
   otg_fs_role = ARM_USB_ROLE_NONE;
+
+  hw_initialized = false;
 
   return ARM_DRIVER_OK;
 }
@@ -550,6 +594,7 @@ static int32_t USBD_PowerControl (ARM_POWER_STATE state) {
 
   switch (state) {
     case ARM_POWER_OFF:
+      RCC->AHB2ENR  |=  RCC_AHB2ENR_OTGFSEN;            // OTG FS clock enable
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
       NVIC_DisableIRQ      (OTG_FS_IRQn);               // Disable interrupt
       NVIC_ClearPendingIRQ (OTG_FS_IRQn);               // Clear pending interrupt
@@ -569,12 +614,19 @@ static int32_t USBD_PowerControl (ARM_POWER_STATE state) {
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
       RCC->AHB2ENR  &= ~RCC_AHB2ENR_OTGFSEN;            // Disable OTG FS clock
 #else
-      HAL_PCD_MspDeInit(&hpcd_USB_OTG_FS);
+      if (hpcd_USB_OTG_FS.Instance != NULL) {
+        HAL_PCD_MspDeInit(&hpcd_USB_OTG_FS);
+      }
 #endif
       break;
 
     case ARM_POWER_FULL:
-      if (hw_powered == true) { return ARM_DRIVER_OK; }
+      if (hw_initialized == false) {
+        return ARM_DRIVER_ERROR;
+      }
+      if (hw_powered     == true) {
+        return ARM_DRIVER_OK;
+      }
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
       RCC->AHB2ENR  |=  RCC_AHB2ENR_OTGFSEN;            // OTG FS clock enable
 #else
@@ -775,7 +827,8 @@ static int32_t USBD_EndpointConfigure (uint8_t  ep_addr,
   // Set maximum packet size to requested
   ptr_ep->max_packet_size = ep_mps;
 
-  if (ep_dir != 0U) {                                   // IN Endpoint
+  // IN Endpoint
+  if (ep_dir != 0U) {
     ptr_ep->in_nak = 0U;                                // Clear IN Endpoint NAK flag
 
     // Configure IN Endpoint
@@ -794,20 +847,15 @@ static int32_t USBD_EndpointConfigure (uint8_t  ep_addr,
       OTG_DIEPCTL(ep_num) |= OTG_FS_DIEPCTLx_EPDIS;     // Disable Endpoint
     }
 
-    USBD_FlushInEpFifo (ep_addr);
-
     // Isochronous IN Endpoint Configuration
     if (OTG_EP_IN_TYPE(ep_num) == ARM_USB_ENDPOINT_ISOCHRONOUS) {
-      OTG->GINTMSK |= OTG_FS_GINTMSK_IISOIXFRM;         // Enable IISOIXFR
-
-      // Regarding FrameNumber, set Frame
-      if ((USBD_GetFrameNumber() & 1U) != 0U) { OTG_DIEPCTL(ep_num) |= OTG_FS_DIEPCTLx_SEVNFRM; }
-      else                                    { OTG_DIEPCTL(ep_num) |= OTG_FS_DIEPCTLx_SODDFRM; }
-
-      // Enable Endpoint and Clear NAK
-      OTG_DIEPCTL(ep_num) |= OTG_FS_DIEPCTLx_EPENA | OTG_FS_DIEPCTLx_CNAK;
+      OTG->GINTMSK |= OTG_FS_GINTMSK_EOPFM;             // Enable End of Periodic Frame Interrupt
     }
-  } else {                                              // OUT Endpoint
+
+    OTG->DAINTMSK |= (1U << ep_num);                    // Enable Endpoint interrupt
+
+  } else {
+  // OUT Endpoint
 
     // Configure OUT Endpoint
     OTG_DOEPCTL(ep_num) = (ep_type <<  OTG_FS_DOEPCTLx_EPTYP_POS) |     // Endpoint Type
@@ -825,9 +873,9 @@ static int32_t USBD_EndpointConfigure (uint8_t  ep_addr,
     }
 
     OTG_DOEPCTL(ep_num) |= OTG_FS_DOEPCTLx_USBAEP;      // Activate Endpoint
-  }
 
-  OTG->DAINTMSK |= (1U << (ep_num + ((ep_dir ^ 1U) << 4)));     // Enable Endpoint interrupt
+    OTG->DAINTMSK |= (1U << (ep_num + 16));             // Enable Endpoint interrupt
+  }
 
   return ARM_DRIVER_OK;
 }
@@ -861,40 +909,40 @@ static int32_t USBD_EndpointUnconfigure (uint8_t ep_addr) {
 
   IsoEpEnCnt = 0U;
 
-  if (ep_dir != 0U) {                                   // IN Endpoint
-    // Count Active Isochronous IN Endpoints
-    if (OTG_EP_IN_TYPE(ep_num) == ARM_USB_ENDPOINT_ISOCHRONOUS) {
-      for (i = 1U; i <= USBD_MAX_ENDPOINT_NUM; i++) {
-        if ((OTG_DIEPCTL(i) & OTG_FS_DIEPCTLx_USBAEP) != 0U) {
-          if (OTG_EP_IN_TYPE(i) == ARM_USB_ENDPOINT_ISOCHRONOUS) {
-            IsoEpEnCnt++;
-          }
+  // Count Active Isochronous OUT and IN Endpoints
+  if ((OTG_EP_OUT_TYPE(ep_num) == ARM_USB_ENDPOINT_ISOCHRONOUS) ||
+      (OTG_EP_IN_TYPE (ep_num) == ARM_USB_ENDPOINT_ISOCHRONOUS)) {
+    for (i = 1U; i <= USBD_MAX_ENDPOINT_NUM; i++) {
+      if ((OTG_DOEPCTL(i) & OTG_FS_DOEPCTLx_USBAEP) != 0U) {
+        if (OTG_EP_OUT_TYPE(i) == ARM_USB_ENDPOINT_ISOCHRONOUS) {
+          IsoEpEnCnt++;
         }
       }
-      // If Last Active Isochronous IN Endpoint, Disable IISOIXFR
-      if (IsoEpEnCnt == 1U) { OTG->GINTMSK &= ~OTG_FS_GINTMSK_IISOIXFRM; }
+      if ((OTG_DIEPCTL(i) & OTG_FS_DIEPCTLx_USBAEP) != 0U) {
+        if (OTG_EP_IN_TYPE(i) == ARM_USB_ENDPOINT_ISOCHRONOUS) {
+          IsoEpEnCnt++;
+        }
+      }
     }
 
+    // If Last Active Isochronous OUT or IN Endpoint, Disable EOPF
+    if (IsoEpEnCnt == 1U) { OTG->GINTMSK &= ~OTG_FS_GINTMSK_EOPFM; }
+  }
+
+  // IN Endpoint
+  if (ep_dir != 0U) {
+    // Disable Enabled IN Endpoint
     if ((OTG_DIEPCTL(ep_num) & OTG_FS_DIEPCTLx_EPENA) != 0U) {
-      OTG_DIEPCTL(ep_num)  |=  OTG_FS_DIEPCTLx_EPDIS;   // Disable Endpoint
+      OTG_DIEPCTL(ep_num)  |=  OTG_FS_DIEPCTLx_EPDIS;
     }
 
     OTG_DIEPCTL(ep_num)    |=  OTG_FS_DIEPCTLx_SNAK;    // Set Endpoint NAK
 
-    if (ep_num != 0U) { OTG_DIEPCTL(ep_num)  &= ~OTG_FS_DIEPCTLx_USBAEP; }      // Deactivate Endpoint
-  } else {                                              // OUT Endpoint
-    // Count Active Isochronous OUT Endpoints
-    if (OTG_EP_OUT_TYPE(ep_num) == ARM_USB_ENDPOINT_ISOCHRONOUS) {
-      for (i = 1U; i <= USBD_MAX_ENDPOINT_NUM; i++) {
-        if ((OTG_DOEPCTL(i) & OTG_FS_DOEPCTLx_USBAEP) != 0U) {
-          if (OTG_EP_OUT_TYPE(i) == ARM_USB_ENDPOINT_ISOCHRONOUS) {
-            IsoEpEnCnt++;
-          }
-        }
-      }
-      // If Last Active Isochronous OUT Endpoint, Disable EOPF
-      if (IsoEpEnCnt == 1U) { OTG->GINTMSK &= ~OTG_FS_GINTMSK_EOPFM; }
-    }
+    // Deactivate Endpoint
+    if (ep_num != 0U) { OTG_DIEPCTL(ep_num)  &= ~OTG_FS_DIEPCTLx_USBAEP; }
+
+  } else {
+  // OUT Endpoint
 
     OTG->DCTL |= OTG_FS_DCTL_SGONAK;                    // Set Global OUT NAK
     while ((OTG->GINTSTS & OTG_FS_GINTSTS_GONAKEFF) == 0U);
@@ -902,9 +950,9 @@ static int32_t USBD_EndpointUnconfigure (uint8_t ep_addr) {
     OTG_DOEPCTL(ep_num) |= OTG_FS_DOEPCTLx_SNAK;        // Set Endpoint NAK
 
     if (ep_num != 0U) {
-      // Disable OUT Endpoint
-      if ((OTG_DOEPCTL(ep_num) & OTG_FS_DOEPCTLx_EPENA) != 0U) {        // If Endpoint is Enabled
-        OTG_DOEPCTL(ep_num)  |=  OTG_FS_DOEPCTLx_EPDIS; // Disable Endpoint
+      // Disable Enabled OUT Endpoint
+      if ((OTG_DOEPCTL(ep_num) & OTG_FS_DOEPCTLx_EPENA) != 0U) {
+        OTG_DOEPCTL(ep_num)  |=  OTG_FS_DOEPCTLx_EPDIS;
         while ((OTG_DOEPINT(ep_num) & OTG_FS_DOEPINTx_EPDISD) == 0U);
       }
       OTG_DOEPCTL(ep_num) &= ~OTG_FS_DOEPCTLx_USBAEP;   // Deactivate Endpoint
@@ -944,12 +992,13 @@ static int32_t USBD_EndpointStall (uint8_t ep_addr, bool stall) {
   if (stall != 0U) {                                    // Activate STALL
     if (ep_dir != 0U) {                                 // IN Endpoint
       if ((OTG_DIEPCTL(ep_num) & OTG_FS_DIEPCTLx_EPENA) != 0U) {
+        // Set flush flag to Flush IN FIFO in Endpoint disabled interrupt
+        ptr_ep->in_flush = 1U;
         OTG_DIEPCTL(ep_num)  |= OTG_FS_DIEPCTLx_STALL | OTG_FS_DIEPCTLx_EPDIS;
       } else {
         OTG_DIEPCTL(ep_num)  |= OTG_FS_DIEPCTLx_STALL;
+        USBD_FlushInEpFifo (ep_num);
       }
-
-      USBD_FlushInEpFifo (ep_addr);
     } else {                                            // OUT Endpoint
       OTG->DCTL |= OTG_FS_DCTL_SGONAK;                  // Set Global OUT NAK
       while ((OTG->GINTSTS & OTG_FS_GINTSTS_GONAKEFF) == 0U);
@@ -970,8 +1019,6 @@ static int32_t USBD_EndpointStall (uint8_t ep_addr, bool stall) {
       if ((OTG_DIEPCTL(ep_num) & OTG_FS_DIEPCTLx_EPENA) != 0U) {  // If Endpoint enabled
         OTG_DIEPCTL(ep_num)   |= OTG_FS_DIEPCTLx_EPDIS; // Disable Endpoint
       }
-
-      USBD_FlushInEpFifo (ep_addr);
 
       // Set DATA0 PID for Interrupt and Bulk Endpoint
       if (((OTG_DIEPCTL(ep_num) & OTG_FS_DIEPCTLx_EPTYP_MSK) >> OTG_FS_DIEPCTLx_EPTYP_POS) > 1U) {
@@ -1022,16 +1069,20 @@ static int32_t USBD_EndpointTransfer (uint8_t ep_addr, uint8_t *data, uint32_t n
   ptr_ep->num_transferred_total = 0U;
   ptr_ep->num_transferring      = 0U;
 
-  if (ep_dir != 0U) {                                   // IN Endpoint
-    if (num == 0U) {
-      ptr_ep->in_zlp     =  1U;                         // Send IN ZLP requested
+  if (ep_dir != 0U) {                                     // IN Endpoint
+    if (OTG_EP_IN_TYPE(ep_num) != ARM_USB_ENDPOINT_ISOCHRONOUS) {
+      if (num == 0U) {
+        ptr_ep->in_zlp     =  1U;                         // Send IN ZLP requested
+      }
+      ptr_ep->in_nak       =  1U;                         // Set IN Endpoint NAK flag
+      OTG_DIEPCTL(ep_num) |=  OTG_FS_DIEPCTLx_CNAK;       // Clear NAK
+      OTG_DIEPCTL(ep_num) |=  OTG_FS_DIEPCTLx_SNAK;       // Set NAK
+      OTG->DIEPMSK        |=  OTG_FS_DIEPMSK_INEPNEM;     // Enable NAK effective interrupt
     }
-    ptr_ep->in_nak       =  1U;                         // Set IN Endpoint NAK flag
-    OTG_DIEPCTL(ep_num) |=  OTG_FS_DIEPCTLx_CNAK;       // Clear NAK
-    OTG_DIEPCTL(ep_num) |=  OTG_FS_DIEPCTLx_SNAK;       // Set NAK
-    OTG->DIEPMSK        |=  OTG_FS_DIEPMSK_INEPNEM;     // Enable NAK effective interrupt
-  } else {                                              // OUT Endpoint
-    USBD_EndpointReadSet(ep_addr);
+  } else {                                                // OUT Endpoint
+    if (OTG_EP_OUT_TYPE(ep_num) != ARM_USB_ENDPOINT_ISOCHRONOUS) {
+      USBD_EndpointReadSet(ep_addr);
+    }
   }
 
   return ARM_DRIVER_OK;
@@ -1075,19 +1126,28 @@ static int32_t USBD_EndpointTransferAbort (uint8_t ep_addr) {
   ptr_ep->in_zlp = 0U;
 
   if ((ep_addr & ARM_USB_ENDPOINT_DIRECTION_MASK) != 0U) {
-    if ((OTG_DIEPCTL(ep_num) & OTG_FS_DIEPCTLx_EPENA) != 0U) {  // If Endpoint enabled
-      OTG_DIEPCTL(ep_num)   |= OTG_FS_DIEPCTLx_EPDIS;   // Disable Endpoint
+    if ((OTG_DIEPCTL(ep_num) & OTG_FS_DIEPCTLx_EPENA) != 0U) {
+      // Set flush flag to Flush IN FIFO in Endpoint disabled interrupt
+      ptr_ep->in_flush = 1U;
+
+      // Disable enabled Endpoint and set NAK
+      OTG_DIEPCTL(ep_num) |= OTG_FS_DIEPCTLx_EPDIS | OTG_FS_DIEPCTLx_SNAK;
+    } else {
+      // Endpoint is already disabled. Set NAK
+      OTG_DIEPCTL(ep_num) |= OTG_FS_DIEPCTLx_SNAK;
+
+      // Flush IN EP FIFO
+      USBD_FlushInEpFifo (ep_num);
     }
 
-    OTG_DIEPCTL(ep_num)     |= OTG_FS_DIEPCTLx_SNAK;    // Set NAK
-
-    USBD_FlushInEpFifo (ep_addr);
   } else {
-    if ((OTG_DOEPCTL(ep_num) & OTG_FS_DOEPCTLx_EPENA) != 0U) {  // If Endpoint enabled
-      OTG_DOEPCTL(ep_num)   |= OTG_FS_DOEPCTLx_EPDIS;   // Disable Endpoint
+    if ((OTG_DOEPCTL(ep_num) & OTG_FS_DOEPCTLx_EPENA) != 0U) {
+      // Disable enabled Endpoint and set NAK
+      OTG_DOEPCTL(ep_num) |= OTG_FS_DOEPCTLx_EPDIS | OTG_FS_DOEPCTLx_SNAK;
+    } else {
+      // Endpoint is already disabled. Set NAK
+      OTG_DOEPCTL(ep_num) |= OTG_FS_DOEPCTLx_SNAK;
     }
-
-    OTG_DOEPCTL(ep_num)     |= OTG_FS_DOEPCTLx_SNAK;    // Set NAK
   }
 
   ptr_ep->active = 0U;
@@ -1173,7 +1233,8 @@ void USBD_FS_IRQ (uint32_t gintsts) {
     }
   }
 
-  if ((gintsts & OTG_FS_GINTSTS_OEPINT) != 0U) {        // If OUT Packet
+  // OUT Packet
+  if ((gintsts & OTG_FS_GINTSTS_OEPINT) != 0U) {
     msk    = (((OTG->DAINT & OTG->DAINTMSK) >> 16) & 0xFFFFU);
     ep_num = 0U;
     do {
@@ -1181,7 +1242,9 @@ void USBD_FS_IRQ (uint32_t gintsts) {
         ep_int = OTG_DOEPINT(ep_num) & OTG->DOEPMSK;
         ptr_ep = &ep[EP_ID(ep_num)];
         if ((ep_int & OTG_FS_DOEPINTx_EPDISD) != 0U) {  // If Endpoint disabled
+
           if (OTG_EP_OUT_TYPE(ep_num) == ARM_USB_ENDPOINT_ISOCHRONOUS) {
+            // Isochronous OUT Endpoint
             // Set packet count and transfer size
             OTG_DOEPTSIZ(ep_num) = (1U << OTG_FS_DOEPTSIZx_PKTCNT_POS) |
                                    (ptr_ep->max_packet_size);
@@ -1195,21 +1258,23 @@ void USBD_FS_IRQ (uint32_t gintsts) {
           OTG_DOEPINT(ep_num) = OTG_FS_DOEPINTx_EPDISD;
         }
 
-        if ((ep_int & OTG_FS_DOEPINTx_STUP) != 0U) {    // If setup phase done interrupt
+        // Setup phase done interrupt
+        if ((ep_int & OTG_FS_DOEPINTx_STUP) != 0U) {
           ptr_ep->num = 0U;
           OTG_DOEPINT(ep_num) = OTG_FS_DOEPINTx_STUP;
           SignalEndpointEvent(ep_num, ARM_USBD_EVENT_SETUP);
         }
 
-        if ((ep_int & OTG_FS_DOEPINTx_XFCR) != 0U) {    // If transfer complete interrupt
+        // Transfer complete interrupt
+        if ((ep_int & OTG_FS_DOEPINTx_XFCR) != 0U) {
           OTG_DOEPINT(ep_num) = OTG_FS_DOEPINTx_XFCR;
-          if (OTG_EP_OUT_TYPE(ep_num) != ARM_USB_ENDPOINT_ISOCHRONOUS) {
-            if (ptr_ep->num != 0U) {
+          if (ptr_ep->num != 0U) {
+            if (OTG_EP_OUT_TYPE(ep_num) != ARM_USB_ENDPOINT_ISOCHRONOUS) {
               USBD_EndpointReadSet(ep_num);
-            } else {
-              ptr_ep->active = 0U;
-              SignalEndpointEvent(ep_num, ARM_USBD_EVENT_OUT);
             }
+          } else {
+            ptr_ep->active = 0U;
+            SignalEndpointEvent(ep_num, ARM_USBD_EVENT_OUT);
           }
         }
       }
@@ -1217,27 +1282,37 @@ void USBD_FS_IRQ (uint32_t gintsts) {
     } while ((msk >> ep_num) != 0U);
   }
 
-  if ((gintsts & OTG_FS_GINTSTS_IEPINT) != 0U) {        // If IN Packet
+  // IN Packet
+  if ((gintsts & OTG_FS_GINTSTS_IEPINT) != 0U) {
     msk    = (OTG->DAINT & OTG->DAINTMSK & 0xFFFFU);
     ep_num = 0U;
     do {
       if (((msk >> ep_num) & 1U) != 0U) {
         ep_int = OTG_DIEPINT(ep_num) & OTG->DIEPMSK;
         ptr_ep = &ep[EP_ID(ep_num | ARM_USB_ENDPOINT_DIRECTION_MASK)];
+
         if ((ep_int & OTG_FS_DIEPINTx_EPDISD) != 0U) {  // If Endpoint disabled
           OTG_DIEPINT(ep_num) = OTG_FS_DIEPINTx_EPDISD;
-
-          if (OTG_EP_IN_TYPE(ep_num) == ARM_USB_ENDPOINT_ISOCHRONOUS) {
+          if (ptr_ep->in_flush == 1U) {
+            // Clear flush flag
+            ptr_ep->in_flush = 0U;  
+            // Flush IN Endpoint FIFO
+            USBD_FlushInEpFifo(ep_num);
+          } else if (OTG_EP_IN_TYPE(ep_num) == ARM_USB_ENDPOINT_ISOCHRONOUS) {
             if ((IsoInIncomplete & (1U << ep_num)) != 0U) {
               // Flush IN Endpoint FIFO and write new data if available
-              USBD_FlushInEpFifo(ep_num | ARM_USB_ENDPOINT_DIRECTION_MASK);
-              if (ptr_ep->num != 0U) { USBD_WriteToFifo(ep_num | ARM_USB_ENDPOINT_DIRECTION_MASK); }
+              USBD_FlushInEpFifo(ep_num);
+              if (ptr_ep->data != NULL) { 
+                ptr_ep->num += ptr_ep->num_transferring;
+                USBD_WriteToFifo(ep_num | ARM_USB_ENDPOINT_DIRECTION_MASK);
+              }
               IsoInIncomplete &= ~(1U << ep_num);
             }
           }
         }
 
-        if ((ep_int & OTG_FS_DIEPINTx_INEPNE) != 0U) {  // If IN Endpoint NAK effective
+        // IN Endpoint NAK effective
+        if ((ep_int & OTG_FS_DIEPINTx_INEPNE) != 0U) {
           if (ptr_ep->in_nak != 0U) {
             ptr_ep->in_nak = 0U;
             val = 0U;
@@ -1258,7 +1333,8 @@ void USBD_FS_IRQ (uint32_t gintsts) {
           OTG_DIEPINT(ep_num) = OTG_FS_DIEPINTx_INEPNE;
         }
 
-        if ((ep_int & OTG_FS_DIEPINTx_XFCR) != 0U) {    // If transmit completed
+        // Transmit completed
+        if ((ep_int & OTG_FS_DIEPINTx_XFCR) != 0U) {
           OTG_DIEPINT(ep_num) = OTG_FS_DIEPINTx_XFCR;
           ptr_ep->num_transferred_total += ptr_ep->num_transferring;
           if (ptr_ep->num == 0U) {
@@ -1266,7 +1342,9 @@ void USBD_FS_IRQ (uint32_t gintsts) {
             ptr_ep->active = 0U;
             SignalEndpointEvent(ep_num | ARM_USB_ENDPOINT_DIRECTION_MASK, ARM_USBD_EVENT_IN);
           } else {
-            USBD_WriteToFifo(ep_num | ARM_USB_ENDPOINT_DIRECTION_MASK);
+            if (OTG_EP_IN_TYPE(ep_num) != ARM_USB_ENDPOINT_ISOCHRONOUS) {
+              USBD_WriteToFifo(ep_num | ARM_USB_ENDPOINT_DIRECTION_MASK);
+            }
           }
         }
       }
@@ -1274,39 +1352,47 @@ void USBD_FS_IRQ (uint32_t gintsts) {
     } while ((msk >> ep_num != 0U));
   }
 
-  if ((gintsts & OTG_FS_GINTSTS_EOPF) != 0U) {          // If end of periodic frame
+  // End of periodic frame
+  if ((gintsts & OTG_FS_GINTSTS_EOPF) != 0U) {
+
+    // Clear interrupt flags
+    OTG->GINTSTS = OTG_FS_GINTSTS_EOPF | OTG_FS_GINTSTS_IPXFR | OTG_FS_GINTSTS_IISOIXFR;
+
+    // Check enabled isochronous OUT Endpoints
     for (ep_num = 1U; ep_num <= USBD_MAX_ENDPOINT_NUM; ep_num++) {
       if (OTG_EP_OUT_TYPE(ep_num) != ARM_USB_ENDPOINT_ISOCHRONOUS) { continue; }
       if ((OTG_DOEPCTL(ep_num) & OTG_FS_DOEPCTLx_USBAEP) == 0U)    { continue; }
 
-      if ((OTG->GINTSTS & OTG_FS_GINTSTS_IPXFR) != 0U) {// If incomplete Isochronous OUT transfer
+      if ((gintsts & OTG_FS_GINTSTS_IPXFR) != 0U) {
+        // Incomplete Isochronous OUT transfer
         if ((USBD_GetFrameNumber() & 1U) == ((OTG_DOEPCTL(ep_num) >> OTG_FS_DOEPCTLx_EONUM_POS) & 1U)) {
           if ((OTG_DOEPCTL(ep_num) & OTG_FS_DOEPCTLx_EPENA) != 0U) {
             OTG_DOEPCTL(ep_num) |= OTG_FS_DOEPCTLx_EPDIS;
           }
         }
-      } else {                                          // else if Isochronous OUT transfer completed
+      } else {
+        // Isochronous OUT transfer completed
         if (ep[EP_ID(ep_num)].num != 0U) {
           USBD_EndpointReadSet(ep_num);
-        } else {
-          ep[EP_ID(ep_num)].active = 0U;
-          SignalEndpointEvent(ep_num, ARM_USBD_EVENT_OUT);
         }
       }
     }
-    OTG->GINTSTS = OTG_FS_GINTSTS_EOPF | OTG_FS_GINTSTS_IPXFR;
-  }
 
-  if ((gintsts & OTG_FS_GINTSTS_IISOIXFR) != 0U) {      // If incomplete Isochronous IN transfer
-    OTG->GINTSTS = OTG_FS_GINTSTS_IISOIXFR;
+    // Check enabled isochronous IN Endpoints
     for (ep_num = 1U; ep_num <= USBD_MAX_ENDPOINT_NUM; ep_num++) {
       if (OTG_EP_IN_TYPE(ep_num) != ARM_USB_ENDPOINT_ISOCHRONOUS)  { continue; }
       if ((OTG_DIEPCTL(ep_num)   &  OTG_FS_DIEPCTLx_USBAEP) == 0U) { continue; }
 
-      if ((OTG_DIEPCTL(ep_num) & OTG_FS_DIEPCTLx_EPENA) != 0U) {
-        if ((USBD_GetFrameNumber() & 1U) == ((OTG_DIEPCTL(ep_num) >> OTG_FS_DIEPCTLx_EONUM_POS) & 1U)) {
-          IsoInIncomplete  |= (1U << ep_num);
-          OTG_DIEPCTL(ep_num) |= OTG_FS_DIEPCTLx_EPDIS | OTG_FS_DIEPCTLx_SNAK;
+      if ((gintsts & OTG_FS_GINTSTS_IISOIXFR) != 0U) {
+        if ((OTG_DIEPCTL(ep_num) & OTG_FS_DIEPCTLx_EPENA) != 0U) {
+          if ((USBD_GetFrameNumber() & 1U) == ((OTG_DIEPCTL(ep_num) >> OTG_FS_DIEPCTLx_EONUM_POS) & 1U)) {
+            IsoInIncomplete  |= (1U << ep_num);
+            OTG_DIEPCTL(ep_num) |= OTG_FS_DIEPCTLx_EPDIS | OTG_FS_DIEPCTLx_SNAK;
+          }
+        }
+      } else {
+        if (ep[EP_ID(ep_num | ARM_USB_ENDPOINT_DIRECTION_MASK)].num != 0U) {
+          USBD_WriteToFifo (ep_num | ARM_USB_ENDPOINT_DIRECTION_MASK);
         }
       }
     }
