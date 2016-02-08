@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        04. September 2015
- * $Revision:    V2.4
+ * $Date:        16. October 2015
+ * $Revision:    V2.5
  *
  * Driver:       Driver_MCI0
  * Configured:   via RTE_Device.h configuration file
@@ -34,6 +34,10 @@
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.5
+ *    Corrected PowerControl function for:
+ *      - Unconditional Power Off
+ *      - Conditional Power full (driver must be initialized)
  *  Version 2.4
  *    Interrupt handler optimized
  *    Corrected clock divider bypass (SDIO_CLKCR_BYPASS) handling in Control function 
@@ -145,7 +149,7 @@ Configuration tab
 
 #include "MCI_STM32F4xx.h"
 
-#define ARM_MCI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,4)  /* driver version */
+#define ARM_MCI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,5)  /* driver version */
 
 /* Enable High Speed bus mode */
 #if defined(MemoryCard_Bus_Mode_HS_Enable)
@@ -168,15 +172,13 @@ Configuration tab
 extern SD_HandleTypeDef hsd;
 #endif
 
-#if defined(RTE_DEVICE_FRAMEWORK_CUBE_MX)
-extern
+#if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
+static DMA_HandleTypeDef hdma_sdio_rx = { 0U };
+static DMA_HandleTypeDef hdma_sdio_tx = { 0U };
+#else
+extern DMA_HandleTypeDef hdma_sdio_rx;
+extern DMA_HandleTypeDef hdma_sdio_tx;
 #endif
-DMA_HandleTypeDef hdma_sdio_rx;
-
-#if defined(RTE_DEVICE_FRAMEWORK_CUBE_MX)
-extern
-#endif
-DMA_HandleTypeDef hdma_sdio_tx;
 
 static MCI_INFO MCI;
 
@@ -443,6 +445,10 @@ static int32_t Uninitialize (void) {
 
   MCI.flags = 0U;
 
+  #if defined(RTE_DEVICE_FRAMEWORK_CUBE_MX)
+    hsd.Instance = NULL;
+  #endif
+
   #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
     /* SDIO_CMD, SDIO_CK and SDIO_D0 pins */
     HAL_GPIO_DeInit(GPIOD, GPIO_PIN_2);
@@ -489,7 +495,7 @@ static int32_t PowerControl (ARM_POWER_STATE state) {
     case ARM_POWER_OFF:
       /* Reset/Dereset SDIO peripheral */
       __HAL_RCC_SDIO_FORCE_RESET();
-      __NOP(); __NOP(); __NOP(); __NOP(); 
+      __NOP(); __NOP(); __NOP(); __NOP();
       __HAL_RCC_SDIO_RELEASE_RESET();
 
       #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
@@ -497,21 +503,31 @@ static int32_t PowerControl (ARM_POWER_STATE state) {
         HAL_NVIC_DisableIRQ (SDIO_IRQn);
 
         /* Disable DMA stream interrupts in NVIC */
-        HAL_NVIC_DisableIRQ (SDIO_RX_DMA_IRQn);
-        HAL_NVIC_DisableIRQ (SDIO_TX_DMA_IRQn);
+        if (hdma_sdio_rx.Instance != NULL) {
+          HAL_NVIC_DisableIRQ (SDIO_RX_DMA_IRQn);
+        }
+        if (hdma_sdio_tx.Instance != NULL) {
+          HAL_NVIC_DisableIRQ (SDIO_TX_DMA_IRQn);
+        }
 
         /* Disable DMA stream */
-        if (HAL_DMA_DeInit (&hdma_sdio_rx) != HAL_OK) {
-          status = ARM_DRIVER_ERROR;
+        if (hdma_sdio_rx.Instance != NULL) {
+          if (HAL_DMA_DeInit (&hdma_sdio_rx) != HAL_OK) {
+            status = ARM_DRIVER_ERROR;
+          }
         }
-        if (HAL_DMA_DeInit (&hdma_sdio_tx) != HAL_OK) {
-          status = ARM_DRIVER_ERROR;
+        if (hdma_sdio_tx.Instance != NULL) {
+          if (HAL_DMA_DeInit (&hdma_sdio_tx) != HAL_OK) {
+            status = ARM_DRIVER_ERROR;
+          }
         }
 
         /* SDIO peripheral clock disable */
         __HAL_RCC_SDIO_CLK_DISABLE();
       #else
-        HAL_SD_MspDeInit (&hsd);
+        if (hsd.Instance != NULL) {
+          HAL_SD_MspDeInit (&hsd);
+        }
       #endif
 
       /* Clear status */
@@ -524,49 +540,53 @@ static int32_t PowerControl (ARM_POWER_STATE state) {
       MCI.status.sdio_interrupt   = 0U;
       MCI.status.ccs              = 0U;
 
-      MCI.flags = MCI_INIT;
+      MCI.flags &= ~MCI_POWER;
       break;
 
     case ARM_POWER_FULL:
-      if ((MCI.flags & MCI_POWER) == 0) {
-        #if defined(RTE_DEVICE_FRAMEWORK_CUBE_MX)
-          HAL_SD_MspInit (&hsd);
-        #else
-          /* Enable SDIO peripheral clock */
-          __HAL_RCC_SDIO_CLK_ENABLE();
-        #endif
-
-        /* Clear response and transfer variables */
-        MCI.response = NULL;
-        MCI.xfer.cnt = 0U;
-
-        /* Enable SDIO peripheral interrupts */
-        SDIO->MASK = SDIO_MASK_DATAENDIE  |
-                     SDIO_MASK_STBITERRIE |
-                     SDIO_MASK_CMDSENTIE  |
-                     SDIO_MASK_CMDRENDIE  |
-                     SDIO_MASK_DTIMEOUTIE |
-                     SDIO_MASK_CTIMEOUTIE |
-                     SDIO_MASK_DCRCFAILIE |
-                     SDIO_MASK_CCRCFAILIE ;
-
-        /* Set max data timeout */
-        SDIO->DTIMER = 0xFFFFFFFF;
-
-        /* Enable clock to the card (SDIO_CK) */
-        SDIO->POWER = SDIO_POWER_PWRCTRL_1 | SDIO_POWER_PWRCTRL_0;
-
-        #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
-          /* Enable DMA stream interrupts in NVIC */
-          HAL_NVIC_EnableIRQ(SDIO_RX_DMA_IRQn);
-          HAL_NVIC_EnableIRQ(SDIO_TX_DMA_IRQn);
-
-          HAL_NVIC_ClearPendingIRQ(SDIO_IRQn);
-          HAL_NVIC_EnableIRQ(SDIO_IRQn);
-        #endif
-
-        MCI.flags |= MCI_POWER;
+      if ((MCI.flags & MCI_INIT)  == 0U) {
+        return ARM_DRIVER_ERROR;
       }
+      if ((MCI.flags & MCI_POWER) != 0U) {
+        return ARM_DRIVER_OK;
+      }
+      #if defined(RTE_DEVICE_FRAMEWORK_CUBE_MX)
+        HAL_SD_MspInit (&hsd);
+      #else
+        /* Enable SDIO peripheral clock */
+        __HAL_RCC_SDIO_CLK_ENABLE();
+      #endif
+
+      /* Clear response and transfer variables */
+      MCI.response = NULL;
+      MCI.xfer.cnt = 0U;
+
+      /* Enable SDIO peripheral interrupts */
+      SDIO->MASK = SDIO_MASK_DATAENDIE  |
+                   SDIO_MASK_STBITERRIE |
+                   SDIO_MASK_CMDSENTIE  |
+                   SDIO_MASK_CMDRENDIE  |
+                   SDIO_MASK_DTIMEOUTIE |
+                   SDIO_MASK_CTIMEOUTIE |
+                   SDIO_MASK_DCRCFAILIE |
+                   SDIO_MASK_CCRCFAILIE ;
+
+      /* Set max data timeout */
+      SDIO->DTIMER = 0xFFFFFFFF;
+
+      /* Enable clock to the card (SDIO_CK) */
+      SDIO->POWER = SDIO_POWER_PWRCTRL_1 | SDIO_POWER_PWRCTRL_0;
+
+      #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
+        /* Enable DMA stream interrupts in NVIC */
+        HAL_NVIC_EnableIRQ(SDIO_RX_DMA_IRQn);
+        HAL_NVIC_EnableIRQ(SDIO_TX_DMA_IRQn);
+
+        HAL_NVIC_ClearPendingIRQ(SDIO_IRQn);
+        HAL_NVIC_EnableIRQ(SDIO_IRQn);
+      #endif
+
+      MCI.flags |= MCI_POWER;
       break;
 
     case ARM_POWER_LOW:

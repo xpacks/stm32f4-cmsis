@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        04. September 2015
- * $Revision:    V2.7
+ * $Date:        16. October 2015
+ * $Revision:    V2.8
  *
  * Project:      SPI Driver definitions for ST STM32F4xx
  * -------------------------------------------------------------------------- */
@@ -44,14 +44,17 @@
 #endif
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
-  #if ((defined(RTE_Drivers_SPI1) || defined(RTE_Drivers_SPI2) || \
-        defined(RTE_Drivers_SPI3) || defined(RTE_Drivers_SPI4) || \
-        defined(RTE_Drivers_SPI5) || defined(RTE_Drivers_SPI6))   \
-       && (RTE_SPI1 == 0)   \
-       && (RTE_SPI2 == 0)   \
-       && (RTE_SPI3 == 0)   \
-       && (RTE_SPI4 == 0)   \
-       && (RTE_SPI5 == 0)   \
+  #if ((defined(RTE_Drivers_SPI1) || \
+        defined(RTE_Drivers_SPI2) || \
+        defined(RTE_Drivers_SPI3) || \
+        defined(RTE_Drivers_SPI4) || \
+        defined(RTE_Drivers_SPI5) || \
+        defined(RTE_Drivers_SPI6))   \
+       && (RTE_SPI1 == 0)            \
+       && (RTE_SPI2 == 0)            \
+       && (RTE_SPI3 == 0)            \
+       && (RTE_SPI4 == 0)            \
+       && (RTE_SPI5 == 0)            \
        && (RTE_SPI6 == 0))
     #error "SPI not configured in RTE_Device.h!"
   #endif
@@ -658,6 +661,24 @@
 #endif
 
 #endif /* RTE_DEVICE_FRAMEWORK_CLASSIC */
+
+#if defined(RTE_DEVICE_FRAMEWORK_CUBE_MX)
+  #if ((defined(RTE_Drivers_SPI1) || \
+        defined(RTE_Drivers_SPI2) || \
+        defined(RTE_Drivers_SPI3) || \
+        defined(RTE_Drivers_SPI4) || \
+        defined(RTE_Drivers_SPI5) || \
+        defined(RTE_Drivers_SPI6))   \
+        && (!defined (MX_SPI1))      \
+        && (!defined (MX_SPI2))      \
+        && (!defined (MX_SPI3))      \
+        && (!defined (MX_SPI4))      \
+        && (!defined (MX_SPI5))      \
+        && (!defined (MX_SPI6)))
+    #error "SPI not configured in STM32CubeMX!"
+  #endif
+
+#endif /* RTE_DEVICE_FRAMEWORK_CUBE_MX */
 
 
 #ifdef MX_SPI1

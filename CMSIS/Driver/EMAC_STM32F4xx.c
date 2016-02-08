@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        04. September 2015
- * $Revision:    V2.3
+ * $Date:        16. October 2015
+ * $Revision:    V2.5
  *
  * Driver:       Driver_ETH_MAC0
  * Configured:   via RTE_Device.h configuration file
@@ -34,6 +34,12 @@
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.5
+ *    Corrected PowerControl function for:
+ *      - Unconditional Power Off
+ *      - Conditional Power full (driver must be initialized)
+ *  Version 2.4
+ *    Corrected return value of the ReadFrame function
  *  Version 2.3
  *    Corrected lockup after long runtime (unhandled MMC interrupts)
  *  Version 2.2
@@ -121,7 +127,7 @@ Configuration tab
 
 #include "EMAC_STM32F4xx.h"
 
-#define ARM_ETH_MAC_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,3) /* driver version */
+#define ARM_ETH_MAC_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,5) /* driver version */
 
 /* Timeouts */
 #define PHY_TIMEOUT         2U          /* PHY Register access timeout in ms  */
@@ -165,6 +171,7 @@ typedef struct tx_desc {
 #endif
 } TX_Desc;
 
+#if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
 /* Ethernet Pin definitions */
 static const ETH_PIN eth_pins[] = {
   { MX_ETH_MDC_GPIOx,  MX_ETH_MDC_GPIO_Pin  },        /* MII, RMII */
@@ -190,6 +197,7 @@ static const ETH_PIN eth_pins[] = {
   { MX_ETH_REF_CLK_GPIOx, MX_ETH_REF_CLK_GPIO_Pin },  /* ---, RMII */
 #endif
 };
+#endif
 
 /* Driver Version */
 static const ARM_DRIVER_VERSION DriverVersion = {
@@ -418,12 +426,17 @@ static int32_t Initialize (ARM_ETH_MAC_SignalEvent_t cb_event) {
   \return      \ref execution_status
 */
 static int32_t Uninitialize (void) {
+#if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
   const ETH_PIN *io;
 
   /* Unconfigure ethernet pins */
   for (io = eth_pins; io != &eth_pins[sizeof(eth_pins)/sizeof(ETH_PIN)]; io++) {
     HAL_GPIO_DeInit(io->port, io->pin);
   }
+#else
+  heth.Instance = NULL;
+#endif
+  Emac.flags &= ~EMAC_FLAG_INIT;
 
   return ARM_DRIVER_OK;
 }
@@ -439,19 +452,28 @@ static int32_t PowerControl (ARM_POWER_STATE state) {
 
   switch (state) {
     case ARM_POWER_OFF:
-      #if defined(RTE_DEVICE_FRAMEWORK_CUBE_MX)
-        HAL_ETH_MspDeInit (&heth);
+      /* Enable Ethernet clocks */
+      __HAL_RCC_ETHMAC_CLK_ENABLE();
+      __HAL_RCC_ETHMACTX_CLK_ENABLE();
+      __HAL_RCC_ETHMACRX_CLK_ENABLE();
+      #if (EMAC_TIME_STAMP)
+      __HAL_RCC_ETHMACPTP_CLK_ENABLE();
       #endif
-
-      /* Disable ethernet interrupts */
-      NVIC_DisableIRQ(ETH_IRQn);
-      ETH->DMAIER  = 0U;
-      ETH->PTPTSCR = 0U;
 
       /* Reset Ethernet MAC peripheral */
       __HAL_RCC_ETHMAC_FORCE_RESET();
       __NOP(); __NOP(); __NOP(); __NOP();
       __HAL_RCC_ETHMAC_RELEASE_RESET();
+
+      #if defined(RTE_DEVICE_FRAMEWORK_CUBE_MX)
+        if (heth.Instance != NULL) {
+          HAL_ETH_MspDeInit (&heth);
+        }
+      #else
+      /* Disable ethernet interrupts */
+      NVIC_DisableIRQ(ETH_IRQn);
+      ETH->DMAIER  = 0U;
+      ETH->PTPTSCR = 0U;
 
       /* Disable Ethernet clocks */
       __HAL_RCC_ETHMAC_CLK_DISABLE();
@@ -460,28 +482,33 @@ static int32_t PowerControl (ARM_POWER_STATE state) {
       #if (EMAC_TIME_STAMP)
       __HAL_RCC_ETHMACPTP_CLK_DISABLE();
       #endif
-      
-      Emac.flags = EMAC_FLAG_INIT;
+      #endif
+
+      Emac.flags &= ~EMAC_FLAG_POWER;
       break;
 
     case ARM_POWER_LOW:
       return ARM_DRIVER_ERROR_UNSUPPORTED;
 
     case ARM_POWER_FULL:
-      if (Emac.flags & EMAC_FLAG_POWER) {
+      if ((Emac.flags & EMAC_FLAG_INIT)  == 0U) {
+        /* Driver not initialized */
+        return ARM_DRIVER_ERROR;
+      }
+      if ((Emac.flags & EMAC_FLAG_POWER) != 0U) {
         /* Driver already powered */
         break;
       }
       #if defined(RTE_DEVICE_FRAMEWORK_CUBE_MX)
         HAL_ETH_MspInit (&heth);
-      #endif
-
+      #else
       /* Enable Ethernet clocks */
       __HAL_RCC_ETHMAC_CLK_ENABLE();
       __HAL_RCC_ETHMACTX_CLK_ENABLE();
       __HAL_RCC_ETHMACRX_CLK_ENABLE();
       #if (EMAC_TIME_STAMP)
       __HAL_RCC_ETHMACPTP_CLK_ENABLE();
+      #endif
       #endif
 
       /* Soft reset MAC DMA controller */
@@ -546,8 +573,10 @@ static int32_t PowerControl (ARM_POWER_STATE state) {
       ETH->MMCTIMR = ETH_MMCTIMR_TGFM  | ETH_MMCTIMR_TGFMSCM | ETH_MMCTIMR_TGFSCM;
       ETH->MMCRIMR = ETH_MMCRIMR_RGUFM | ETH_MMCRIMR_RFAEM   | ETH_MMCRIMR_RFCEM;
 
+      #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
       NVIC_ClearPendingIRQ (ETH_IRQn);
       NVIC_EnableIRQ (ETH_IRQn);
+      #endif
 
       Emac.frame_end = NULL;
       Emac.flags    |= EMAC_FLAG_POWER;
@@ -571,6 +600,10 @@ static int32_t GetMacAddress (ARM_ETH_MAC_ADDR *ptr_addr) {
 
   if (ptr_addr == NULL) {
     return ARM_DRIVER_ERROR_PARAMETER;
+  }
+
+  if ((Emac.flags & EMAC_FLAG_POWER) == 0U) {
+    return ARM_DRIVER_ERROR;
   }
 
   val = ETH->MACA0HR;
@@ -597,6 +630,10 @@ static int32_t SetMacAddress (const ARM_ETH_MAC_ADDR *ptr_addr) {
     return ARM_DRIVER_ERROR_PARAMETER;
   }
 
+  if ((Emac.flags & EMAC_FLAG_POWER) == 0U) {
+    return ARM_DRIVER_ERROR;
+  }
+
   /* Set Ethernet MAC Address registers */
   ETH->MACA0HR = ((uint32_t)ptr_addr->b[5] <<  8) |  (uint32_t)ptr_addr->b[4];
   ETH->MACA0LR = ((uint32_t)ptr_addr->b[3] << 24) | ((uint32_t)ptr_addr->b[2] << 16) |
@@ -618,6 +655,10 @@ static int32_t SetAddressFilter (const ARM_ETH_MAC_ADDR *ptr_addr, uint32_t num_
 
   if ((ptr_addr == NULL) && (num_addr != 0)) {
     return ARM_DRIVER_ERROR_PARAMETER;
+  }
+
+  if ((Emac.flags & EMAC_FLAG_POWER) == 0U) {
+    return ARM_DRIVER_ERROR;
   }
 
   /* Use unicast address filtering for first 3 MAC addresses */
@@ -693,6 +734,10 @@ static int32_t SendFrame (const uint8_t *frame, uint32_t len, uint32_t flags) {
     return ARM_DRIVER_ERROR_PARAMETER;
   }
 
+  if ((Emac.flags & EMAC_FLAG_POWER) == 0U) {
+    return ARM_DRIVER_ERROR;
+  }
+
   if (dst == NULL) {
     /* Start of a new transmit frame */
     if (tx_desc[Emac.tx_index].CtrlStat & DMA_TX_OWN) {
@@ -758,6 +803,15 @@ static int32_t SendFrame (const uint8_t *frame, uint32_t len, uint32_t flags) {
 */
 static int32_t ReadFrame (uint8_t *frame, uint32_t len) {
   uint8_t const *src = rx_desc[Emac.rx_index].Addr;
+  int32_t cnt        = (int32_t)len;
+
+  if ((frame == NULL) && (len != 0U)) {
+    return ARM_DRIVER_ERROR_PARAMETER;
+  }
+
+  if ((Emac.flags & EMAC_FLAG_POWER) == 0U) {
+    return ARM_DRIVER_ERROR;
+  }
 
   /* Fast-copy data to frame buffer */
   for ( ; len > 7U; frame += 8, src += 8, len -= 8U) {
@@ -781,7 +835,7 @@ static int32_t ReadFrame (uint8_t *frame, uint32_t len) {
     ETH->DMASR   = ETH_DMASR_RBUS;
     ETH->DMARPDR = 0;
   }
-  return ((int32_t)len);
+  return (cnt);
 }
 
 /**
@@ -791,6 +845,10 @@ static int32_t ReadFrame (uint8_t *frame, uint32_t len) {
 */
 static uint32_t GetRxFrameSize (void) {
   uint32_t stat = rx_desc[Emac.rx_index].Stat;
+
+  if ((Emac.flags & EMAC_FLAG_POWER) == 0U) {
+    return (0U);
+  }
 
   if (stat & DMA_RX_OWN) {
     /* Owned by DMA */
@@ -805,29 +863,6 @@ static uint32_t GetRxFrameSize (void) {
   return (((stat & DMA_RX_FL) >> 16) - 4U);
 }
 
-/* Ethernet IRQ Handler */
-void ETH_IRQHandler (void) {
-  uint32_t dmasr, macsr, event = 0;
-
-  dmasr = ETH->DMASR;
-  ETH->DMASR = dmasr & (ETH_DMASR_NIS | ETH_DMASR_RS | ETH_DMASR_TS);
-  if (dmasr & ETH_DMASR_TS)   { event |= ARM_ETH_MAC_EVENT_TX_FRAME; }
-  if (dmasr & ETH_DMASR_RS)   { event |= ARM_ETH_MAC_EVENT_RX_FRAME; }
-  macsr = ETH->MACSR;
-#if (EMAC_TIME_STAMP != 0)
-  if (macsr & ETH_MACSR_TSTS) { event |= ARM_ETH_MAC_EVENT_TIMER_ALARM; }
-#endif
-  if (macsr & ETH_MACSR_PMTS) {
-    ETH->MACPMTCSR;
-    event |= ARM_ETH_MAC_EVENT_WAKEUP;
-  }
-
-  /* Callback event notification */
-  if (event && Emac.cb_event) {
-    Emac.cb_event (event);
-  }
-}
-
 /**
   \fn          int32_t GetRxFrameTime (ARM_ETH_MAC_TIME *time)
   \brief       Get time of received Ethernet frame.
@@ -837,6 +872,10 @@ void ETH_IRQHandler (void) {
 static int32_t GetRxFrameTime (ARM_ETH_MAC_TIME *time) {
 #if (EMAC_TIME_STAMP)
   RX_Desc *rxd = &rx_desc[Emac.rx_index];
+
+  if ((Emac.flags & EMAC_FLAG_POWER) == 0U) {
+    return ARM_DRIVER_ERROR;
+  }
 
   if (rxd->Stat & DMA_RX_OWN) {
     /* Owned by DMA */
@@ -861,6 +900,10 @@ static int32_t GetTxFrameTime (ARM_ETH_MAC_TIME *time) {
 #if (EMAC_TIME_STAMP)
   TX_Desc *txd = &tx_desc[Emac.tx_ts_index];
 
+  if ((Emac.flags & EMAC_FLAG_POWER) == 0U) {
+    return ARM_DRIVER_ERROR;
+  }
+
   if (txd->CtrlStat & DMA_RX_OWN) {
     /* Owned by DMA */
     return ARM_DRIVER_ERROR_BUSY;
@@ -878,6 +921,76 @@ static int32_t GetTxFrameTime (ARM_ETH_MAC_TIME *time) {
 }
 
 /**
+  \fn          int32_t ControlTimer (uint32_t control, ARM_ETH_MAC_TIME *time)
+  \brief       Control Precision Timer.
+  \param[in]   control  operation
+  \param[in]   time     Pointer to time structure
+  \return      \ref execution_status
+*/
+static int32_t ControlTimer (uint32_t control, ARM_ETH_MAC_TIME *time) {
+#if (EMAC_TIME_STAMP != 0)
+  if ((Emac.flags & EMAC_FLAG_POWER) == 0U) {
+    return ARM_DRIVER_ERROR;
+  }
+
+  switch (control) {
+    case ARM_ETH_MAC_TIMER_GET_TIME:
+      /* Get current time */
+      time->sec = ETH->PTPTSHR;
+      time->ns  = ETH->PTPTSLR;
+      break;
+
+    case ARM_ETH_MAC_TIMER_SET_TIME:
+      /* Set new time */
+      ETH->PTPTSHUR = time->sec;
+      ETH->PTPTSLUR = time->ns;
+      /* Initialize TS time */
+      ETH->PTPTSCR |= ETH_PTPTSCR_TSSTI;
+      break;
+
+    case ARM_ETH_MAC_TIMER_INC_TIME:
+      /* Increment current time */
+      ETH->PTPTSHUR = time->sec;
+      ETH->PTPTSLUR = time->ns;
+      /* Coarse TS clock update */
+      ETH->PTPTSCR &= ~ETH_PTPTSCR_TSFCU;
+      ETH->PTPTSCR |= ETH_PTPTSCR_TSSTI;
+      break;
+
+    case ARM_ETH_MAC_TIMER_DEC_TIME:
+      /* Decrement current time */
+      ETH->PTPTSHUR = time->sec;
+      ETH->PTPTSLUR = time->ns | 0x80000000U;
+      /* Coarse TS clock update */
+      ETH->PTPTSCR &= ~ETH_PTPTSCR_TSFCU;
+      ETH->PTPTSCR |=  ETH_PTPTSCR_TSSTI;
+      break;
+
+    case ARM_ETH_MAC_TIMER_SET_ALARM:
+      /* Set alarm time */
+      ETH->PTPTTHR  = time->sec;
+      ETH->PTPTTLR  = time->ns;
+      /* Enable also PTP interrupts */
+      ETH->PTPTSCR |= ETH_PTPTSCR_TSITE;
+      break;
+
+    case ARM_ETH_MAC_TIMER_ADJUST_CLOCK:
+      /* Adjust current time, fine correction */
+      ETH->PTPTSAR = time->ns;
+      /* Fine TS clock correction */
+      ETH->PTPTSCR |= (ETH_PTPTSCR_TSARU | ETH_PTPTSCR_TSFCU);
+      break;
+
+    default:
+      return ARM_DRIVER_ERROR_PARAMETER;
+  }
+  return ARM_DRIVER_OK;
+#else
+  return ARM_DRIVER_ERROR;
+#endif
+}
+
+/**
   \fn          int32_t Control (uint32_t control, uint32_t arg)
   \brief       Control Ethernet Interface.
   \param[in]   control  operation
@@ -888,6 +1001,10 @@ static int32_t Control (uint32_t control, uint32_t arg) {
   uint32_t maccr;
   uint32_t dmaomr;
   uint32_t macffr;
+
+  if ((Emac.flags & EMAC_FLAG_POWER) == 0U) {
+    return ARM_DRIVER_ERROR;
+  }
 
   switch (control) {
     case ARM_ETH_MAC_CONFIGURE:
@@ -1013,71 +1130,6 @@ static int32_t Control (uint32_t control, uint32_t arg) {
   return ARM_DRIVER_OK;
 }
 
-/**
-  \fn          int32_t ControlTimer (uint32_t control, ARM_ETH_MAC_TIME *time)
-  \brief       Control Precision Timer.
-  \param[in]   control  operation
-  \param[in]   time     Pointer to time structure
-  \return      \ref execution_status
-*/
-static int32_t ControlTimer (uint32_t control, ARM_ETH_MAC_TIME *time) {
-#if (EMAC_TIME_STAMP != 0)
-  switch (control) {
-    case ARM_ETH_MAC_TIMER_GET_TIME:
-      /* Get current time */
-      time->sec = ETH->PTPTSHR;
-      time->ns  = ETH->PTPTSLR;
-      break;
-
-    case ARM_ETH_MAC_TIMER_SET_TIME:
-      /* Set new time */
-      ETH->PTPTSHUR = time->sec;
-      ETH->PTPTSLUR = time->ns;
-      /* Initialize TS time */
-      ETH->PTPTSCR |= ETH_PTPTSCR_TSSTI;
-      break;
-
-    case ARM_ETH_MAC_TIMER_INC_TIME:
-      /* Increment current time */
-      ETH->PTPTSHUR = time->sec;
-      ETH->PTPTSLUR = time->ns;
-      /* Coarse TS clock update */
-      ETH->PTPTSCR &= ~ETH_PTPTSCR_TSFCU;
-      ETH->PTPTSCR |= ETH_PTPTSCR_TSSTI;
-      break;
-
-    case ARM_ETH_MAC_TIMER_DEC_TIME:
-      /* Decrement current time */
-      ETH->PTPTSHUR = time->sec;
-      ETH->PTPTSLUR = time->ns | 0x80000000U;
-      /* Coarse TS clock update */
-      ETH->PTPTSCR &= ~ETH_PTPTSCR_TSFCU;
-      ETH->PTPTSCR |=  ETH_PTPTSCR_TSSTI;
-      break;
-
-    case ARM_ETH_MAC_TIMER_SET_ALARM:
-      /* Set alarm time */
-      ETH->PTPTTHR  = time->sec;
-      ETH->PTPTTLR  = time->ns;
-      /* Enable also PTP interrupts */
-      ETH->PTPTSCR |= ETH_PTPTSCR_TSITE;
-      break;
-
-    case ARM_ETH_MAC_TIMER_ADJUST_CLOCK:
-      /* Adjust current time, fine correction */
-      ETH->PTPTSAR = time->ns;
-      /* Fine TS clock correction */
-      ETH->PTPTSCR |= (ETH_PTPTSCR_TSARU | ETH_PTPTSCR_TSFCU);
-      break;
-
-    default:
-      return ARM_DRIVER_ERROR_PARAMETER;
-  }
-  return ARM_DRIVER_OK;
-#else
-  return ARM_DRIVER_ERROR;
-#endif
-}
 
 /**
   \fn          int32_t PHY_Read (uint8_t phy_addr, uint8_t reg_addr, uint16_t *data)
@@ -1089,6 +1141,10 @@ static int32_t ControlTimer (uint32_t control, ARM_ETH_MAC_TIME *time) {
 */
 static int32_t PHY_Read (uint8_t phy_addr, uint8_t reg_addr, uint16_t *data) {
   uint32_t val, tick;
+
+  if ((Emac.flags & EMAC_FLAG_POWER) == 0U) {
+    return ARM_DRIVER_ERROR;
+  }
 
   val = ETH->MACMIIAR & ETH_MACMIIAR_CR;
 
@@ -1120,6 +1176,10 @@ static int32_t PHY_Read (uint8_t phy_addr, uint8_t reg_addr, uint16_t *data) {
 static int32_t PHY_Write (uint8_t phy_addr, uint8_t reg_addr, uint16_t data) {
   uint32_t val, tick;
 
+  if ((Emac.flags & EMAC_FLAG_POWER) == 0U) {
+    return ARM_DRIVER_ERROR;
+  }
+
   ETH->MACMIIDR = data;
   val = ETH->MACMIIAR & ETH_MACMIIAR_CR;
   ETH->MACMIIAR = val | ETH_MACMIIAR_MB | ETH_MACMIIAR_MW | ((uint32_t)phy_addr << 11) |
@@ -1136,6 +1196,30 @@ static int32_t PHY_Write (uint8_t phy_addr, uint8_t reg_addr, uint16_t data) {
   }
 
   return ARM_DRIVER_ERROR_TIMEOUT;
+}
+
+
+/* Ethernet IRQ Handler */
+void ETH_IRQHandler (void) {
+  uint32_t dmasr, macsr, event = 0;
+
+  dmasr = ETH->DMASR;
+  ETH->DMASR = dmasr & (ETH_DMASR_NIS | ETH_DMASR_RS | ETH_DMASR_TS);
+  if (dmasr & ETH_DMASR_TS)   { event |= ARM_ETH_MAC_EVENT_TX_FRAME; }
+  if (dmasr & ETH_DMASR_RS)   { event |= ARM_ETH_MAC_EVENT_RX_FRAME; }
+  macsr = ETH->MACSR;
+#if (EMAC_TIME_STAMP != 0)
+  if (macsr & ETH_MACSR_TSTS) { event |= ARM_ETH_MAC_EVENT_TIMER_ALARM; }
+#endif
+  if (macsr & ETH_MACSR_PMTS) {
+    ETH->MACPMTCSR;
+    event |= ARM_ETH_MAC_EVENT_WAKEUP;
+  }
+
+  /* Callback event notification */
+  if (event && Emac.cb_event) {
+    Emac.cb_event (event);
+  }
 }
 
 

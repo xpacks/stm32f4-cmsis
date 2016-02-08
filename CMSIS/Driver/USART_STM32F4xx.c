@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        1. September 2015
- * $Revision:    V2.4
+ * $Date:        16. October 2015
+ * $Revision:    V2.5
  *
  * Driver:       Driver_USART1, Driver_USART2, Driver_USART3, Driver_USART4,
  *               Driver_USART5, Driver_USART6, Driver_USART7, Driver_USART8,
@@ -42,6 +42,10 @@
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.5
+ *    Corrected PowerControl function for:
+ *      - Unconditional Power Off
+ *      - Conditional Power full (driver must be initialized)
  *  Version 2.4
  *    Added support for STM32F410xx
  *    Corrected unwanted receive stop (Caused by calling USART_Receive function, while receiver is still busy.)
@@ -118,7 +122,7 @@ Configuration tab
 
 #include "USART_STM32F4xx.h"
 
-#define ARM_USART_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,4)
+#define ARM_USART_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,5)
 
 // Driver Version
 static const ARM_DRIVER_VERSION usart_driver_version = { ARM_USART_API_VERSION, ARM_USART_DRV_VERSION };
@@ -141,8 +145,8 @@ extern SMARTCARD_HandleTypeDef hsc1;
 #endif
 
 // USART1 Run-Time Information
-static USART_INFO          USART1_Info = {0};
-static USART_TRANSFER_INFO USART1_TransferInfo = {0};
+static USART_INFO          USART1_Info         = { 0U };
+static USART_TRANSFER_INFO USART1_TransferInfo = { 0U };
 
 #ifdef MX_USART1_TX_Pin
   static USART_PIN USART1_tx = {MX_USART1_TX_GPIOx,  MX_USART1_TX_GPIO_Pin,  MX_USART1_TX_GPIO_AF};
@@ -164,11 +168,10 @@ static USART_TRANSFER_INFO USART1_TransferInfo = {0};
   void USART1_TX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
-  static
+  static DMA_HandleTypeDef hdma_usart1_tx = { 0U };
 #else
-  extern
+  extern DMA_HandleTypeDef hdma_usart1_tx;
 #endif
-  DMA_HandleTypeDef hdma_usart1_tx;
   static USART_DMA USART1_DMA_Tx = {
     &hdma_usart1_tx,
     USART1_TX_DMA_Complete,
@@ -184,11 +187,10 @@ static USART_TRANSFER_INFO USART1_TransferInfo = {0};
   void USART1_RX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
-  static
+  static DMA_HandleTypeDef hdma_usart1_rx = { 0U };
 #else
-  extern
+  extern DMA_HandleTypeDef hdma_usart1_rx;
 #endif
-  DMA_HandleTypeDef  hdma_usart1_rx;
   static USART_DMA USART1_DMA_Rx = {
     &hdma_usart1_rx,
     USART1_RX_DMA_Complete,
@@ -330,8 +332,8 @@ extern SMARTCARD_HandleTypeDef hsc2;
 #endif
 
 // USART2 Run-Time Information
-static USART_INFO          USART2_Info = {0};
-static USART_TRANSFER_INFO USART2_TransferInfo = {0};
+static USART_INFO          USART2_Info         = { 0U };
+static USART_TRANSFER_INFO USART2_TransferInfo = { 0U };
 
 #ifdef MX_USART2_TX_Pin
   static USART_PIN USART2_tx = {MX_USART2_TX_GPIOx,  MX_USART2_TX_GPIO_Pin,  MX_USART2_TX_GPIO_AF};
@@ -353,11 +355,10 @@ static USART_TRANSFER_INFO USART2_TransferInfo = {0};
   void USART2_TX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
-  static
+  static DMA_HandleTypeDef hdma_usart2_tx = { 0U };
 #else
-  extern
+  extern DMA_HandleTypeDef hdma_usart2_tx;
 #endif
-  DMA_HandleTypeDef hdma_usart2_tx;
   static USART_DMA USART2_DMA_Tx = {
     &hdma_usart2_tx,
     USART2_TX_DMA_Complete,
@@ -373,11 +374,10 @@ static USART_TRANSFER_INFO USART2_TransferInfo = {0};
   void USART2_RX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
-  static
+  static DMA_HandleTypeDef hdma_usart2_rx = { 0U };
 #else
-  extern
+  extern DMA_HandleTypeDef hdma_usart2_rx;
 #endif
-  DMA_HandleTypeDef  hdma_usart2_rx;
   static USART_DMA USART2_DMA_Rx = {
     &hdma_usart2_rx,
     USART2_RX_DMA_Complete,
@@ -519,8 +519,8 @@ extern SMARTCARD_HandleTypeDef hsc3;
 #endif
 
 // USART3 Run-Time Information
-static USART_INFO          USART3_Info = {0};
-static USART_TRANSFER_INFO USART3_TransferInfo = {0};
+static USART_INFO          USART3_Info         = { 0U };
+static USART_TRANSFER_INFO USART3_TransferInfo = { 0U };
 
 #ifdef MX_USART3_TX_Pin
   static USART_PIN USART3_tx = {MX_USART3_TX_GPIOx,  MX_USART3_TX_GPIO_Pin,  MX_USART3_TX_GPIO_AF};
@@ -542,11 +542,10 @@ static USART_TRANSFER_INFO USART3_TransferInfo = {0};
   void USART3_TX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
-  static
+  static DMA_HandleTypeDef hdma_usart3_tx = { 0U };
 #else
-  extern
+  extern DMA_HandleTypeDef hdma_usart3_tx;
 #endif
-  DMA_HandleTypeDef hdma_usart3_tx;
   static USART_DMA USART3_DMA_Tx = {
     &hdma_usart3_tx,
     USART3_TX_DMA_Complete,
@@ -562,11 +561,10 @@ static USART_TRANSFER_INFO USART3_TransferInfo = {0};
   void USART3_RX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
-  static
+  static DMA_HandleTypeDef hdma_usart3_rx = { 0U };
 #else
-  extern
+  extern DMA_HandleTypeDef hdma_usart3_rx;
 #endif
-  DMA_HandleTypeDef  hdma_usart3_rx;
   static USART_DMA USART3_DMA_Rx = {
     &hdma_usart3_rx,
     USART3_RX_DMA_Complete,
@@ -704,8 +702,8 @@ extern IRDA_HandleTypeDef hirda4;
 #endif
 
 // UART4 Run-Time Information
-static USART_INFO          UART4_Info = {0};
-static USART_TRANSFER_INFO UART4_TransferInfo = {0};
+static USART_INFO          UART4_Info         = { 0U };
+static USART_TRANSFER_INFO UART4_TransferInfo = { 0U };
 
 #ifdef MX_UART4_TX_Pin
   static USART_PIN UART4_tx = {MX_UART4_TX_GPIOx,  MX_UART4_TX_GPIO_Pin,  MX_UART4_TX_GPIO_AF};
@@ -718,11 +716,10 @@ static USART_TRANSFER_INFO UART4_TransferInfo = {0};
   void UART4_TX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
-  static
+  static DMA_HandleTypeDef hdma_uart4_tx = { 0U };
 #else
-  extern
+  extern DMA_HandleTypeDef hdma_uart4_tx;
 #endif
-  DMA_HandleTypeDef hdma_uart4_tx;
   static USART_DMA UART4_DMA_Tx = {
     &hdma_uart4_tx,
     UART4_TX_DMA_Complete,
@@ -738,11 +735,10 @@ static USART_TRANSFER_INFO UART4_TransferInfo = {0};
   void UART4_RX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
-  static
+  static DMA_HandleTypeDef hdma_uart4_rx = { 0U };
 #else
-  extern
+  extern DMA_HandleTypeDef hdma_uart4_rx;
 #endif
-  DMA_HandleTypeDef  hdma_uart4_rx;
   static USART_DMA UART4_DMA_Rx = {
     &hdma_uart4_rx,
     UART4_RX_DMA_Complete,
@@ -842,8 +838,8 @@ extern IRDA_HandleTypeDef hirda5;
 #endif
 
 // UART5 Run-Time Information
-static USART_INFO          UART5_Info = {0};
-static USART_TRANSFER_INFO UART5_TransferInfo = {0};
+static USART_INFO          UART5_Info         = { 0U };
+static USART_TRANSFER_INFO UART5_TransferInfo = { 0U };
 
 #ifdef MX_UART5_TX_Pin
   static USART_PIN UART5_tx = {MX_UART5_TX_GPIOx,  MX_UART5_TX_GPIO_Pin,  MX_UART5_TX_GPIO_AF};
@@ -856,11 +852,10 @@ static USART_TRANSFER_INFO UART5_TransferInfo = {0};
   void UART5_TX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
-  static
+  static DMA_HandleTypeDef hdma_uart5_tx = { 0U };
 #else
-  extern
+  extern DMA_HandleTypeDef hdma_uart5_tx;
 #endif
-  DMA_HandleTypeDef hdma_uart5_tx;
   static USART_DMA UART5_DMA_Tx = {
     &hdma_uart5_tx,
     UART5_TX_DMA_Complete,
@@ -876,11 +871,10 @@ static USART_TRANSFER_INFO UART5_TransferInfo = {0};
   void UART5_RX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
-  static
+  static DMA_HandleTypeDef hdma_uart5_rx = { 0U };
 #else
-  extern
+  extern DMA_HandleTypeDef hdma_uart5_rx;
 #endif
-  DMA_HandleTypeDef  hdma_uart5_rx;
   static USART_DMA UART5_DMA_Rx = {
     &hdma_uart5_rx,
     UART5_RX_DMA_Complete,
@@ -984,8 +978,8 @@ extern SMARTCARD_HandleTypeDef hsc6;
 #endif
 
 // USART6 Run-Time Information
-static USART_INFO          USART6_Info = {0};
-static USART_TRANSFER_INFO USART6_TransferInfo = {0};
+static USART_INFO          USART6_Info         = { 0U };
+static USART_TRANSFER_INFO USART6_TransferInfo = { 0U };
 
 #ifdef MX_USART6_TX_Pin
   static USART_PIN USART6_tx = {MX_USART6_TX_GPIOx,  MX_USART6_TX_GPIO_Pin,  MX_USART6_TX_GPIO_AF};
@@ -1007,11 +1001,10 @@ static USART_TRANSFER_INFO USART6_TransferInfo = {0};
   void USART6_TX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
-  static
+  static DMA_HandleTypeDef hdma_usart6_tx = { 0U };
 #else
-  extern
+  extern DMA_HandleTypeDef hdma_usart6_tx;
 #endif
-  DMA_HandleTypeDef hdma_usart6_tx;
   static USART_DMA USART6_DMA_Tx = {
     &hdma_usart6_tx,
     USART6_TX_DMA_Complete,
@@ -1027,11 +1020,10 @@ static USART_TRANSFER_INFO USART6_TransferInfo = {0};
   void USART6_RX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
-  static
+  static DMA_HandleTypeDef hdma_usart6_rx = { 0U };
 #else
-  extern
+  extern DMA_HandleTypeDef hdma_usart6_rx;
 #endif
-  DMA_HandleTypeDef  hdma_usart6_rx;
   static USART_DMA USART6_DMA_Rx = {
     &hdma_usart6_rx,
     USART6_RX_DMA_Complete,
@@ -1169,8 +1161,8 @@ extern IRDA_HandleTypeDef hirda7;
 #endif
 
 // UART7 Run-Time Information
-static USART_INFO          UART7_Info = {0};
-static USART_TRANSFER_INFO UART7_TransferInfo = {0};
+static USART_INFO          UART7_Info         = { 0U };
+static USART_TRANSFER_INFO UART7_TransferInfo = { 0U };
 
 #ifdef MX_UART7_TX_Pin
   static USART_PIN UART7_tx = {MX_UART7_TX_GPIOx,  MX_UART7_TX_GPIO_Pin,  MX_UART7_TX_GPIO_AF};
@@ -1183,11 +1175,10 @@ static USART_TRANSFER_INFO UART7_TransferInfo = {0};
   void UART7_TX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
-  static
+  static DMA_HandleTypeDef hdma_uart7_tx = { 0U };
 #else
-  extern
+  extern DMA_HandleTypeDef hdma_uart7_tx;
 #endif
-  DMA_HandleTypeDef hdma_uart7_tx;
   static USART_DMA UART7_DMA_Tx = {
     &hdma_uart7_tx,
     UART7_TX_DMA_Complete,
@@ -1203,11 +1194,10 @@ static USART_TRANSFER_INFO UART7_TransferInfo = {0};
   void UART7_RX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
-  static
+  static DMA_HandleTypeDef hdma_uart7_rx = { 0U };
 #else
-  extern
+  extern DMA_HandleTypeDef hdma_uart7_rx;
 #endif
-  DMA_HandleTypeDef  hdma_uart7_rx;
   static USART_DMA UART7_DMA_Rx = {
     &hdma_uart7_rx,
     UART7_RX_DMA_Complete,
@@ -1307,8 +1297,8 @@ extern IRDA_HandleTypeDef hirda8;
 #endif
 
 // UART8 Run-Time Information
-static USART_INFO          UART8_Info = {0};
-static USART_TRANSFER_INFO UART8_TransferInfo = {0};
+static USART_INFO          UART8_Info         = { 0U };
+static USART_TRANSFER_INFO UART8_TransferInfo = { 0U };
 
 #ifdef MX_UART8_TX_Pin
   static USART_PIN UART8_tx = {MX_UART8_TX_GPIOx,  MX_UART8_TX_GPIO_Pin,  MX_UART8_TX_GPIO_AF};
@@ -1321,11 +1311,10 @@ static USART_TRANSFER_INFO UART8_TransferInfo = {0};
   void UART8_TX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
-  static
+  static DMA_HandleTypeDef hdma_uart8_tx = { 0U };
 #else
-  extern
+  extern DMA_HandleTypeDef hdma_uart8_tx;
 #endif
-  DMA_HandleTypeDef hdma_uart8_tx;
   static USART_DMA UART8_DMA_Tx = {
     &hdma_uart8_tx,
     UART8_TX_DMA_Complete,
@@ -1341,11 +1330,10 @@ static USART_TRANSFER_INFO UART8_TransferInfo = {0};
   void UART8_RX_DMA_Complete (DMA_HandleTypeDef *hdma);
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
-  static
+  static DMA_HandleTypeDef hdma_uart8_rx = { 0U };
 #else
-  extern
+  extern DMA_HandleTypeDef hdma_uart8_rx;
 #endif
-  DMA_HandleTypeDef  hdma_uart8_rx;
   static USART_DMA UART8_DMA_Rx = {
     &hdma_uart8_rx,
     UART8_RX_DMA_Complete,
@@ -1677,11 +1665,38 @@ static int32_t USART_Uninitialize (const USART_RESOURCES *usart) {
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
   // Unconfigure USART pins
-  if (usart->io.tx)  HAL_GPIO_DeInit(usart->io.tx->port,  usart->io.tx->pin);
-  if (usart->io.rx)  HAL_GPIO_DeInit(usart->io.rx->port,  usart->io.rx->pin);
-  if (usart->io.ck)  HAL_GPIO_DeInit(usart->io.ck->port,  usart->io.ck->pin);
-  if (usart->io.rts) HAL_GPIO_DeInit(usart->io.rts->port, usart->io.rts->pin);
-  if (usart->io.cts) HAL_GPIO_DeInit(usart->io.cts->port, usart->io.cts->pin);
+  if (usart->io.tx)  { HAL_GPIO_DeInit(usart->io.tx->port,  usart->io.tx->pin);  }
+  if (usart->io.rx)  { HAL_GPIO_DeInit(usart->io.rx->port,  usart->io.rx->pin);  }
+  if (usart->io.ck)  { HAL_GPIO_DeInit(usart->io.ck->port,  usart->io.ck->pin);  }
+  if (usart->io.rts) { HAL_GPIO_DeInit(usart->io.rts->port, usart->io.rts->pin); }
+  if (usart->io.cts) { HAL_GPIO_DeInit(usart->io.cts->port, usart->io.cts->pin); }
+
+  if (usart->dma_rx) { usart->dma_rx->hdma->Instance = NULL; }
+  if (usart->dma_tx) { usart->dma_tx->hdma->Instance = NULL; }
+#else
+
+  switch (usart->vmode) {
+#ifdef USART_ASYNC
+    case VM_ASYNC:
+      ((UART_HandleTypeDef*)usart->h)->Instance      = NULL;
+      break;
+#endif
+#ifdef USART_SYNC
+    case VM_SYNC:
+      ((USART_HandleTypeDef*)usart->h)->Instance     = NULL;
+      break;
+#endif
+#ifdef USART_IRDA
+    case VM_IRDA:
+      ((IRDA_HandleTypeDef*)usart->h)->Instance      = NULL;
+      break;
+#endif
+#ifdef USART_SMARTCARD
+    case VM_SMARTCARD:
+      ((SMARTCARD_HandleTypeDef*)usart->h)->Instance = NULL;
+      break;
+#endif
+  }
 #endif
 
   // Reset USART status flags
@@ -1710,39 +1725,51 @@ static int32_t USART_PowerControl (      ARM_POWER_STATE  state,
       HAL_NVIC_DisableIRQ (usart->irq_num);
 #ifdef __USART_DMA
       if (usart->dma_rx) {
-        // Disable DMA IRQ in NVIC
-        HAL_NVIC_DisableIRQ (usart->dma_rx->irq_num);
-        // Deinitialize DMA
-        HAL_DMA_DeInit (usart->dma_rx->hdma);
+        if (usart->dma_rx->hdma->Instance) {
+          // Disable DMA IRQ in NVIC
+          HAL_NVIC_DisableIRQ (usart->dma_rx->irq_num);
+          // Deinitialize DMA
+          HAL_DMA_DeInit (usart->dma_rx->hdma);
+        }
       }
 
       if (usart->dma_tx) {
-        // Disable DMA IRQ in NVIC
-        HAL_NVIC_DisableIRQ (usart->dma_tx->irq_num);
-        // Deinitialize DMA
-        HAL_DMA_DeInit (usart->dma_tx->hdma);
+        if (usart->dma_tx->hdma->Instance) {
+          // Disable DMA IRQ in NVIC
+          HAL_NVIC_DisableIRQ (usart->dma_tx->irq_num);
+          // Deinitialize DMA
+          HAL_DMA_DeInit (usart->dma_tx->hdma);
+        }
       }
 #endif
 #else
       switch (usart->vmode) {
 #ifdef USART_ASYNC
         case VM_ASYNC:
-          HAL_UART_MspDeInit ((UART_HandleTypeDef*) usart->h);
+          if (((UART_HandleTypeDef*)usart->h)->Instance != NULL) {
+            HAL_UART_MspDeInit ((UART_HandleTypeDef*) usart->h);
+          }
           break;
 #endif
 #ifdef USART_SYNC
         case VM_SYNC:
-          HAL_USART_MspDeInit ((USART_HandleTypeDef*) usart->h);
+          if (((USART_HandleTypeDef*)usart->h)->Instance != NULL) {
+            HAL_USART_MspDeInit ((USART_HandleTypeDef*) usart->h);
+          }
           break;
 #endif
 #ifdef USART_IRDA
         case VM_IRDA:
-          HAL_IRDA_MspDeInit ((IRDA_HandleTypeDef*) usart->h);
+          if (((IRDA_HandleTypeDef*)usart->h)->Instance != NULL) {
+            HAL_IRDA_MspDeInit ((IRDA_HandleTypeDef*) usart->h);
+          }
           break;
 #endif
 #ifdef USART_SMARTCARD
         case VM_SMARTCARD:
-          HAL_SMARTCARD_MspDeInit ((SMARTCARD_HandleTypeDef*) usart->h);
+          if (((SMARTCARD_HandleTypeDef*)usart->h)->Instance != NULL) {
+            HAL_SMARTCARD_MspDeInit ((SMARTCARD_HandleTypeDef*) usart->h);
+          }
           break;
 #endif
         default: break;
@@ -1783,14 +1810,17 @@ static int32_t USART_PowerControl (      ARM_POWER_STATE  state,
       usart->info->status.rx_parity_error  = 0U;
       usart->xfer->send_active             = 0U;
 
-      usart->info->flags = USART_FLAG_INITIALIZED;
+      usart->info->flags &= ~USART_FLAG_POWERED;
       break;
 
     case ARM_POWER_LOW:
       return ARM_DRIVER_ERROR_UNSUPPORTED;
 
     case ARM_POWER_FULL:
-      if (usart->info->flags & USART_FLAG_POWERED) {
+      if ((usart->info->flags & USART_FLAG_INITIALIZED) == 0U) {
+        return ARM_DRIVER_ERROR;
+      }
+      if ((usart->info->flags & USART_FLAG_POWERED)     != 0U) {
         return ARM_DRIVER_OK;
       }
 
@@ -1884,7 +1914,6 @@ static int32_t USART_PowerControl (      ARM_POWER_STATE  state,
 
       // USART peripheral reset
       USART_PeripheralReset (usart->reg);
-      usart->info->flags = USART_FLAG_POWERED | USART_FLAG_INITIALIZED;
 
     break;
     default: return ARM_DRIVER_ERROR_UNSUPPORTED;
