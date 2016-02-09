@@ -86,3 +86,11 @@ To silence warnings when compiling the CMSIS drivers, use:
 -Wno-aggregate-return -Wno-conversion -Wno-missing-prototypes \
 -Wno-missing-declarations -Wno-unused-parameter -Wno-padded
 ```
+
+## Tests
+
+```
+export PATH=/usr/local/gcc-arm-none-eabi-5_2-2015q4/bin:$PATH
+bash ../../../scripts/run-tests.sh
+```
+
