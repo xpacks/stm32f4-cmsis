@@ -27,7 +27,7 @@
 
 /* History:
  *  Version 2.4
- *    STM32CubeMX generated code can also be used to configure the driver.
+ *    STM32CubeMX generated code can also be used to configure the driver
  *  Version 2.3
  *    Removed pins_cfg_mask variable
  *  Version 2.2

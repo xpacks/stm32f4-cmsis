@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013-2015 ARM Ltd.
+ * Copyright (c) 2013-2016 ARM Ltd.
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        04. September 2015
- * $Revision:    V2.4
+ * $Date:        30. May 2016
+ * $Revision:    V2.6
  *
  * Project:      I2C Driver definitions for ST STM32F4xx
  * -------------------------------------------------------------------------- */

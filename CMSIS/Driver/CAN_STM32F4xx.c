@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        3. March 2016
- * $Revision:    V1.4
+ * $Date:        27. May 2016
+ * $Revision:    V1.7
  *
  * Driver:       Driver_CAN1/2
  * Configured:   via RTE_Device.h configuration file
@@ -46,6 +46,12 @@
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 1.7
+ *    Added port configuration for ports supported by new subfamily.
+ *  Version 1.6
+ *    Corrected CAN2 initialization was disabling CAN1 filters
+ *  Version 1.5
+ *    Corrected receive overrun signaling
  *  Version 1.4
  *    Corrected functionality when NULL pointer is provided for one or both 
  *    signal callbacks in Initialize function call
@@ -199,7 +205,7 @@ static void Enable_GPIO_Clock (const GPIO_TypeDef *GPIOx) {
 
 // CAN Driver ******************************************************************
 
-#define ARM_CAN_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(1,4) // CAN driver version
+#define ARM_CAN_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(1,7) // CAN driver version
 
 // Driver Version
 static const ARM_DRIVER_VERSION can_driver_version = { ARM_CAN_API_VERSION, ARM_CAN_DRV_VERSION };
@@ -900,7 +906,7 @@ static int32_t CANx_PowerControl (ARM_POWER_STATE state, uint8_t x) {
 
       // Initialize filter banks
       CAN1->FMR   =  CAN_FMR_FINIT | ((CAN1_FILTER_BANK_NUM << 8) & CAN_FMR_CAN2SB);
-      msk            = ((uint32_t)1U << bank_end) - 1U;
+      msk         =  ((uint32_t)1U << bank_end) - ((uint32_t)1U << bank);
       CAN1->FMR  |=  CAN_FMR_FINIT;             // Enter filter initialization mode
       CAN1->FA1R &= ~msk;                       // Put all filters in inactive mode
       CAN1->FM1R &= ~msk;                       // Initialize all filters mode
@@ -1545,17 +1551,14 @@ void CAN1_TX_IRQHandler (void) {
 void CAN1_RX0_IRQHandler (void) {
   uint32_t esr, ier;
 
-  if ((CAN1->RF0R & CAN_RF0R_FMP0) != 0U) {
-    if (can_obj_cfg[0][0] == ARM_CAN_OBJ_RX) {
+  if (can_obj_cfg[0][0] == ARM_CAN_OBJ_RX) {
+    if ((CAN1->RF0R & CAN_RF0R_FOVR0) != 0U) {
+      if (CAN_SignalObjectEvent[0] != NULL) { CAN_SignalObjectEvent[0](0U, ARM_CAN_EVENT_RECEIVE | ARM_CAN_EVENT_RECEIVE_OVERRUN); }
+    } else if ((CAN1->RF0R & CAN_RF0R_FMP0) != 0U) {
       if (CAN_SignalObjectEvent[0] != NULL) { CAN_SignalObjectEvent[0](0U, ARM_CAN_EVENT_RECEIVE); }
-    } else {
-      CAN1->RF0R = CAN_RF0R_RFOM0;      // Release FIFO 0 output mailbox if object not enabled for reception
     }
-  }
-  if ((CAN1->RF0R & CAN_RF0R_FOVR0) != 0U) {
-    if (can_obj_cfg[0][0] == ARM_CAN_OBJ_RX) {
-      if (CAN_SignalObjectEvent[0] != NULL) { CAN_SignalObjectEvent[0](0U, ARM_CAN_EVENT_RECEIVE_OVERRUN); }
-    }
+  } else {
+    CAN1->RF0R = CAN_RF0R_RFOM0;        // Release FIFO 0 output mailbox if object not enabled for reception
   }
 
   // Handle transition from from 'bus off', ' error active' state, or re-enable warning interrupt
@@ -1581,17 +1584,14 @@ void CAN1_RX0_IRQHandler (void) {
 void CAN1_RX1_IRQHandler (void) {
   uint32_t esr, ier;
 
-  if ((CAN1->RF1R & CAN_RF1R_FMP1) != 0U) {
-    if (can_obj_cfg[0][1] == ARM_CAN_OBJ_RX) {
+  if (can_obj_cfg[0][1] == ARM_CAN_OBJ_RX) {
+    if ((CAN1->RF1R & CAN_RF1R_FOVR1) != 0U) {
+      if (CAN_SignalObjectEvent[0] != NULL) { CAN_SignalObjectEvent[0](1U, ARM_CAN_EVENT_RECEIVE | ARM_CAN_EVENT_RECEIVE_OVERRUN); }
+    } else if ((CAN1->RF1R & CAN_RF1R_FMP1) != 0U) {
       if (CAN_SignalObjectEvent[0] != NULL) { CAN_SignalObjectEvent[0](1U, ARM_CAN_EVENT_RECEIVE); }
-    } else {
-      CAN1->RF1R = CAN_RF1R_RFOM1;      // Release FIFO 1 output mailbox if object not enabled for reception
     }
-  }
-  if ((CAN1->RF1R & CAN_RF1R_FOVR1) != 0U) {
-    if (can_obj_cfg[0][1] == ARM_CAN_OBJ_RX) {
-      if (CAN_SignalObjectEvent[0] != NULL) { CAN_SignalObjectEvent[0](1U, ARM_CAN_EVENT_RECEIVE_OVERRUN); }
-    }
+  } else {
+    CAN1->RF1R = CAN_RF1R_RFOM1;        // Release FIFO 1 output mailbox if object not enabled for reception
   }
 
   // Handle transition from from 'bus off', ' error active' state, or re-enable warning interrupt
@@ -1678,17 +1678,14 @@ void CAN2_TX_IRQHandler (void) {
 void CAN2_RX0_IRQHandler (void) {
   uint32_t esr, ier;
 
-  if ((CAN2->RF0R & CAN_RF0R_FMP0) != 0U) {
-    if (can_obj_cfg[1][0] == ARM_CAN_OBJ_RX) {
+  if (can_obj_cfg[1][0] == ARM_CAN_OBJ_RX) {
+    if ((CAN2->RF0R & CAN_RF0R_FOVR0) != 0U) {
+      if (CAN_SignalObjectEvent[1] != NULL) { CAN_SignalObjectEvent[1](0U, ARM_CAN_EVENT_RECEIVE | ARM_CAN_EVENT_RECEIVE_OVERRUN); }
+    } else if ((CAN2->RF0R & CAN_RF0R_FMP0) != 0U) {
       if (CAN_SignalObjectEvent[1] != NULL) { CAN_SignalObjectEvent[1](0U, ARM_CAN_EVENT_RECEIVE); }
-    } else {
-      CAN2->RF0R = CAN_RF0R_RFOM0;      // Release FIFO 0 output mailbox if object not enabled for reception
     }
-  }
-  if ((CAN2->RF0R & CAN_RF0R_FOVR0) != 0U) {
-    if (can_obj_cfg[1][0] == ARM_CAN_OBJ_RX) {
-      if (CAN_SignalObjectEvent[1] != NULL) { CAN_SignalObjectEvent[1](0U, ARM_CAN_EVENT_RECEIVE_OVERRUN); }
-    }
+  } else {
+    CAN2->RF0R = CAN_RF0R_RFOM0;        // Release FIFO 0 output mailbox if object not enabled for reception
   }
 
   // Handle transition from from 'bus off', ' error active' state, or re-enable warning interrupt
@@ -1714,17 +1711,14 @@ void CAN2_RX0_IRQHandler (void) {
 void CAN2_RX1_IRQHandler (void) {
   uint32_t esr, ier;
 
-  if ((CAN2->RF1R & CAN_RF1R_FMP1) != 0U) {
-    if (can_obj_cfg[1][1] == ARM_CAN_OBJ_RX) {
+  if (can_obj_cfg[1][1] == ARM_CAN_OBJ_RX) {
+    if ((CAN2->RF1R & CAN_RF1R_FOVR1) != 0U) {
+      if (CAN_SignalObjectEvent[1] != NULL) { CAN_SignalObjectEvent[1](1U, ARM_CAN_EVENT_RECEIVE | ARM_CAN_EVENT_RECEIVE_OVERRUN); }
+    } else if ((CAN2->RF1R & CAN_RF1R_FMP1) != 0U) {
       if (CAN_SignalObjectEvent[1] != NULL) { CAN_SignalObjectEvent[1](1U, ARM_CAN_EVENT_RECEIVE); }
-    } else {
-      CAN2->RF1R = CAN_RF1R_RFOM1;      // Release FIFO 1 output mailbox if object not enabled for reception
     }
-  }
-  if ((CAN2->RF1R & CAN_RF1R_FOVR1) != 0U) {
-    if (can_obj_cfg[1][1] == ARM_CAN_OBJ_RX) {
-      if (CAN_SignalObjectEvent[1] != NULL) { CAN_SignalObjectEvent[1](1U, ARM_CAN_EVENT_RECEIVE_OVERRUN); }
-    }
+  } else {
+    CAN2->RF1R = CAN_RF1R_RFOM1;        // Release FIFO 1 output mailbox if object not enabled for reception
   }
 
   // Handle transition from from 'bus off', ' error active' state, or re-enable warning interrupt

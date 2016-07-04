@@ -17,8 +17,8 @@
  *
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * $Date:        2. February 2016
- * $Revision:    V2.3.1
+ * $Date:        27. May 2016
+ * $Revision:    V2.4.1
  *
  * Project:      RTE Device Configuration for ST STM32F4xx
  * -------------------------------------------------------------------------- */
@@ -279,7 +279,7 @@
 #error "Invalid USART3_TX Pin Configuration!"
 #endif
 
-//   <o> USART3_RX Pin <0=>PB11 <1=>PC11 <2=>PD9
+//   <o> USART3_RX Pin <0=>PB11 <1=>PC11 <2=>PD9 <3=>PC5
 #define RTE_USART3_RX_ID                0
 #if    (RTE_USART3_RX_ID == 0)
 #define RTE_USART3_RX_PORT              GPIOB
@@ -290,6 +290,9 @@
 #elif  (RTE_USART3_RX_ID == 2)
 #define RTE_USART3_RX_PORT              GPIOD
 #define RTE_USART3_RX_BIT               9
+#elif  (RTE_USART3_RX_ID == 3)
+#define RTE_USART3_RX_PORT              GPIOC
+#define RTE_USART3_RX_BIT               5
 #else
 #error "Invalid USART3_RX Pin Configuration!"
 #endif
@@ -1561,53 +1564,74 @@
 #define RTE_SDIO                        0
 
 //   <h> SDIO Peripheral Bus
-//     <o> SDIO_CK Pin <0=>PC12
+//     <o> SDIO_CK Pin <0=>PC12 <1=>PB15
 #define   RTE_SDIO_CK_PORT_ID           0
 #if      (RTE_SDIO_CK_PORT_ID == 0)
   #define RTE_SDIO_CK_PORT              GPIOC
   #define RTE_SDIO_CK_PIN               GPIO_PIN_12
+#elif    (RTE_SDIO_CK_PORT_ID == 1)
+  #define RTE_SDIO_CK_PORT              GPIOB
+  #define RTE_SDIO_CK_PIN               GPIO_PIN_15
 #else
   #error "Invalid SD_CLK Pin Configuration!"
 #endif
-//     <o> SDIO_CMD Pin <0=>PD2
+//     <o> SDIO_CMD Pin <0=>PD2 <1=>PA6
 #define   RTE_SDIO_CMD_PORT_ID          0
 #if      (RTE_SDIO_CMD_PORT_ID == 0)
   #define RTE_SDIO_CMD_PORT             GPIOD
   #define RTE_SDIO_CMD_PIN              GPIO_PIN_2
+#elif    (RTE_SDIO_CMD_PORT_ID == 1)
+  #define RTE_SDIO_CMD_PORT             GPIOA
+  #define RTE_SDIO_CMD_PIN              GPIO_PIN_6
 #else
   #error "Invalid SD_CMD Pin Configuration!"
 #endif
-//     <o> SDIO_D0 Pin <0=>PC8
+//     <o> SDIO_D0 Pin <0=>PC8 <1=>PB4 <2=>PB6
 #define   RTE_SDIO_D0_PORT_ID           0
 #if      (RTE_SDIO_D0_PORT_ID == 0)
   #define RTE_SDIO_D0_PORT              GPIOC
   #define RTE_SDIO_D0_PIN               GPIO_PIN_8
+#elif    (RTE_SDIO_D0_PORT_ID == 1)
+  #define RTE_SDIO_D0_PORT              GPIOB
+  #define RTE_SDIO_D0_PIN               GPIO_PIN_4
+#elif    (RTE_SDIO_D0_PORT_ID == 2)
+  #define RTE_SDIO_D0_PORT              GPIOB
+  #define RTE_SDIO_D0_PIN               GPIO_PIN_6
 #else
   #error "Invalid SD_DAT0 Pin Configuration!"
 #endif
 //     <e> SDIO_D[1 .. 3]
 #define   RTE_SDIO_BUS_WIDTH_4          1
-//       <o> SDIO_D1 Pin <0=>PC9
+//       <o> SDIO_D1 Pin <0=>PC9 <1=>PA8
 #define   RTE_SDIO_D1_PORT_ID           0
 #if      (RTE_SDIO_D1_PORT_ID == 0)
   #define RTE_SDIO_D1_PORT              GPIOC
   #define RTE_SDIO_D1_PIN               GPIO_PIN_9
+#elif    (RTE_SDIO_D1_PORT_ID == 1)
+  #define RTE_SDIO_D1_PORT              GPIOA
+  #define RTE_SDIO_D1_PIN               GPIO_PIN_8
 #else
   #error "Invalid SD_DAT1 Pin Configuration!"
 #endif
-//       <o> SDIO_D2 Pin <0=>PC10
+//       <o> SDIO_D2 Pin <0=>PC10 <1=>PA9
 #define   RTE_SDIO_D2_PORT_ID           0
 #if      (RTE_SDIO_D2_PORT_ID == 0)
   #define RTE_SDIO_D2_PORT              GPIOC
   #define RTE_SDIO_D2_PIN               GPIO_PIN_10
+#elif    (RTE_SDIO_D2_PORT_ID == 1)
+  #define RTE_SDIO_D2_PORT              GPIOA
+  #define RTE_SDIO_D2_PIN               GPIO_PIN_9
 #else
   #error "Invalid SD_DAT2 Pin Configuration!"
 #endif
-//       <o> SDIO_D3 Pin <0=>PC11
+//       <o> SDIO_D3 Pin <0=>PC11 <1=>PB5
 #define   RTE_SDIO_D3_PORT_ID           0
 #if      (RTE_SDIO_D3_PORT_ID == 0)
   #define RTE_SDIO_D3_PORT              GPIOC
   #define RTE_SDIO_D3_PIN               GPIO_PIN_11
+#elif    (RTE_SDIO_D3_PORT_ID == 1)
+  #define RTE_SDIO_D3_PORT              GPIOB
+  #define RTE_SDIO_D3_PIN               GPIO_PIN_5
 #else
   #error "Invalid SD_DAT3 Pin Configuration!"
 #endif
@@ -1630,19 +1654,25 @@
 #else
   #error "Invalid SD_DAT5 Pin Configuration!"
 #endif
-//       <o> SDIO_D6 Pin <0=>PC6
+//       <o> SDIO_D6 Pin <0=>PC6 <1=>PB14
 #define   RTE_SDIO_D6_PORT_ID           0
 #if      (RTE_SDIO_D6_PORT_ID == 0)
   #define RTE_SDIO_D6_PORT              GPIOC
   #define RTE_SDIO_D6_PIN               GPIO_PIN_6
+#elif    (RTE_SDIO_D6_PORT_ID == 1)
+  #define RTE_SDIO_D6_PORT              GPIOB
+  #define RTE_SDIO_D6_PIN               GPIO_PIN_14
 #else
   #error "Invalid SD_DAT6 Pin Configuration!"
 #endif
-//       <o> SDIO_D7 Pin <0=>PC7
+//       <o> SDIO_D7 Pin <0=>PC7 <1=>PB10
 #define   RTE_SDIO_D7_PORT_ID           0
 #if      (RTE_SDIO_D7_PORT_ID == 0)
   #define RTE_SDIO_D7_PORT              GPIOC
   #define RTE_SDIO_D7_PIN               GPIO_PIN_7
+#elif    (RTE_SDIO_D7_PORT_ID == 1)
+  #define RTE_SDIO_D7_PORT              GPIOB
+  #define RTE_SDIO_D7_PIN               GPIO_PIN_10
 #else
   #error "Invalid SD_DAT7 Pin Configuration!"
 #endif
@@ -1720,7 +1750,7 @@
 // <i> Configuration settings for Driver_CAN1 in component ::CMSIS Driver:CAN
 #define RTE_CAN1                        0
 
-//   <o> CAN1_RX Pin <0=>PA11 <1=>PB8 <2=>PD0 <3=>PI9
+//   <o> CAN1_RX Pin <0=>PA11 <1=>PB8 <2=>PD0 <3=>PI9 <4=>PG0
 #define RTE_CAN1_RX_PORT_ID             0
 #if    (RTE_CAN1_RX_PORT_ID == 0)
 #define RTE_CAN1_RX_PORT                GPIOA
@@ -1734,11 +1764,14 @@
 #elif  (RTE_CAN1_RX_PORT_ID == 3)
 #define RTE_CAN1_RX_PORT                GPIOI
 #define RTE_CAN1_RX_BIT                 GPIO_PIN_9
+#elif  (RTE_CAN1_RX_PORT_ID == 4)
+#define RTE_CAN1_RX_PORT                GPIOG
+#define RTE_CAN1_RX_BIT                 GPIO_PIN_0
 #else
 #error "Invalid CAN1_RX Pin Configuration!"
 #endif
 
-//   <o> CAN1_TX Pin <0=>PA12 <1=>PB9 <2=>PD1 <3=>PH13
+//   <o> CAN1_TX Pin <0=>PA12 <1=>PB9 <2=>PD1 <3=>PH13 <4=>PG1
 #define RTE_CAN1_TX_PORT_ID             0
 #if    (RTE_CAN1_TX_PORT_ID == 0)
 #define RTE_CAN1_TX_PORT                GPIOA
@@ -1752,6 +1785,9 @@
 #elif  (RTE_CAN1_TX_PORT_ID == 3)
 #define RTE_CAN1_TX_PORT                GPIOH
 #define RTE_CAN1_TX_BIT                 GPIO_PIN_13
+#elif  (RTE_CAN1_TX_PORT_ID == 4)
+#define RTE_CAN1_TX_PORT                GPIOG
+#define RTE_CAN1_TX_BIT                 GPIO_PIN_1
 #else
 #error "Invalid CAN1_TX Pin Configuration!"
 #endif
@@ -1763,7 +1799,7 @@
 // <i> Configuration settings for Driver_CAN2 in component ::CMSIS Driver:CAN
 #define RTE_CAN2                        0
 
-//   <o> CAN2_RX Pin <0=>PB5 <1=>PB12
+//   <o> CAN2_RX Pin <0=>PB5 <1=>PB12 <2=>PG11
 #define RTE_CAN2_RX_PORT_ID             0
 #if    (RTE_CAN2_RX_PORT_ID == 0)
 #define RTE_CAN2_RX_PORT                GPIOB
@@ -1771,11 +1807,14 @@
 #elif  (RTE_CAN2_RX_PORT_ID == 1)
 #define RTE_CAN2_RX_PORT                GPIOB
 #define RTE_CAN2_RX_BIT                 GPIO_PIN_12
+#elif  (RTE_CAN2_RX_PORT_ID == 2)
+#define RTE_CAN2_RX_PORT                GPIOG
+#define RTE_CAN2_RX_BIT                 GPIO_PIN_11
 #else
 #error "Invalid CAN2_RX Pin Configuration!"
 #endif
 
-//   <o> CAN2_TX Pin <0=>PB6 <1=>PB13
+//   <o> CAN2_TX Pin <0=>PB6 <1=>PB13 <2=>PG12
 #define RTE_CAN2_TX_PORT_ID             0
 #if    (RTE_CAN2_TX_PORT_ID == 0)
 #define RTE_CAN2_TX_PORT                GPIOB
@@ -1783,6 +1822,9 @@
 #elif  (RTE_CAN2_TX_PORT_ID == 1)
 #define RTE_CAN2_TX_PORT                GPIOB
 #define RTE_CAN2_TX_BIT                 GPIO_PIN_13
+#elif  (RTE_CAN2_TX_PORT_ID == 2)
+#define RTE_CAN2_TX_PORT                GPIOG
+#define RTE_CAN2_TX_BIT                 GPIO_PIN_12
 #else
 #error "Invalid CAN2_TX Pin Configuration!"
 #endif
@@ -2043,10 +2085,20 @@
 // <e> USB OTG Full-speed
 #define RTE_USB_OTG_FS                  0
 
+//   <e> Device [Driver_USBD0]
+//   <i> Configuration settings for Driver_USBD0 in component ::CMSIS Driver:USB Device
+
+#define RTE_USB_OTG_FS_DEVICE           1
+
+//     <o0.0> VBUS Sensing Pin
+//     <i> Enable or disable VBUS sensing
+#define RTE_OTG_FS_VBUS_SENSING_PIN     1
+//   </e>
+
 //   <e> Host [Driver_USBH0]
 //   <i> Configuration settings for Driver_USBH0 in component ::CMSIS Driver:USB Host
 
-#define RTE_USB_OTG_FS_HOST             1
+#define RTE_USB_OTG_FS_HOST             0
 
 //     <e> VBUS Power On/Off Pin
 //     <i> Configure Pin for driving VBUS
@@ -2203,9 +2255,20 @@
 
 //   </h>
 
+//   <e> Device [Driver_USBD1]
+//   <i> Configuration settings for Driver_USBD1 in component ::CMSIS Driver:USB Device
+
+#define RTE_USB_OTG_HS_DEVICE           0
+
+//     <o0.0> VBUS Sensing Pin
+//     <i> Enable or disable VBUS sensing
+//     <i> Relevant only if PHY Interface On-chip full-speed PHY is selected
+#define RTE_OTG_HS_VBUS_SENSING_PIN     0
+//   </e>
+
 //   <e> Host [Driver_USBH1]
 //   <i> Configuration settings for Driver_USBH1 in component ::CMSIS Driver:USB Host
-#define RTE_USB_OTG_HS_HOST             1
+#define RTE_USB_OTG_HS_HOST             0
 
 //     <e> VBUS Power On/Off Pin
 //     <i> Configure Pin for driving VBUS

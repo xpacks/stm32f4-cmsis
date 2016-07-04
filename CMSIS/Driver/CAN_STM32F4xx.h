@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013-2015 ARM Ltd.
+ * Copyright (c) 2013-2016 ARM Ltd.
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        24. December 2015
- * $Revision:    V1.2
+ * $Date:        27. May 2016
+ * $Revision:    V1.3
  *
  * Driver:       Driver_CAN1/2
  * Configured:   via RTE_Device.h configuration file
@@ -61,7 +61,12 @@
 #define MX_CAN1_RX_GPIOx                RTE_CAN1_RX_PORT
 #define MX_CAN1_RX_GPIO_PuPd            GPIO_NOPULL
 #define MX_CAN1_RX_GPIO_Pin             RTE_CAN1_RX_BIT
-#define MX_CAN1_RX_GPIO_AF              GPIO_AF9_CAN1
+#if (RTE_CAN1_RX_PORT_ID == 1) && \
+    (defined (STM32F412Cx) || defined (STM32F412Rx) || defined (STM32F412Vx) || defined (STM32F412Zx))
+  #define MX_CAN1_RX_GPIO_AF            GPIO_AF8_CAN1
+#else
+  #define MX_CAN1_RX_GPIO_AF            GPIO_AF9_CAN1
+#endif
 #define MX_CAN1_RX_GPIO_Mode            GPIO_MODE_AF_PP
 
 /* Pin CAN1_TX */
@@ -70,7 +75,12 @@
 #define MX_CAN1_TX_GPIOx                RTE_CAN1_TX_PORT
 #define MX_CAN1_TX_GPIO_PuPd            GPIO_NOPULL
 #define MX_CAN1_TX_GPIO_Pin             RTE_CAN1_TX_BIT
-#define MX_CAN1_TX_GPIO_AF              GPIO_AF9_CAN1
+#if (RTE_CAN1_TX_PORT_ID == 1) && \
+    (defined (STM32F412Cx) || defined (STM32F412Rx) || defined (STM32F412Vx) || defined (STM32F412Zx))
+  #define MX_CAN1_TX_GPIO_AF            GPIO_AF8_CAN1
+#else
+  #define MX_CAN1_TX_GPIO_AF            GPIO_AF9_CAN1
+#endif
 #define MX_CAN1_TX_GPIO_Mode            GPIO_MODE_AF_PP
 #endif
 

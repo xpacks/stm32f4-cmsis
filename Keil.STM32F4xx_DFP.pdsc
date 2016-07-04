@@ -7,6 +7,24 @@
   <url>http://www.keil.com/pack</url>
 
   <releases>
+    <release version="2.9.0" date="2016-05-31">
+      Added device support for subfamily STM32F412
+      - updated device list according STM32Cube V1.45.0
+      Updated Pack to STM32Cube_FW_F4 Firmware Package version V1.12.0
+      Updated HAL to version V1.5.0
+      Updated CMSIS drivers:
+      - CAN:
+      -- reflect changes from RTE_Device.h (Ver 2.4.1) adding pin configurations
+      -- corrected CAN2 initialization was disabling CAN1 filters
+      -- corrected receive overrun signaling
+      - USART: reflect changes from RTE_Device.h (Ver 2.4.1) adding pin configurations
+      - MCI: reflect changes from RTE_Device.h (Ver 2.4.1) adding pin configurations
+      - I2C: corrected rise time setting when using ARM_I2C_BUS_SPEED_FAST
+      - USB Device:
+      -- VBUS detection is selected automatically based on VBUS sensing pin setting (in RTE_Device.h or by STM32CubeMX)
+      -- Corrected initial resume signaling after USB Bus Reset
+      -- Corrected device status information
+    </release>
     <release version="2.8.0" date="2016-04-14">
       Updated CMSIS drivers:
       - EMAC: 
@@ -236,7 +254,9 @@
   <devices>
     <family Dfamily="STM32F4 Series" Dvendor="STMicroelectronics:13">
       <processor Dcore="Cortex-M4" DcoreVersion="r0p1" Dfpu="1" Dmpu="1" Dendian="Little-endian"/>
-      <!-- Debug Access Variables have to be re-defined on subfamily level for configfile, needs to be fixed in uVision -->
+      <environment name="uv">
+        <CMisc>--C99</CMisc>
+      </environment>      <!-- Debug Access Variables have to be re-defined on subfamily level for configfile, needs to be fixed in uVision -->
       <debugvars>
         // Debug Access Variables, can be modified by user via copies of DBGCONF files as created by uVision. Also see sub-family level.
         __var DbgMCU_CR      = 0x00000007;   // DBGMCU_CR: DBG_SLEEP, DBG_STOP, DBG_STANDBY
@@ -629,6 +649,8 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           __var DbgMCU_APB1_Fz = 0x00000000;   // DGBMCU_APB1_FZ
           __var DbgMCU_APB2_Fz = 0x00000000;   // DGBMCU_APB2_FZ
         </debugvars>
+        <book       name="Documentation/DM00180366.pdf"              title="STM32F410 Reference Manual"/>
+        <book       name="Documentation/DM00214043.pdf"              title="STM32F410x8/STM32F410xB Data Sheet"/>
 
         <!-- *************************  Device 'STM32F410CB'  ***************************** -->
         <device Dname="STM32F410CB">
@@ -645,7 +667,6 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           <memory     id="IROM1"                             start="0x08000000"  size="0x20000"    startup="1"   default="1"/>
           <memory     id="IRAM1"                             start="0x20000000"  size="0x8000"     init   ="0"   default="1"/>
           <algorithm  name="CMSIS/Flash/STM32F4xx_128.FLM"   start="0x08000000"  size="0x20000"                  default="1"/> 
-          <variant Dvariant="STM32F410RBUx"> <feature type="QFN" n="64"/> </variant>
           <variant Dvariant="STM32F410RBTx"> <feature type="QFP" n="64"/> </variant>
         </device>
 
@@ -656,33 +677,6 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           <memory     id="IRAM1"                             start="0x20000000"  size="0x8000"     init   ="0"   default="1"/>
           <algorithm  name="CMSIS/Flash/STM32F4xx_128.FLM"   start="0x08000000"  size="0x20000"                  default="1"/> 
           <variant Dvariant="STM32F410TBYx"> <feature type="CSP" n="36"/> </variant>
-        </device>
-
-        <!-- *************************  Device 'STM32F410CA'  ***************************** -->
-        <device Dname="STM32F410CA">
-          <compile header="Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h"  define="STM32F410Cx"/>
-          <memory     id="IROM1"                             start="0x08000000"  size="0x18000"    startup="1"   default="1"/>
-          <memory     id="IRAM1"                             start="0x20000000"  size="0x8000"     init   ="0"   default="1"/>
-          <algorithm  name="CMSIS/Flash/STM32F4xx_128.FLM"   start="0x08000000"  size="0x18000"                  default="1"/> 
-          <variant Dvariant="STM32F410CAUx"> <feature type="QFN" n="48"/> </variant>
-        </device>
-
-        <!-- *************************  Device 'STM32F410RA'  ***************************** -->
-        <device Dname="STM32F410RA">
-          <compile header="Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h"  define="STM32F410Rx"/>
-          <memory     id="IROM1"                             start="0x08000000"  size="0x18000"    startup="1"   default="1"/>
-          <memory     id="IRAM1"                             start="0x20000000"  size="0x8000"     init   ="0"   default="1"/>
-          <algorithm  name="CMSIS/Flash/STM32F4xx_128.FLM"   start="0x08000000"  size="0x18000"                  default="1"/>
-          <variant Dvariant="STM32F410RATx"> <feature type="QFP" n="64"/> </variant>
-        </device>
-
-        <!-- *************************  Device 'STM32F410TA'  ***************************** -->
-        <device Dname="STM32F410TA">
-          <compile header="Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h"  define="STM32F410Tx"/>
-          <memory     id="IROM1"                             start="0x08000000"  size="0x18000"    startup="1"   default="1"/>
-          <memory     id="IRAM1"                             start="0x20000000"  size="0x8000"     init   ="0"   default="1"/>
-          <algorithm  name="CMSIS/Flash/STM32F4xx_128.FLM"   start="0x08000000"  size="0x18000"                  default="1"/>
-          <variant Dvariant="STM32F410TAYx"> <feature type="CSP" n="36"/> </variant>
         </device>
 
         <!-- *************************  Device 'STM32F410C8'  ***************************** -->
@@ -743,6 +737,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           <feature type="IOs"           n="36"/>
           <feature type="SPI"           n="5"       m="45000000"/>
           <feature type="SDIO"          n="1"       m="8"               name="Secure Digital IO"/>
+          <variant Dvariant="STM32F411CCUx"> <feature type="QFP" n="48"/> </variant>
           <variant Dvariant="STM32F411CCYx"> <feature type="CSP" n="49"/> </variant>
         </device>
 
@@ -817,6 +812,124 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           <feature type="SDIO"          n="1"       m="8"               name="Secure Digital IO"/>
           <variant Dvariant="STM32F411VETx"> <feature type="QFP" n="100"/> </variant>
           <variant Dvariant="STM32F411VEHx"> <feature type="BGA" n="100"/> </variant>
+        </device>
+      </subFamily>
+
+
+      <!-- ************************  Subfamily 'STM32F412'  **************************** -->
+      <subFamily DsubFamily="STM32F412">
+        <processor Dclock="100000000"/>
+        <debug      svd="CMSIS/SVD/STM32F412xG.svd"/>
+        <debugvars configfile="CMSIS/Debug/STM32F40x_41x_42x_43x.dbgconf">
+          // Debug Access Variables, can be modified by user via copy of STM32F40x_41x_42x_43x.dbgconf created by uVision.
+          __var DbgMCU_CR      = 0x00000007;   // DBGMCU_CR: DBG_SLEEP, DBG_STOP, DBG_STANDBY
+          __var DbgMCU_APB1_Fz = 0x00000000;   // DGBMCU_APB1_FZ
+          __var DbgMCU_APB2_Fz = 0x00000000;   // DGBMCU_APB2_FZ
+        </debugvars>
+        <book       name="Documentation/DM00180369.pdf"              title="STM32F412 Reference Manual"/>
+        <book       name="Documentation/DM00213872.pdf"              title="STM32F412 Data Sheet"/>
+        <feature type="Timer"         n="12"      m="14"/>
+        <feature type="SPI"           n="5"       m="37500000"/>
+        <feature type="I2C"           n="3"/>
+        <feature type="SDIO"          n="1"       m="8"               name="Secure Digital IO"/>
+        <feature type="USART"         n="4"       m="10500000"/>
+        <feature type="ADC"           n="16"      m="12"/>
+        <feature type="USBOTG"        n="1"/>
+        <feature type="CAN"           n="2"/>
+        <feature type="VCC"           n="1.70"    m="3.60"/>
+
+        <!-- *************************  Device 'STM32F412CE'  ***************************** -->
+        <device Dname="STM32F412CE">
+          <compile header="Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h"  define="STM32F412Cx"/>
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x00080000"    startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x00040000"    init   ="0"   default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_512.FLM"         start="0x08000000"  size="0x00080000"                  default="1"/>
+          <!--algorithm  name="CMSIS/Flash/STM32F40xxx_41xxx_OPT.FLM" start="0x1FFFC000"  size="0x00000004"                  default="0"/-->
+          <algorithm  name="CMSIS/Flash/STM32F4xx_OTP.FLM"         start="0x1FFF7800"  size="0x00000210"                  default="0"/>
+          <variant Dvariant="STM32F412CEUx"> <feature type="QFP" n="48"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F412CG'  ***************************** -->
+        <device Dname="STM32F412CG">
+          <compile header="Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h"  define="STM32F412Cx"/>
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x00100000"   startup="1"    default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x00040000"   init   ="0"    default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_1024.FLM"        start="0x08000000"  size="0x00100000"                  default="1"/>
+          <!--algorithm  name="CMSIS/Flash/STM32F40xxx_41xxx_OPT.FLM" start="0x1FFFC000"  size="0x00000004"                  default="0"/-->
+          <algorithm  name="CMSIS/Flash/STM32F4xx_OTP.FLM"         start="0x1FFF7800"  size="0x00000210"                  default="0"/>
+          <variant Dvariant="STM32F412CGUx"> <feature type="QFP" n="48"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F412RE'  ***************************** -->
+        <device Dname="STM32F412RE">
+          <compile header="Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h"  define="STM32F412Rx"/>
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x00080000"    startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x00040000"    init   ="0"   default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_512.FLM"         start="0x08000000"  size="0x00080000"                  default="1"/>
+          <!--algorithm  name="CMSIS/Flash/STM32F40xxx_41xxx_OPT.FLM" start="0x1FFFC000"  size="0x00000004"                  default="0"/-->
+          <algorithm  name="CMSIS/Flash/STM32F4xx_OTP.FLM"         start="0x1FFF7800"  size="0x00000210"                  default="0"/>
+          <variant Dvariant="STM32F412RETx"> <feature type="QFP" n="64"/> </variant>
+          <variant Dvariant="STM32F412REYx"> <feature type="CSP" n="64"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F412RG'  ***************************** -->
+        <device Dname="STM32F412RG">
+          <compile header="Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h"  define="STM32F412Rx"/>
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x00100000"   startup="1"    default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x00040000"   init   ="0"    default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_1024.FLM"        start="0x08000000"  size="0x00100000"                  default="1"/>
+          <!--algorithm  name="CMSIS/Flash/STM32F40xxx_41xxx_OPT.FLM" start="0x1FFFC000"  size="0x00000004"                  default="0"/-->
+          <algorithm  name="CMSIS/Flash/STM32F4xx_OTP.FLM"         start="0x1FFF7800"  size="0x00000210"                  default="0"/>
+          <variant Dvariant="STM32F412RGTx"> <feature type="QFP" n="64"/> </variant>
+          <variant Dvariant="STM32F412RGYx"> <feature type="CSP" n="64"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F412VE'  ***************************** -->
+        <device Dname="STM32F412VE">
+          <compile header="Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h"  define="STM32F412Vx"/>
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x00080000"    startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x00040000"    init   ="0"   default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_512.FLM"         start="0x08000000"  size="0x00080000"                  default="1"/>
+          <!--algorithm  name="CMSIS/Flash/STM32F40xxx_41xxx_OPT.FLM" start="0x1FFFC000"  size="0x00000004"                  default="0"/-->
+          <algorithm  name="CMSIS/Flash/STM32F4xx_OTP.FLM"         start="0x1FFF7800"  size="0x00000210"                  default="0"/>
+          <variant Dvariant="STM32F412VEHx"> <feature type="BGA" n="100"/> </variant>
+          <variant Dvariant="STM32F412VETx"> <feature type="QFP" n="100"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F412VG'  ***************************** -->
+        <device Dname="STM32F412VG">
+          <compile header="Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h"  define="STM32F412Vx"/>
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x00100000"   startup="1"    default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x00040000"   init   ="0"    default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_1024.FLM"        start="0x08000000"  size="0x00100000"                  default="1"/>
+          <!--algorithm  name="CMSIS/Flash/STM32F40xxx_41xxx_OPT.FLM" start="0x1FFFC000"  size="0x00000004"                  default="0"/-->
+          <algorithm  name="CMSIS/Flash/STM32F4xx_OTP.FLM"         start="0x1FFF7800"  size="0x00000210"                  default="0"/>
+          <variant Dvariant="STM32F412VGHx"> <feature type="BGA" n="100"/> </variant>
+          <variant Dvariant="STM32F412VGTx"> <feature type="QFP" n="100"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F412ZE'  ***************************** -->
+        <device Dname="STM32F412ZE">
+          <compile header="Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h"  define="STM32F412Zx"/>
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x00080000"    startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x00040000"    init   ="0"   default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_512.FLM"         start="0x08000000"  size="0x00080000"                  default="1"/>
+          <!--algorithm  name="CMSIS/Flash/STM32F40xxx_41xxx_OPT.FLM" start="0x1FFFC000"  size="0x00000004"                  default="0"/-->
+          <algorithm  name="CMSIS/Flash/STM32F4xx_OTP.FLM"         start="0x1FFF7800"  size="0x00000210"                  default="0"/>
+          <variant Dvariant="STM32F412ZEJx"> <feature type="BGA" n="144"/> </variant>
+          <variant Dvariant="STM32F412ZETx"> <feature type="QFP" n="144"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F412ZG'  ***************************** -->
+        <device Dname="STM32F412ZG">
+          <compile header="Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h"  define="STM32F412Zx"/>
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x00100000"   startup="1"    default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x00040000"   init   ="0"    default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_1024.FLM"        start="0x08000000"  size="0x00100000"                  default="1"/>
+          <!--algorithm  name="CMSIS/Flash/STM32F40xxx_41xxx_OPT.FLM" start="0x1FFFC000"  size="0x00000004"                  default="0"/-->
+          <algorithm  name="CMSIS/Flash/STM32F4xx_OTP.FLM"         start="0x1FFF7800"  size="0x00000210"                  default="0"/>
+          <variant Dvariant="STM32F412ZGJx"> <feature type="BGA" n="144"/> </variant>
+          <variant Dvariant="STM32F412ZGTx"> <feature type="QFP" n="144"/> </variant>
         </device>
       </subFamily>
 
@@ -1244,6 +1357,19 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
         <feature type="VCC"           n="1.80"    m="3.60"/>
         <feature type="Camera"        n="1"       m="14"/>
 
+        <!-- *************************  Device 'STM32F427AG'  ***************************** -->
+        <device Dname="STM32F427AG">
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x100000"   startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x30000"    init   ="0"   default="1"/>
+          <memory     id="IRAM2"                                   start="0x10000000"  size="0x10000"    init   ="0"   default="0"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_1024.FLM"        start="0x08000000"  size="0x100000"                 default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F42xxx_43xxx_OPT.FLM" start="0x1FFFC000"  size="0x08"                     default="0"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_OTP.FLM"         start="0x1FFF7800"  size="0x0210"                   default="0"/>
+          <feature type="ADC"           n="16"      m="12"/>
+          <feature type="IOs"           n="130"/>
+          <variant Dvariant="STM32F427AGHx"> <feature type="BGA" n="169"/> </variant>
+        </device>
+
         <!-- *************************  Device 'STM32F427VG'  ***************************** -->
         <device Dname="STM32F427VG">
           <memory     id="IROM1"                                   start="0x08000000"  size="0x100000"   startup="1"   default="1"/>
@@ -1268,7 +1394,6 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           <feature type="ADC"           n="24"      m="12"/>
           <feature type="IOs"           n="114"/>
           <variant Dvariant="STM32F427ZGTx"> <feature type="QFP" n="144"/> </variant>
-          <variant Dvariant="STM32F427ZGYx"> <feature type="CSP" n="143"/> </variant>
         </device>
 
         <!-- *************************  Device 'STM32F427IG'  ***************************** -->
@@ -1283,6 +1408,19 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           <feature type="IOs"           n="140"/>
           <variant Dvariant="STM32F427IGTx"> <feature type="QFP" n="176"/> </variant>
           <variant Dvariant="STM32F427IGHx"> <feature type="BGA" n="176"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F427AI'  ***************************** -->
+        <device Dname="STM32F427AI">
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x200000"   startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x30000"    init   ="0"   default="1"/>
+          <memory     id="IRAM2"                                   start="0x10000000"  size="0x10000"    init   ="0"   default="0"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_2048.FLM"        start="0x08000000"  size="0x200000"                 default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F42xxx_43xxx_OPT.FLM" start="0x1FFFC000"  size="0x08"                     default="0"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_OTP.FLM"         start="0x1FFF7800"  size="0x0210"                   default="0"/>
+          <feature type="ADC"           n="16"      m="12"/>
+          <feature type="IOs"           n="130"/>
+          <variant Dvariant="STM32F427AIHx"> <feature type="BGA" n="169"/> </variant>
         </device>
 
         <!-- *************************  Device 'STM32F427VI'  ***************************** -->
@@ -1309,7 +1447,6 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           <feature type="ADC"           n="24"      m="12"/>
           <feature type="IOs"           n="114"/>
           <variant Dvariant="STM32F427ZITx"> <feature type="QFP" n="144"/> </variant>
-          <variant Dvariant="STM32F427ZIYx"> <feature type="CSP" n="143"/> </variant>
         </device>
 
         <!-- *************************  Device 'STM32F427II'  ***************************** -->
@@ -1355,6 +1492,19 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
         <feature type="VCC"           n="1.80"    m="3.60"/>
         <feature type="Camera"        n="1"       m="14"/>
 
+        <!-- *************************  Device 'STM32F429AG'  ***************************** -->
+        <device Dname="STM32F429AG">
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x100000"   startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x30000"    init   ="0"   default="1"/>
+          <memory     id="IRAM2"                                   start="0x10000000"  size="0x10000"    init   ="0"   default="0"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_1024.FLM"        start="0x08000000"  size="0x100000"                 default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F42xxx_43xxx_OPT.FLM" start="0x1FFFC000"  size="0x08"                     default="0"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_OTP.FLM"         start="0x1FFF7800"  size="0x0210"                   default="0"/>
+          <feature type="ADC"           n="16"      m="12"/>
+          <feature type="IOs"           n="130"/>
+          <variant Dvariant="STM32F429AGHx"> <feature type="BGA" n="169"/> </variant>
+        </device>
+
         <!-- *************************  Device 'STM32F429VG'  ***************************** -->
         <device Dname="STM32F429VG">
           <memory     id="IROM1"                                   start="0x08000000"  size="0x100000"   startup="1"   default="1"/>
@@ -1379,7 +1529,6 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           <feature type="ADC"           n="24"      m="12"/>
           <feature type="IOs"           n="114"/>
           <variant Dvariant="STM32F429ZGTx"> <feature type="QFP" n="144"/> </variant>
-          <variant Dvariant="STM32F429ZGYx"> <feature type="CSP" n="143"/> </variant>
         </device>
 
         <!-- *************************  Device 'STM32F429IG'  ***************************** -->
@@ -1394,6 +1543,19 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           <feature type="IOs"           n="140"/>
           <variant Dvariant="STM32F429IGTx"> <feature type="QFP" n="176"/> </variant>
           <variant Dvariant="STM32F429IGHx"> <feature type="BGA" n="176"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F429AI'  ***************************** -->
+        <device Dname="STM32F429AI">
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x200000"   startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x30000"    init   ="0"   default="1"/>
+          <memory     id="IRAM2"                                   start="0x10000000"  size="0x10000"    init   ="0"   default="0"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_2048.FLM"        start="0x08000000"  size="0x200000"                 default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F42xxx_43xxx_OPT.FLM" start="0x1FFFC000"  size="0x08"                     default="0"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_OTP.FLM"         start="0x1FFF7800"  size="0x0210"                   default="0"/>
+          <feature type="ADC"           n="16"      m="12"/>
+          <feature type="IOs"           n="130"/>
+          <variant Dvariant="STM32F429AIHx"> <feature type="BGA" n="169"/> </variant>
         </device>
 
         <!-- *************************  Device 'STM32F429VI'  ***************************** -->
@@ -1461,7 +1623,6 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           <feature type="ADC"           n="24"      m="12"/>
           <feature type="IOs"           n="114"/>
           <variant Dvariant="STM32F429ZETx"> <feature type="QFP" n="144"/> </variant>
-          <variant Dvariant="STM32F429ZEYx"> <feature type="CSP" n="143"/> </variant>
         </device>
 
         <!-- *************************  Device 'STM32F429IE'  ***************************** -->
@@ -1610,7 +1771,6 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           <feature type="IOs"           n="114"/>
           <feature type="ComOther"      n="1"                           name="SAI Interface"/>
           <variant Dvariant="STM32F437ZGTx"> <feature type="QFP" n="144"/> </variant>
-          <variant Dvariant="STM32F437ZGYx"> <feature type="CSP" n="143"/> </variant>
         </device>
 
         <!-- *************************  Device 'STM32F437IG'  ***************************** -->
@@ -1625,6 +1785,19 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           <feature type="IOs"           n="140"/>
           <variant Dvariant="STM32F437IGTx"> <feature type="QFP" n="176"/> </variant>
           <variant Dvariant="STM32F437IGHx"> <feature type="BGA" n="176"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F437AI'  ***************************** -->
+        <device Dname="STM32F437AI">
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x200000"   startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x30000"    init   ="0"   default="1"/>
+          <memory     id="IRAM2"                                   start="0x10000000"  size="0x10000"    init   ="0"   default="0"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_2048.FLM"        start="0x08000000"  size="0x200000"                 default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F42xxx_43xxx_OPT.FLM" start="0x1FFFC000"  size="0x08"                     default="0"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_OTP.FLM"         start="0x1FFF7800"  size="0x0210"                   default="0"/>
+          <feature type="ADC"           n="16"      m="12"/>
+          <feature type="IOs"           n="130"/>
+          <variant Dvariant="STM32F437AIHx"> <feature type="BGA" n="169"/> </variant>
         </device>
 
         <!-- *************************  Device 'STM32F437VI'  ***************************** -->
@@ -1651,7 +1824,6 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           <feature type="ADC"           n="24"      m="12"/>
           <feature type="IOs"           n="114"/>
           <variant Dvariant="STM32F437ZITx"> <feature type="QFP" n="144"/> </variant>
-          <variant Dvariant="STM32F437ZIYx"> <feature type="CSP" n="143"/> </variant>
         </device>
 
         <!-- *************************  Device 'STM32F437II'  ***************************** -->
@@ -1735,7 +1907,6 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           <feature type="ADC"           n="24"      m="12"/>
           <feature type="IOs"           n="114"/>
           <variant Dvariant="STM32F439ZGTx"> <feature type="QFP" n="144"/> </variant>
-          <variant Dvariant="STM32F439ZGYx"> <feature type="CSP" n="143"/> </variant>
         </device>
 
         <!-- *************************  Device 'STM32F439ZI'  ***************************** -->
@@ -1831,6 +2002,19 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           <feature type="IOs"           n="168"/>
           <variant Dvariant="STM32F439NIHx"> <feature type="BGA" n="216"/> </variant>
         </device>
+
+        <!-- *************************  Device 'STM32F439AI'  ***************************** -->
+        <device Dname="STM32F439AI">
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x200000"   startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x30000"    init   ="0"   default="1"/>
+          <memory     id="IRAM2"                                   start="0x10000000"  size="0x10000"    init   ="0"   default="0"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_2048.FLM"        start="0x08000000"  size="0x200000"                 default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F42xxx_43xxx_OPT.FLM" start="0x1FFFC000"  size="0x08"                     default="0"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_OTP.FLM"         start="0x1FFF7800"  size="0x0210"                   default="0"/>
+          <feature type="ADC"           n="24"      m="12"/>
+          <feature type="IOs"           n="130"/>
+          <variant Dvariant="STM32F439AIHx"> <feature type="BGA" n="169"/> </variant>
+        </device>
       </subFamily>
 
       <!-- ************************  Subfamily 'STM32F446'  **************************** -->
@@ -1894,7 +2078,8 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           <memory     id="IRAM1"                                   start="0x20000000"  size="0x20000"    init   ="0"   default="1"/>
           <algorithm  name="CMSIS/Flash/STM32F4xx_256.FLM"         start="0x08000000"  size="0x40000"                  default="1"/>
           <algorithm  name="CMSIS/Flash/STM32F4xx_OTP.FLM"         start="0x1FFF7800"  size="0x0210"                   default="0"/>
-          <variant Dvariant="STM32F446ZCTx"> <feature type="QFP" n="100"/> </variant>
+          <variant Dvariant="STM32F446ZCHx"> <feature type="BGA" n="144"/> </variant>
+          <variant Dvariant="STM32F446ZCTx"> <feature type="QFP" n="144"/> </variant>
         </device>
 
         <!-- *************************  Device 'STM32F446ME'  ***************************** -->
@@ -1930,8 +2115,9 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           <memory     id="IRAM1"                                   start="0x20000000"  size="0x20000"    init   ="0"   default="1"/>
           <algorithm  name="CMSIS/Flash/STM32F4xx_512.FLM"         start="0x08000000"  size="0x80000"                  default="1"/>
           <algorithm  name="CMSIS/Flash/STM32F4xx_OTP.FLM"         start="0x1FFF7800"  size="0x0210"                   default="0"/>
-          <variant Dvariant="STM32F446ZETx"> <feature type="QFP" n="100"/> </variant>
-          <variant Dvariant="STM32F446ZEHx"> <feature type="QFP" n="100"/> </variant>
+          <variant Dvariant="STM32F446ZEHx"> <feature type="BGA" n="144"/> </variant>
+          <variant Dvariant="STM32F446ZEJx"> <feature type="BGA" n="144"/> </variant>
+          <variant Dvariant="STM32F446ZETx"> <feature type="QFP" n="144"/> </variant>
         </device>
       </subFamily>
 
@@ -1939,7 +2125,6 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <subFamily DsubFamily="STM32F469">
         <processor Dclock="180000000"/>
         <compile header="Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h"  define="STM32F469xx"/>
-        <book       name="Documentation/DM00118914.pdf"              title="STM32F469/479 Data Sheet"/>
         <debug svd="CMSIS/SVD/STM32F46_79x.svd"/>
         <debugvars configfile="CMSIS/Debug/STM32F40x_41x_42x_43x.dbgconf">
           // Debug Access Variables, can be modified by user via copy of STM32F401xBCDE_411xCE.dbgconf created by uVision.
@@ -1947,6 +2132,8 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           __var DbgMCU_APB1_Fz = 0x00000000;   // DGBMCU_APB1_FZ: All Peripherals Operate as in Normal Mode
           __var DbgMCU_APB2_Fz = 0x00000000;   // DGBMCU_APB2_FZ: All Peripherals Operate as in Normal Mode
         </debugvars>
+        <book       name="Documentation/DM00127514.pdf"              title="STM32F469/479 Reference Manual"/>
+        <book       name="Documentation/DM00219980.pdf"              title="STM32F469 Data Sheet"/>
         <feature type="Timer"         n="12"      m="16"/>
         <feature type="ADC"           n="3"       m="12"/>
         <feature type="SPI"           n="6"       m="42000000"/>
@@ -1962,16 +2149,6 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
         <feature type="Camera"        n="1"       m="14"/>
         <feature type="VCC"           n="1.70"    m="3.60"/>
 
-         <!-- *************************  Device 'STM32F469AG'  ***************************** -->
-         <device Dname="STM32F469AG">
-          <memory     id="IROM1"                                   start="0x08000000"  size="0x100000"   startup="1"   default="1"/>
-          <memory     id="IRAM1"                                   start="0x20000000"  size="0x50000"    init   ="0"   default="1"/>
-          <algorithm  name="CMSIS/Flash/STM32F4xx_1024.FLM"        start="0x08000000"  size="0x100000"                 default="1"/>
-          <algorithm  name="CMSIS/Flash/STM32F469_Quad_SPI.FLM"    start="0x90000000"  size="0x2000000"                default="1"/>
-          <variant Dvariant="STM32F469AGHx"> <feature type="BGA" n="168"/> </variant>
-          <variant Dvariant="STM32F469AGYx"> <feature type="CSP" n="168"/> </variant>
-        </device>
-
         <!-- *************************  Device 'STM32F469AE'  ***************************** -->
         <device Dname="STM32F469AE">
           <memory     id="IROM1"                                   start="0x08000000"  size="0x80000"    startup="1"   default="1"/>
@@ -1980,6 +2157,16 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           <algorithm  name="CMSIS/Flash/STM32F469_Quad_SPI.FLM"    start="0x90000000"  size="0x2000000"                default="1"/>
           <variant Dvariant="STM32F469AEHx"> <feature type="BGA" n="168"/> </variant>
           <variant Dvariant="STM32F469AEYx"> <feature type="CSP" n="168"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F469AG'  ***************************** -->
+        <device Dname="STM32F469AG">
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x100000"   startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x50000"    init   ="0"   default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_1024.FLM"        start="0x08000000"  size="0x100000"                 default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F469_Quad_SPI.FLM"    start="0x90000000"  size="0x2000000"                default="1"/>
+          <variant Dvariant="STM32F469AGHx"> <feature type="BGA" n="168"/> </variant>
+          <variant Dvariant="STM32F469AGYx"> <feature type="CSP" n="168"/> </variant>
         </device>
 
         <!-- *************************  Device 'STM32F469AI'  ***************************** -->
@@ -2072,6 +2259,87 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           <algorithm  name="CMSIS/Flash/STM32F469_Quad_SPI.FLM"    start="0x90000000"  size="0x2000000"                default="1"/>
           <variant Dvariant="STM32F469NIHx"> <feature type="BGA" n="216"/> </variant>
         </device>
+
+        <!-- *************************  Device 'STM32F469VE'  ***************************** -->
+        <device Dname="STM32F469VE">
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x80000"    startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x50000"    init   ="0"   default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_512.FLM"         start="0x08000000"  size="0x80000"                  default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F469_Quad_SPI.FLM"    start="0x90000000"  size="0x2000000"                default="1"/>
+          <variant Dvariant="STM32F469VETx"> <feature type="QFP" n="100"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F469VG'  ***************************** -->
+        <device Dname="STM32F469VG">
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x100000"   startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x50000"    init   ="0"   default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_1024.FLM"        start="0x08000000"  size="0x100000"                 default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F469_Quad_SPI.FLM"    start="0x90000000"  size="0x2000000"                default="1"/>
+          <variant Dvariant="STM32F469VGTx"> <feature type="QFP" n="100"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F469VI'  ***************************** -->
+        <device Dname="STM32F469VI">
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x200000"   startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x50000"    init   ="0"   default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_2048.FLM"        start="0x08000000"  size="0x200000"                 default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F469_Quad_SPI.FLM"    start="0x90000000"  size="0x2000000"                default="1"/>
+          <variant Dvariant="STM32F469VITx"> <feature type="QFP" n="100"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F469ZE'  ***************************** -->
+        <device Dname="STM32F469ZE">
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x80000"    startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x50000"    init   ="0"   default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_512.FLM"         start="0x08000000"  size="0x80000"                  default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F469_Quad_SPI.FLM"    start="0x90000000"  size="0x2000000"                default="1"/>
+          <variant Dvariant="STM32F469ZETx"> <feature type="QFP" n="144"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F469ZG'  ***************************** -->
+        <device Dname="STM32F469ZG">
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x100000"   startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x50000"    init   ="0"   default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_1024.FLM"        start="0x08000000"  size="0x100000"                 default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F469_Quad_SPI.FLM"    start="0x90000000"  size="0x2000000"                default="1"/>
+          <variant Dvariant="STM32F469ZGTx"> <feature type="QFP" n="144"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F469ZI'  ***************************** -->
+        <device Dname="STM32F469ZI">
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x200000"   startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x50000"    init   ="0"   default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_2048.FLM"        start="0x08000000"  size="0x200000"                 default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F469_Quad_SPI.FLM"    start="0x90000000"  size="0x2000000"                default="1"/>
+          <variant Dvariant="STM32F469ZITx"> <feature type="QFP" n="144"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F469IE'  ***************************** -->
+        <device Dname="STM32F469IE">
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x80000"    startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x50000"    init   ="0"   default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_512.FLM"         start="0x08000000"  size="0x80000"                  default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F469_Quad_SPI.FLM"    start="0x90000000"  size="0x2000000"                default="1"/>
+          <variant Dvariant="STM32F469IEHx"> <feature type="BGA" n="176"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F469IG'  ***************************** -->
+        <device Dname="STM32F469IG">
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x100000"   startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x50000"    init   ="0"   default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_1024.FLM"        start="0x08000000"  size="0x100000"                 default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F469_Quad_SPI.FLM"    start="0x90000000"  size="0x2000000"                default="1"/>
+          <variant Dvariant="STM32F469IGHx"> <feature type="BGA" n="176"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F469II'  ***************************** -->
+        <device Dname="STM32F469II">
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x200000"   startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x50000"    init   ="0"   default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_2048.FLM"        start="0x08000000"  size="0x200000"                 default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F469_Quad_SPI.FLM"    start="0x90000000"  size="0x2000000"                default="1"/>
+          <variant Dvariant="STM32F469IIHx"> <feature type="BGA" n="176"/> </variant>
+        </device>
       </subFamily>
 
       <!-- ************************  Subfamily 'STM32F479'  **************************** -->
@@ -2085,6 +2353,8 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           __var DbgMCU_APB1_Fz = 0x00000000;   // DGBMCU_APB1_FZ: All Peripherals Operate as in Normal Mode
           __var DbgMCU_APB2_Fz = 0x00000000;   // DGBMCU_APB2_FZ: All Peripherals Operate as in Normal Mode
         </debugvars>
+        <book       name="Documentation/DM00127514.pdf"              title="STM32F469/479 Reference Manual"/>
+        <book       name="Documentation/DM00208574.pdf"              title="STM32F479 Data Sheet"/>
         <feature type="Timer"         n="12"      m="16"/>
         <feature type="ADC"           n="3"       m="12"/>
         <feature type="SPI"           n="6"       m="42000000"/>
@@ -2172,6 +2442,60 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           <algorithm  name="CMSIS/Flash/STM32F4xx_2048.FLM"        start="0x08000000"  size="0x200000"                 default="1"/>
           <algorithm  name="CMSIS/Flash/STM32F469_Quad_SPI.FLM"    start="0x90000000"  size="0x2000000"                default="1"/>
           <variant Dvariant="STM32F479NIHx"> <feature type="BGA" n="216"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F479VG'  ***************************** -->
+        <device Dname="STM32F479VG">
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x100000"   startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x50000"    init   ="0"   default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_1024.FLM"        start="0x08000000"  size="0x100000"                 default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F469_Quad_SPI.FLM"    start="0x90000000"  size="0x2000000"                default="1"/>
+          <variant Dvariant="STM32F479VGTx"> <feature type="QFP" n="100"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F479VI'  ***************************** -->
+        <device Dname="STM32F479VI">
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x200000"   startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x50000"    init   ="0"   default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_2048.FLM"        start="0x08000000"  size="0x200000"                 default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F469_Quad_SPI.FLM"    start="0x90000000"  size="0x2000000"                default="1"/>
+          <variant Dvariant="STM32F479VITx"> <feature type="QFP" n="100"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F479ZG'  ***************************** -->
+        <device Dname="STM32F479ZG">
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x100000"   startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x50000"    init   ="0"   default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_1024.FLM"        start="0x08000000"  size="0x100000"                 default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F469_Quad_SPI.FLM"    start="0x90000000"  size="0x2000000"                default="1"/>
+          <variant Dvariant="STM32F479ZGTx"> <feature type="QFP" n="144"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F479ZI'  ***************************** -->
+        <device Dname="STM32F479ZI">
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x200000"   startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x50000"    init   ="0"   default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_2048.FLM"        start="0x08000000"  size="0x200000"                 default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F469_Quad_SPI.FLM"    start="0x90000000"  size="0x2000000"                default="1"/>
+          <variant Dvariant="STM32F479ZITx"> <feature type="QFP" n="144"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F479IG'  ***************************** -->
+        <device Dname="STM32F479IG">
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x100000"   startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x50000"    init   ="0"   default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_1024.FLM"        start="0x08000000"  size="0x100000"                 default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F469_Quad_SPI.FLM"    start="0x90000000"  size="0x2000000"                default="1"/>
+          <variant Dvariant="STM32F479IGHx"> <feature type="BGA" n="176"/> </variant>
+        </device>
+
+        <!-- *************************  Device 'STM32F479II'  ***************************** -->
+        <device Dname="STM32F479II">
+          <memory     id="IROM1"                                   start="0x08000000"  size="0x200000"   startup="1"   default="1"/>
+          <memory     id="IRAM1"                                   start="0x20000000"  size="0x50000"    init   ="0"   default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F4xx_2048.FLM"        start="0x08000000"  size="0x200000"                 default="1"/>
+          <algorithm  name="CMSIS/Flash/STM32F469_Quad_SPI.FLM"    start="0x90000000"  size="0x2000000"                default="1"/>
+          <variant Dvariant="STM32F479IIHx"> <feature type="BGA" n="176"/> </variant>
         </device>
       </subFamily>
     </family>
@@ -2349,6 +2673,26 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <description>STMicroelectronics STM32F411xC/E Series devices</description>
       <require Dvendor="STMicroelectronics:13" Dname="STM32F411?[CE]*"/>
     </condition>
+    <condition id="STM32F412Cx">
+      <description>STMicroelectronics STM32F412Cx Series devices</description>
+      <require Dvendor="STMicroelectronics:13" Dname="STM32F412C*"/>
+    </condition>
+    <condition id="STM32F412Rx">
+      <description>STMicroelectronics STM32F412Rx Series devices</description>
+      <require Dvendor="STMicroelectronics:13" Dname="STM32F412R*"/>
+    </condition>
+    <condition id="STM32F412Vx">
+      <description>STMicroelectronics STM32F412Vx Series devices</description>
+      <require Dvendor="STMicroelectronics:13" Dname="STM32F412V*"/>
+    </condition>
+    <condition id="STM32F412Zx">
+      <description>STMicroelectronics STM32F412Zx Series devices</description>
+      <require Dvendor="STMicroelectronics:13" Dname="STM32F412Z*"/>
+    </condition>
+    <condition id="STM32F412xx">
+      <description>STMicroelectronics STM32F412xx Series devices</description>
+      <require Dvendor="STMicroelectronics:13" Dname="STM32F412*"/>
+    </condition>
     <condition id="STM32F415xx">
       <description>STMicroelectronics STM32F415xx Series devices</description>
       <require Dvendor="STMicroelectronics:13" Dname="STM32F415*"/>
@@ -2423,6 +2767,21 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <accept  condition="STM32F469xx"/>
       <accept  condition="STM32F479xx"/>
     </condition>
+    <condition id="STM32F40_41_412_42_43_44_46_47x">
+      <description>STMicroelectronics STM32F405/407/412/415/417/427/429/437/439/446/469/479 Series devices</description>
+      <accept  condition="STM32F405xx"/>
+      <accept  condition="STM32F407xx"/>
+      <accept  condition="STM32F412xx"/>
+      <accept  condition="STM32F415xx"/>
+      <accept  condition="STM32F417xx"/>
+      <accept  condition="STM32F427xx"/>
+      <accept  condition="STM32F429xx"/>
+      <accept  condition="STM32F437xx"/>
+      <accept  condition="STM32F439xx"/>
+      <accept  condition="STM32F446xx"/>
+      <accept  condition="STM32F469xx"/>
+      <accept  condition="STM32F479xx"/>
+    </condition>
     <condition id="STM32F41_43_47x">
       <description>STMicroelectronics STM32F405/415/437/439/479 Series devices</description>
       <accept  condition="STM32F415xx"/>
@@ -2465,6 +2824,13 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
     </condition>
     <condition id="STM32F44_46_47x">
       <description>STMicroelectronics STM32F446/469/479 Series devices</description>
+      <accept  condition="STM32F446xx"/>
+      <accept  condition="STM32F469xx"/>
+      <accept  condition="STM32F479xx"/>
+    </condition>
+    <condition id="STM32F412_44_46_47x">
+      <description>STMicroelectronics STM32F412/446/469/479 Series devices</description>
+      <accept  condition="STM32F412xx"/>
       <accept  condition="STM32F446xx"/>
       <accept  condition="STM32F469xx"/>
       <accept  condition="STM32F479xx"/>
@@ -2521,6 +2887,24 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <accept  condition="STM32F469xx"/>
       <accept  condition="STM32F479xx"/>
     </condition>
+    <condition id="STM32F4x1_40_41_412_42_43_44_46_47x">
+      <description>STMicroelectronics STM32F401/411/405/407/412/415/417/427/429/437/439/446/469/479 Series devices</description>
+      <accept  condition="STM32F401xC"/>
+      <accept  condition="STM32F401xE"/>
+      <accept  condition="STM32F411xE"/>
+      <accept  condition="STM32F405xx"/>
+      <accept  condition="STM32F407xx"/>
+      <accept  condition="STM32F412xx"/>
+      <accept  condition="STM32F415xx"/>
+      <accept  condition="STM32F417xx"/>
+      <accept  condition="STM32F427xx"/>
+      <accept  condition="STM32F429xx"/>
+      <accept  condition="STM32F437xx"/>
+      <accept  condition="STM32F439xx"/>
+      <accept  condition="STM32F446xx"/>
+      <accept  condition="STM32F469xx"/>
+      <accept  condition="STM32F479xx"/>
+    </condition>
     <condition id="STM32F4x1_42_43_44_46_47x">
       <description>STMicroelectronics STM32F401/411/427/429/437/439/446/469/479 Series devices</description>
       <accept  condition="STM32F401xC"/>
@@ -2545,11 +2929,33 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <accept  condition="STM32F410xx"/>
       <accept  condition="STM32F446xx"/>
     </condition>
+    <condition id="STM32F410_412_446">
+      <description>STMicroelectronics STM32F410/412/446 Series devices</description>
+      <accept  condition="STM32F410xx"/>
+      <accept  condition="STM32F412xx"/>
+      <accept  condition="STM32F446xx"/>
+    </condition>
     <condition id="STM32F410_40_41_42_43_44_46_47x">
       <description>STMicroelectronics STM32F410/405/407/415/417/427/429/437/439/446/469/479 Series devices</description>
       <accept  condition="STM32F410xx"/>
       <accept  condition="STM32F405xx"/>
       <accept  condition="STM32F407xx"/>
+      <accept  condition="STM32F415xx"/>
+      <accept  condition="STM32F417xx"/>
+      <accept  condition="STM32F427xx"/>
+      <accept  condition="STM32F429xx"/>
+      <accept  condition="STM32F437xx"/>
+      <accept  condition="STM32F439xx"/>
+      <accept  condition="STM32F446xx"/>
+      <accept  condition="STM32F469xx"/>
+      <accept  condition="STM32F479xx"/>
+    </condition>
+    <condition id="STM32F410_40_41_412_42_43_44_46_47x">
+      <description>STMicroelectronics STM32F410/405/407/412/415/417/427/429/437/439/446/469/479 Series devices</description>
+      <accept  condition="STM32F410xx"/>
+      <accept  condition="STM32F405xx"/>
+      <accept  condition="STM32F407xx"/>
+      <accept  condition="STM32F412xx"/>
       <accept  condition="STM32F415xx"/>
       <accept  condition="STM32F417xx"/>
       <accept  condition="STM32F427xx"/>
@@ -2675,6 +3081,70 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
     <condition id="STM32F411xE_IAR">
       <description>filter for STM32F411xC/E devices and the IAR compiler</description>
       <require condition="STM32F411xE"/>
+      <require Tcompiler="IAR"/>
+    </condition>
+
+    <condition id="STM32F412Cx_ARMCC">
+      <description>filter for STM32F412Cx devices and the ARM compiler</description>
+      <require condition="STM32F412Cx"/>
+      <require Tcompiler="ARMCC"/>
+    </condition>
+    <condition id="STM32F412Cx_GCC">
+      <description>filter for STM32F412Cx devices and the GCC compiler</description>
+      <require condition="STM32F412Cx"/>
+      <require Tcompiler="GCC"/>
+    </condition>
+    <condition id="STM32F412Cx_IAR">
+      <description>filter for STM32F412Cx devices and the IAR compiler</description>
+      <require condition="STM32F412Cx"/>
+      <require Tcompiler="IAR"/>
+    </condition>
+
+    <condition id="STM32F412Rx_ARMCC">
+      <description>filter for STM32F412Rx devices and the ARM compiler</description>
+      <require condition="STM32F412Rx"/>
+      <require Tcompiler="ARMCC"/>
+    </condition>
+    <condition id="STM32F412Rx_GCC">
+      <description>filter for STM32F412Rx devices and the GCC compiler</description>
+      <require condition="STM32F412Rx"/>
+      <require Tcompiler="GCC"/>
+    </condition>
+    <condition id="STM32F412Rx_IAR">
+      <description>filter for STM32F412Rx devices and the IAR compiler</description>
+      <require condition="STM32F412Rx"/>
+      <require Tcompiler="IAR"/>
+    </condition>
+
+    <condition id="STM32F412Vx_ARMCC">
+      <description>filter for STM32F412Vx devices and the ARM compiler</description>
+      <require condition="STM32F412Vx"/>
+      <require Tcompiler="ARMCC"/>
+    </condition>
+    <condition id="STM32F412Vx_GCC">
+      <description>filter for STM32F412Vx devices and the GCC compiler</description>
+      <require condition="STM32F412Vx"/>
+      <require Tcompiler="GCC"/>
+    </condition>
+    <condition id="STM32F412Vx_IAR">
+      <description>filter for STM32F412Vx devices and the IAR compiler</description>
+      <require condition="STM32F412Vx"/>
+      <require Tcompiler="IAR"/>
+    </condition>
+
+    <condition id="STM32F412Zx_ARMCC">
+      <description>filter for STM32F412Zx devices and the ARM compiler</description>
+      <require condition="STM32F412Zx"/>
+      <require Tcompiler="ARMCC"/>
+    </condition>
+    <condition id="STM32F412Zx_GCC">
+      <description>filter for STM32F412Zx devices and the GCC compiler</description>
+      <require condition="STM32F412Zx"/>
+      <require Tcompiler="GCC"/>
+    </condition>
+    <condition id="STM32F412Zx_IAR">
+      <description>filter for STM32F412Zx devices and the IAR compiler</description>
+      <require condition="STM32F412Zx"/>
       <require Tcompiler="IAR"/>
     </condition>
 
@@ -2910,6 +3380,11 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <require condition="STM32F40_41_42_43_44_46_47x"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
     </condition>
+    <condition id="STM32F40_41_412_42_43_44_46_47x HAL">
+      <description>STMicroelectronics STM32F405/407/412/415/417/427/429/437/439/446/469/479 Device and HAL</description>
+      <require condition="STM32F40_41_412_42_43_44_46_47x"/>
+      <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
+    </condition>
     <condition id="STM32F42_43x HAL">
       <description>STMicroelectronics STM32F427/429/437/439 Device and HAL</description>
       <require condition="STM32F42_43x"/>
@@ -2945,14 +3420,29 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <require condition="STM32F4x1_40_41_42_43_44_46_47x"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
     </condition>
+    <condition id="STM32F4x1_40_41_412_42_43_44_46_47x HAL">
+      <description>STMicroelectronics STM32F401/411/405/407/412/415/417/427/429/437/439/446/469/479 Device and HAL</description>
+      <require condition="STM32F4x1_40_41_412_42_43_44_46_47x"/>
+      <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
+    </condition>
     <condition id="STM32F410 HAL">
       <description>STMicroelectronics STM32F410 Device and HAL</description>
       <require condition="STM32F410xx"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
     </condition>
+    <condition id="STM32F412 HAL">
+      <description>STMicroelectronics STM32F412 Device and HAL</description>
+      <require condition="STM32F412xx"/>
+      <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
+    </condition>
     <condition id="STM32F410_40_41_42_43_44_46_47x HAL">
       <description>STMicroelectronics STM32F410/405/407/415/417/427/429/437/439/446/469/479 Device and HAL</description>
       <require condition="STM32F410_40_41_42_43_44_46_47x"/>
+      <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
+    </condition>
+    <condition id="STM32F410_40_41_412_42_43_44_46_47x HAL">
+      <description>STMicroelectronics STM32F410/405/407/412/415/417/427/429/437/439/446/469/479 Device and HAL</description>
+      <require condition="STM32F410_40_41_412_42_43_44_46_47x"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
     </condition>
 
@@ -2989,6 +3479,12 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="DMA"/>
     </condition>
+    <condition id="STM32F40_41_412_42_43_44_46_47x HAL DMA">
+      <description>STMicroelectronics STM32F405/407/412/415/417/427/429/437/439/446/469/479 Device and HAL with DMA</description>
+      <require condition="STM32F40_41_412_42_43_44_46_47x"/>
+      <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
+      <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="DMA"/>
+    </condition>
     <condition id="STM32F41_43_47x HAL DMA">
       <description>STMicroelectronics STM32F415/417/437/439/479 Device and HAL with DMA</description>
       <require condition="STM32F41_43_47x"/>
@@ -3004,6 +3500,12 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
     <condition id="STM32F44_46_47x HAL DMA">
       <description>STMicroelectronics STM32F446/469/479 Device and HAL with DMA</description>
       <require condition="STM32F44_46_47x"/>
+      <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
+      <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="DMA"/>
+    </condition>
+    <condition id="STM32F412_44_46_47x HAL DMA">
+      <description>STMicroelectronics STM32F412/446/469/479 Device and HAL with DMA</description>
+      <require condition="STM32F412_44_46_47x"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="DMA"/>
     </condition>
@@ -3025,9 +3527,21 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="DMA"/>
     </condition>
+    <condition id="STM32F4x1_40_41_412_42_43_44_46_47x HAL DMA">
+      <description>STMicroelectronics STM32F401/411/405/407/412/415/417/427/429/437/439/446/469/479 Device and HAL with DMA</description>
+      <require condition="STM32F4x1_40_41_412_42_43_44_46_47x"/>
+      <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
+      <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="DMA"/>
+    </condition>
     <condition id="STM32F410_446 HAL DMA">
       <description>STMicroelectronics STM32F410/446 Device and HAL with DMA</description>
       <require condition="STM32F410_446"/>
+      <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
+      <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="DMA"/>
+    </condition>
+    <condition id="STM32F410_412_446 HAL DMA">
+      <description>STMicroelectronics STM32F410/412/446 Device and HAL with DMA</description>
+      <require condition="STM32F410_412_446"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="DMA"/>
     </condition>
@@ -3086,7 +3600,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
 
     <condition id="STM32F4 CMSIS_Driver CAN">
       <description>Requirement for CMSIS CAN Driver</description>
-      <require condition="STM32F40_41_42_43_44_46_47x"/>
+      <require condition="STM32F40_41_412_42_43_44_46_47x"/>
       <require Cclass="CMSIS"  Cgroup="CORE"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="RCC"/>
@@ -3124,7 +3638,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
     </condition>
     <condition id="STM32F4 CMSIS_Driver MCI">
       <description>Requirement for CMSIS MCI Driver</description>
-      <require condition="STM32F4x1_40_41_42_43_44_46_47x"/>
+      <require condition="STM32F4x1_40_41_412_42_43_44_46_47x"/>
       <require Cclass="CMSIS"  Cgroup="CORE"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="RCC"/>
@@ -3141,7 +3655,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
     </condition>
     <condition id="STM32F4 CMSIS_Driver USB0">
       <description>Requirement for CMSIS USB0 Driver</description>
-      <require condition="STM32F4x1_40_41_42_43_44_46_47x"/>
+      <require condition="STM32F4x1_40_41_412_42_43_44_46_47x"/>
       <require Cclass="CMSIS"  Cgroup="CORE"/>
       <require Cclass="CMSIS"  Cgroup="RTOS"/>
       <require Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"/>
@@ -3720,7 +4234,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
   </apis>
 
   <components>
-    <component Cclass="Device" Cgroup="Startup" Cversion="2.4.2" condition="STM32F4 CMSIS">  <!-- Cversion is necessary -->
+    <component Cclass="Device" Cgroup="Startup" Cversion="2.5.0" condition="STM32F4 CMSIS">  <!-- Cversion is necessary -->
       <description>System Startup for STMicroelectronics STM32F4 Series</description>
       <RTE_Components_h>
         <!-- the following content goes into file 'RTE_Components.h' -->
@@ -3741,74 +4255,86 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
 
         <!-- startup files -->
         <!-- ARM Compiler Toolchain -->
-        <file category="source" condition="STM32F401xC_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f401xc.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F401xE_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f401xe.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F405xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f405xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F407xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f407xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F410Cx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f410cx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F410Rx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f410rx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F410Tx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f410tx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F411xE_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f411xe.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F415xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f415xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F417xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f417xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F427xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f427xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F429xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f429xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F437xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f437xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F439xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f439xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F446xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f446xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F469xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f469xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F479xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f479xx.s" attr="config" version="2.4.2"/>
+        <file category="source" condition="STM32F401xC_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f401xc.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F401xE_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f401xe.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F405xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f405xx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F407xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f407xx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F410Cx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f410cx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F410Rx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f410rx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F410Tx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f410tx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F411xE_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f411xe.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F412Cx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f412cx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F412Rx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f412rx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F412Vx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f412vx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F412Zx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f412zx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F415xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f415xx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F417xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f417xx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F427xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f427xx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F429xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f429xx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F437xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f437xx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F439xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f439xx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F446xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f446xx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F469xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f469xx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F479xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f479xx.s" attr="config" version="2.5.0"/>
         <!-- GCC Toolchain -->
-        <file category="source" condition="STM32F401xC_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f401xc.S" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F401xE_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f401xe.S" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F405xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f405xx.S" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F407xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f407xx.S" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F410Cx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f410cx.S" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F410Rx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f410rx.S" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F410Tx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f410tx.S" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F411xE_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f411xe.S" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F415xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f415xx.S" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F417xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f417xx.S" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F427xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f427xx.S" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F429xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f429xx.S" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F437xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f437xx.S" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F439xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f439xx.S" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F446xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f446xx.S" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F469xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f469xx.S" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F479xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f479xx.S" attr="config" version="2.4.2"/>
+        <file category="source" condition="STM32F401xC_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f401xc.S" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F401xE_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f401xe.S" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F405xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f405xx.S" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F407xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f407xx.S" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F410Cx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f410cx.S" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F410Rx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f410rx.S" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F410Tx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f410tx.S" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F411xE_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f411xe.S" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F412Cx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f412cx.S" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F412Rx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f412rx.S" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F412Vx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f412vx.S" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F412Zx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f412zx.S" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F415xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f415xx.S" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F417xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f417xx.S" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F427xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f427xx.S" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F429xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f429xx.S" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F437xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f437xx.S" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F439xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f439xx.S" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F446xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f446xx.S" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F469xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f469xx.S" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F479xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f479xx.S" attr="config" version="2.5.0"/>
         <!-- IAR Toolchain -->
-        <file category="source" condition="STM32F401xC_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f401xc.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F401xE_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f401xe.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F405xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f405xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F407xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f407xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F410Cx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f410cx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F410Rx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f410rx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F410Tx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f410tx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F411xE_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f411xe.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F415xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f415xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F417xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f417xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F427xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f427xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F429xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f429xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F437xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f437xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F439xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f439xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F446xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f446xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F469xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f469xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F479xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f479xx.s" attr="config" version="2.4.2"/>
+        <file category="source" condition="STM32F401xC_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f401xc.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F401xE_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f401xe.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F405xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f405xx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F407xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f407xx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F410Cx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f410cx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F410Rx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f410rx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F410Tx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f410tx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F411xE_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f411xe.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F412Cx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f412cx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F412Rx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f412rx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F412Vx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f412vx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F412Zx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f412zx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F415xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f415xx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F417xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f417xx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F427xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f427xx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F429xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f429xx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F437xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f437xx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F439xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f439xx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F446xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f446xx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F469xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f469xx.s" attr="config" version="2.5.0"/>
+        <file category="source" condition="STM32F479xx_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f479xx.s" attr="config" version="2.5.0"/>
 
         <!-- system file -->
-        <file category="source" name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c" attr="config" version="2.4.2"/>
+        <file category="source" name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c" attr="config" version="2.5.0"/>
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube Framework" Csub="Classic" Cversion="1.4.2" Capiversion="1.0.0" condition="STM32F4 Framework Classic">
+    <component Cclass="Device" Cgroup="STM32Cube Framework" Csub="Classic" Cversion="1.5.0" Capiversion="1.0.0" condition="STM32F4 Framework Classic">
       <description>Configuration via RTE_Device.h</description>
       <RTE_Components_h>
         #define RTE_DEVICE_FRAMEWORK_CLASSIC
       </RTE_Components_h>
       <files>
         <file category="doc"     name="MDK/CubeMX/Documentation/classic.html"/>
-        <file category="header"  name="CMSIS/Driver/Config/RTE_Device.h" attr="config" version="2.3.1"/>
-        <file category="header"  name="MDK/Templates/Inc/stm32f4xx_hal_conf.h" attr="config" version="1.4.2"/>
+        <file category="header"  name="CMSIS/Driver/Config/RTE_Device.h" attr="config" version="2.4.1"/>
+        <file category="header"  name="MDK/Templates/Inc/stm32f4xx_hal_conf.h" attr="config" version="1.5.0"/>
         <file category="source"  name="MDK/Templates/Src/stm32f4xx_hal_msp.c"  attr="template" select="MCU Specific HAL Initialization / De-Initialization"/>
         <file category="header"  name="MDK/Templates/Inc/stm32f4xx_it.h" attr="template" select="Exception Handlers and Peripheral IRQ"/>
         <file category="source"  name="MDK/Templates/Src/stm32f4xx_it.c" attr="template" select="Exception Handlers and Peripheral IRQ"/>
@@ -3833,7 +4359,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
 
     <!-- START: STMicroelectronics STM32CubeF4 HAL -->
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common" Cversion="1.4.2" condition="STM32F4 HAL Common">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common" Cversion="1.5.0" condition="STM32F4 HAL Common">
       <description>Common HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_COMMON
@@ -3845,7 +4371,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="ADC" Cversion="1.4.2" condition="STM32F4 HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="ADC" Cversion="1.5.0" condition="STM32F4 HAL DMA">
       <description>Analog-to-digital converter (ADC) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_ADC
@@ -3856,7 +4382,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="CAN" Cversion="1.4.2" condition="STM32F40_41_42_43_44_46_47x HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="CAN" Cversion="1.5.0" condition="STM32F40_41_412_42_43_44_46_47x HAL">
       <description>Controller area network (CAN) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_CAN
@@ -3866,7 +4392,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="CEC" Cversion="1.4.2" condition="STM32F446 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="CEC" Cversion="1.5.0" condition="STM32F446 HAL">
       <description>Consumer Electronics Control (CEC) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_CEC
@@ -3876,7 +4402,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="Cortex" Cversion="1.4.2" condition="STM32F4 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="Cortex" Cversion="1.5.0" condition="STM32F4 HAL">
       <description>Cortex HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_CORTEX
@@ -3886,7 +4412,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="CRC" Cversion="1.4.2" condition="STM32F4 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="CRC" Cversion="1.5.0" condition="STM32F4 HAL">
       <description>CRC calculation unit (CRC) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_CRC
@@ -3896,7 +4422,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="CRYP" Cversion="1.4.2" condition="STM32F41_43_47x HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="CRYP" Cversion="1.5.0" condition="STM32F41_43_47x HAL DMA">
       <description>Cryptographic processor (CRYP) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_CRYP
@@ -3907,7 +4433,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="DAC" Cversion="1.4.2" condition="STM32F410_40_41_42_43_44_46_47x HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="DAC" Cversion="1.5.0" condition="STM32F410_40_41_42_43_44_46_47x HAL DMA">
       <description>Digital-to-analog converter (DAC) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_DAC
@@ -3918,7 +4444,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="DCMI" Cversion="1.4.2" condition="STM32F4x7_9_6 HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="DCMI" Cversion="1.5.0" condition="STM32F4x7_9_6 HAL DMA">
       <description>Digital camera interface (DCMI) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_DCMI
@@ -3929,7 +4455,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="DMA" Cversion="1.4.2" condition="STM32F4 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="DMA" Cversion="1.5.0" condition="STM32F4 HAL">
       <description>DMA controller (DMA) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_DMA
@@ -3940,7 +4466,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="DMA2D" Cversion="1.4.2" condition="STM32F42_43_46_47x HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="DMA2D" Cversion="1.5.0" condition="STM32F42_43_46_47x HAL">
       <description>Chrom-Art Accelerator (DMA2D) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_DMA2D
@@ -3950,7 +4476,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="DSI" Cversion="1.4.2" condition="STM32F46_47x HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="DSI" Cversion="1.5.0" condition="STM32F46_47x HAL">
       <description>DSI HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_DSI
@@ -3960,7 +4486,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="ETH" Cversion="1.4.2" condition="STM32F4x7_9 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="ETH" Cversion="1.5.0" condition="STM32F4x7_9 HAL">
       <description>Ethernet MAC (ETH) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_ETH
@@ -3970,7 +4496,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="Flash" Cversion="1.4.2" condition="STM32F4 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="Flash" Cversion="1.5.0" condition="STM32F4 HAL">
       <description>Embedded Flash memory HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_FLASH
@@ -3982,7 +4508,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="FMPI2C" Cversion="1.4.2" condition="STM32F410_446 HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="FMPI2C" Cversion="1.5.0" condition="STM32F410_412_446 HAL DMA">
       <description>Fast-mode Plus Inter-integrated circuit (FMPI2C) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_FMPI2C
@@ -3993,7 +4519,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="GPIO" Cversion="1.4.2" condition="STM32F4 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="GPIO" Cversion="1.5.0" condition="STM32F4 HAL">
       <description>General-purpose I/O (GPIO) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_GPIO
@@ -4003,7 +4529,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="HASH" Cversion="1.4.2" condition="STM32F41_43_47x HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="HASH" Cversion="1.5.0" condition="STM32F41_43_47x HAL DMA">
       <description>Hash processor (HASH) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_HASH
@@ -4014,7 +4540,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="HCD" Cversion="1.4.2" condition="STM32F4x1_40_41_42_43_44_46_47x HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="HCD" Cversion="1.5.0" condition="STM32F4x1_40_41_412_42_43_44_46_47x HAL">
       <description>USB Host controller (HCD) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_HCD
@@ -4025,7 +4551,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="I2C" Cversion="1.4.2" condition="STM32F4 HAL DMA RCC">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="I2C" Cversion="1.5.0" condition="STM32F4 HAL DMA RCC">
       <description>Inter-integrated circuit (I2C) interface HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_I2C
@@ -4036,7 +4562,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="I2S" Cversion="1.4.2" condition="STM32F4 HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="I2S" Cversion="1.5.0" condition="STM32F4 HAL DMA">
       <description>I2S HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_I2S
@@ -4047,7 +4573,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="IRDA" Cversion="1.4.2" condition="STM32F4 HAL DMA RCC">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="IRDA" Cversion="1.5.0" condition="STM32F4 HAL DMA RCC">
       <description>IrDA HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_IRDA
@@ -4057,7 +4583,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="IWDG" Cversion="1.4.2" condition="STM32F4 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="IWDG" Cversion="1.5.0" condition="STM32F4 HAL">
       <description>Independent watchdog (IWDG) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_IWDG
@@ -4067,7 +4593,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="LPTIM" Cversion="1.4.2" condition="STM32F410 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="LPTIM" Cversion="1.5.0" condition="STM32F410 HAL">
       <description>Low-power timer (LPTIM) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_LPTIM
@@ -4077,7 +4603,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="LTDC" Cversion="1.4.2" condition="STM32F4x9 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="LTDC" Cversion="1.5.0" condition="STM32F4x9 HAL">
       <description>LCD-TFT Controller (LTDC) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_LTDC
@@ -4088,7 +4614,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="NAND" Cversion="1.4.2" condition="STM32F40_41_42_43_44_46_47x HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="NAND" Cversion="1.5.0" condition="STM32F40_41_412_42_43_44_46_47x HAL">
       <description>NAND Flash controller HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_NAND
@@ -4100,7 +4626,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="NOR" Cversion="1.4.2" condition="STM32F40_41_42_43_44_46_47x HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="NOR" Cversion="1.5.0" condition="STM32F40_41_412_42_43_44_46_47x HAL">
       <description>NOR Flash controller HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_NOR
@@ -4112,7 +4638,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="PC Card" Cversion="1.4.2" condition="STM32F40_41_42_43x HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="PC Card" Cversion="1.5.0" condition="STM32F40_41_42_43x HAL">
       <description>PC Card controller HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_PCCARD
@@ -4124,7 +4650,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="PCD" Cversion="1.4.2" condition="STM32F4x1_40_41_42_43_44_46_47x HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="PCD" Cversion="1.5.0" condition="STM32F4x1_40_41_412_42_43_44_46_47x HAL">
       <description>USB Peripheral controller (PCD) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_PCD
@@ -4136,7 +4662,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="PWR" Cversion="1.4.2" condition="STM32F4 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="PWR" Cversion="1.5.0" condition="STM32F4 HAL">
       <description>Power controller (PWR) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_PWR
@@ -4147,7 +4673,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="QSPI" Cversion="1.4.2" condition="STM32F44_46_47x HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="QSPI" Cversion="1.5.0" condition="STM32F412_44_46_47x HAL DMA">
       <description>Quad Serial peripheral interface (QSPI) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_QSPI
@@ -4157,7 +4683,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="RCC" Cversion="1.4.2" condition="STM32F4 HAL GPIO">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="RCC" Cversion="1.5.0" condition="STM32F4 HAL GPIO">
       <description>Reset and clock control (RCC) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_RCC
@@ -4168,7 +4694,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="RNG" Cversion="1.4.2" condition="STM32F410_40_41_42_43_44_46_47x HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="RNG" Cversion="1.5.0" condition="STM32F410_40_41_412_42_43_44_46_47x HAL">
       <description>Random number generator (RNG) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_RNG
@@ -4178,7 +4704,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="RTC" Cversion="1.4.2" condition="STM32F4 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="RTC" Cversion="1.5.0" condition="STM32F4 HAL">
       <description>Real-time clock (RTC) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_RTC
@@ -4189,7 +4715,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SAI" Cversion="1.4.2" condition="STM32F42_43_44_46_47x HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SAI" Cversion="1.5.0" condition="STM32F42_43_44_46_47x HAL DMA">
       <description>Serial audio interface (SAI) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_SAI
@@ -4200,7 +4726,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SD" Cversion="1.4.2" condition="STM32F4x1_40_41_42_43_44_46_47x HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SD" Cversion="1.5.0" condition="STM32F4x1_40_41_412_42_43_44_46_47x HAL DMA">
       <description>Secure digital (SD) interface HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_SD
@@ -4211,7 +4737,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SDRAM" Cversion="1.4.2" condition="STM32F42_43_44_46_47x HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SDRAM" Cversion="1.5.0" condition="STM32F42_43_44_46_47x HAL DMA">
       <description>SDRAM controller (SDRAM) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_SDRAM
@@ -4222,7 +4748,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="Smartcard" Cversion="1.4.2" condition="STM32F4 HAL DMA RCC">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="Smartcard" Cversion="1.5.0" condition="STM32F4 HAL DMA RCC">
       <description>Smartcard HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_SMARTCARD
@@ -4232,7 +4758,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SPDIFRX" Cversion="1.4.2" condition="STM32F446 HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SPDIFRX" Cversion="1.5.0" condition="STM32F446 HAL DMA">
       <description>SPDIF Receiver interface (SPDIFRX) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_SPDIFRX
@@ -4242,7 +4768,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SPI" Cversion="1.4.2" condition="STM32F4 HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SPI" Cversion="1.5.0" condition="STM32F4 HAL DMA">
       <description>Serial peripheral interface (SPI) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_SPI
@@ -4252,7 +4778,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SRAM" Cversion="1.4.2" condition="STM32F40_41_42_43_44_46_47x HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SRAM" Cversion="1.5.0" condition="STM32F40_41_412_42_43_44_46_47x HAL DMA">
       <description>SRAM controller (SRAM) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_SRAM
@@ -4264,7 +4790,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="TIM" Cversion="1.4.2" condition="STM32F4 HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="TIM" Cversion="1.5.0" condition="STM32F4 HAL DMA">
       <description>Timers (TIM) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_TIM
@@ -4275,7 +4801,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="UART" Cversion="1.4.2" condition="STM32F4 HAL DMA">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="UART" Cversion="1.5.0" condition="STM32F4 HAL DMA">
       <description>Universal asynchronous receiver transmitter (UART) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_UART
@@ -4285,7 +4811,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="USART" Cversion="1.4.2" condition="STM32F4 HAL DMA RCC">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="USART" Cversion="1.5.0" condition="STM32F4 HAL DMA RCC">
       <description>Universal synchronous asynchronous receiver transmitter (USART) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_USART
@@ -4295,7 +4821,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="WWDG" Cversion="1.4.2" condition="STM32F4 HAL">
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="WWDG" Cversion="1.5.0" condition="STM32F4 HAL">
       <description>Window watchdog (WWDG) HAL driver</description>
       <RTE_Components_h>
         #define RTE_DEVICE_HAL_WWDG
@@ -4305,9 +4831,19 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="DFSDM" Cversion="1.5.0" condition="STM32F412 HAL">
+      <description>Digital Filter for Sigma-Delta Modulators (DFSDM) HAL driver</description>
+      <RTE_Components_h>
+        #define RTE_DEVICE_HAL_DFSDM
+      </RTE_Components_h>
+      <files>
+        <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dfsdm.c"/>
+      </files>
+    </component>
+
     <!-- END: STMicroelectronics STM32CubeF4 HAL -->
 
-    <component Cclass="CMSIS Driver" Cgroup="CAN" Capiversion="1.0" Cversion="1.4" condition="STM32F4 CMSIS_Driver CAN">
+    <component Cclass="CMSIS Driver" Cgroup="CAN" Capiversion="1.0" Cversion="1.7" condition="STM32F4 CMSIS_Driver CAN">
       <description>CAN Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_CAN1                /* Driver CAN1 */
@@ -4333,7 +4869,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="CMSIS Driver" Cgroup="USART" Capiversion="2.1" Cversion="2.6" condition="STM32F4 CMSIS_Driver USART">
+    <component Cclass="CMSIS Driver" Cgroup="USART" Capiversion="2.1" Cversion="2.7" condition="STM32F4 CMSIS_Driver USART">
       <description>USART Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_USART1              /* Driver USART1 */
@@ -4350,7 +4886,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="CMSIS Driver" Cgroup="I2C" Capiversion="2.2" Cversion="2.5" condition="STM32F4 CMSIS_Driver I2C">
+    <component Cclass="CMSIS Driver" Cgroup="I2C" Capiversion="2.2" Cversion="2.6" condition="STM32F4 CMSIS_Driver I2C">
       <description>I2C Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_I2C1                /* Driver I2C1 */
@@ -4362,7 +4898,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="CMSIS Driver" Cgroup="MCI" Capiversion="2.2" Cversion="2.5" condition="STM32F4 CMSIS_Driver MCI">
+    <component Cclass="CMSIS Driver" Cgroup="MCI" Capiversion="2.2" Cversion="2.6" condition="STM32F4 CMSIS_Driver MCI">
       <description>MCI Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_MCI0                /* Driver MCI0 */
@@ -4382,7 +4918,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="CMSIS Driver" Cgroup="USB Device" Csub="Full-speed" Capiversion="2.1" Cversion="2.13" condition="STM32F4 CMSIS_Driver USB0">
+    <component Cclass="CMSIS Driver" Cgroup="USB Device" Csub="Full-speed" Capiversion="2.1" Cversion="2.15" condition="STM32F4 CMSIS_Driver USB0">
       <description>USB Device Full-Speed Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_USBD0               /* Driver USBD0 */
@@ -4393,7 +4929,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="CMSIS Driver" Cgroup="USB Device" Csub="High-speed" Capiversion="2.1" Cversion="2.13" condition="STM32F4 CMSIS_Driver USB1">
+    <component Cclass="CMSIS Driver" Cgroup="USB Device" Csub="High-speed" Capiversion="2.1" Cversion="2.15" condition="STM32F4 CMSIS_Driver USB1">
       <description>USB Device High-Speed Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_USBD1               /* Driver USBD1 */

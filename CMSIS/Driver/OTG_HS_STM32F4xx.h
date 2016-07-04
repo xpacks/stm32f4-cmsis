@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        2. February 2016
- * $Revision:    V1.8
+ * $Date:        26. May 2016
+ * $Revision:    V1.9
  *
  * Project:      OTG High-Speed Driver Header for ST STM32F4xx
  * -------------------------------------------------------------------------- */
@@ -191,12 +191,14 @@
 #define MX_USB_OTG_HS_DP_GPIO_Mode              GPIO_MODE_AF_PP
 #define MX_USB_OTG_HS_DP_GPIO_Pin               GPIO_PIN_15
 
+#if    ((RTE_USB_OTG_HS_DEVICE == 1) && (RTE_OTG_HS_VBUS_SENSING_PIN == 1))
 // Pin USB_OTG_HS_VBUS : PB13
 #define MX_USB_OTG_HS_VBUS_Pin                  PB13
 #define MX_USB_OTG_HS_VBUS_GPIO_PuPd            GPIO_NOPULL
 #define MX_USB_OTG_HS_VBUS_GPIOx                GPIOB
 #define MX_USB_OTG_HS_VBUS_GPIO_Mode            GPIO_MODE_INPUT
 #define MX_USB_OTG_HS_VBUS_GPIO_Pin             GPIO_PIN_13
+#endif
 
 #endif
 
