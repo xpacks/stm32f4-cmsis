@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        14. January 2016
- * $Revision:    V1.6
+ * $Date:        26. May 2016
+ * $Revision:    V1.7
  *
  * Project:      OTG Full/Low-Speed Driver Header for ST STM32F4xx
  * -------------------------------------------------------------------------- */
@@ -51,13 +51,6 @@
 #define MX_USB_OTG_FS_GPIO_PIN_(n)              GPIO_PIN_##n
 #define MX_USB_OTG_FS_GPIO_PIN(n)               MX_USB_OTG_FS_GPIO_PIN_(n)
 
-// Pin USB_OTG_FS_VBUS : PA9
-#define MX_USB_OTG_FS_VBUS_Pin                  PA9
-#define MX_USB_OTG_FS_VBUS_GPIO_PuPd            GPIO_NOPULL
-#define MX_USB_OTG_FS_VBUS_GPIOx                GPIOA
-#define MX_USB_OTG_FS_VBUS_GPIO_Mode            GPIO_MODE_INPUT
-#define MX_USB_OTG_FS_VBUS_GPIO_Pin             GPIO_PIN_9
-
 // Pin USB_OTG_FS_DM : PA11
 #define MX_USB_OTG_FS_DM_Pin                    PA11
 #define MX_USB_OTG_FS_DM_GPIO_AF                GPIO_AF10_OTG_FS
@@ -84,6 +77,15 @@
 #define MX_USB_OTG_FS_ID_GPIOx                  GPIOA
 #define MX_USB_OTG_FS_ID_GPIO_Mode              GPIO_MODE_AF_PP
 #define MX_USB_OTG_FS_ID_GPIO_Pin               GPIO_PIN_10
+
+#if    ((RTE_USB_OTG_FS_DEVICE == 1) && (RTE_OTG_FS_VBUS_SENSING_PIN == 1))
+// Pin USB_OTG_FS_VBUS : PA9
+#define MX_USB_OTG_FS_VBUS_Pin                  PA9
+#define MX_USB_OTG_FS_VBUS_GPIO_PuPd            GPIO_NOPULL
+#define MX_USB_OTG_FS_VBUS_GPIOx                GPIOA
+#define MX_USB_OTG_FS_VBUS_GPIO_Mode            GPIO_MODE_INPUT
+#define MX_USB_OTG_FS_VBUS_GPIO_Pin             GPIO_PIN_9
+#endif
 
 #if    ((RTE_USB_OTG_FS_HOST == 1) && (RTE_OTG_FS_VBUS_PIN == 1))
 // Pin USB_OTG_FS_VBUS_Power : GPIO pin

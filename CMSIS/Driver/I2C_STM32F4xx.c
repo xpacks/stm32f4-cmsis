@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013-2015 ARM Ltd.
+ * Copyright (c) 2013-2016 ARM Ltd.
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        16. October 2015
- * $Revision:    V2.5
+ * $Date:        30. May 2016
+ * $Revision:    V2.6
  *
  * Driver:       Driver_I2C1, Driver_I2C2, Driver_I2C3
  * Configured:   via RTE_Device.h configuration file
@@ -36,6 +36,8 @@
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.6
+ *    Corrected rise time setting when using ARM_I2C_BUS_SPEED_FAST
  *  Version 2.5
  *    Corrected PowerControl function for:
  *      - Unconditional Power Off
@@ -135,7 +137,7 @@ Configuration tab
 
 #include "I2C_STM32F4xx.h"
 
-#define ARM_I2C_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,5)    /* driver version */
+#define ARM_I2C_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,6)    /* driver version */
 
 
 #if defined(MX_I2C1_RX_DMA_Instance) && defined(MX_I2C1_TX_DMA_Instance)
@@ -1047,7 +1049,7 @@ static int32_t I2C_Control (uint32_t control, uint32_t arg, I2C_RESOURCES *i2c) 
           } else {
             ccr = I2C_CCR_FS |                ((pclk / 400000U) / 3U);
           }
-          trise = (pclk / 333333U) + 1U;
+          trise = (((pclk / 1000000U) * 300U) / 1000U) + 1U;
           break;
         default:
           return ARM_DRIVER_ERROR_UNSUPPORTED;

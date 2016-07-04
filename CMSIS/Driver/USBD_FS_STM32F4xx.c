@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013-2015 ARM Ltd.
+ * Copyright (c) 2013-2016 ARM Ltd.
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        24. November 2015
- * $Revision:    V2.13
+ * $Date:        26. May 2016
+ * $Revision:    V2.15
  *
  * Driver:       Driver_USBD0
  * Configured:   via RTE_Device.h configuration file
@@ -34,20 +34,22 @@
  * --------------------------------------------------------------------------
  * Defines used for driver configuration (at compile time):
  *
- *   USBD_MAX_ENDPOINT_NUM:  defines maximum number of IN/OUT Endpoint pairs 
+ *   USBD_MAX_ENDPOINT_NUM:  defines maximum number of IN/OUT Endpoint pairs
  *                           that driver will support with Control Endpoint 0
  *                           not included, this value impacts driver memory
  *                           requirements
- *     - default value: 3
- *     - maximum value: 3
- *   USBD_VBUS_DETECT:       defines if driver supports VBUS detection
- *     - default value: 0   (disabled as MCBSTM32F400 board can not detect
- *                           VBUS change because of combination of B340A and
- *                           USBLC6-4 prevents VBUS to go low when board
- *                           is externally powered and USB is not connected)
+ *     - default value:      3
+ *     - maximum value:      3
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.15
+ *    VBUS detection is selected automatically based on VBUS sensing pin
+ *    setting (in RTE_Device.h or by STM32CubeMX)
+ *  Version 2.14
+ *    Corrected initial resume signaling after USB Bus Reset
+ *    Corrected device status information
+ *    VBUS sensing enabled by default
  *  Version 2.13
  *    Updated Isochronous transfer
  *  Version 2.12
@@ -99,7 +101,8 @@ Valid settings for various evaluation boards are listed in the table below:
 
 Peripheral Resource | MCBSTM32F400       | STM32F4-Discovery  | 32F401C-Discovery  | 32F429I-Discovery
 :-------------------|:-------------------|:-------------------|:-------------------|:------------------
-USB_OTG_FS Mode     | <b>Device_only</b> | <b>Device_only</b> | <b>Device_only</b> | <b>Device_only</b>
+USB_OTG_FS Mode     | <b>Device_only</b> | <b>Device_only</b> | <b>Device_only</b> | n/a
+Activate_VBUS       | <b>enabled</b>     | <b>enabled</b>     | <b>enabled</b>     | n/a
 
 For different boards, refer to the hardware schematics to reflect correct setup values.
  
@@ -110,6 +113,7 @@ Pinout tab
 ----------
   1. Configure USBD mode
      - Peripherals \b USB_OTG_FS: Mode=<b>Device_Only</b>
+     - Peripherals \b USB_OTG_FS: Activate_VBUS=<b>enabled</b>
  
 Clock Configuration tab
 -----------------------
@@ -144,14 +148,10 @@ Configuration tab
 #include "OTG_FS_STM32F4xx.h"
 
 #ifndef USBD_MAX_ENDPOINT_NUM
-#define USBD_MAX_ENDPOINT_NUM           3U
+#define USBD_MAX_ENDPOINT_NUM          (3U)
 #endif
 #if    (USBD_MAX_ENDPOINT_NUM > 3)
 #error  Too many Endpoints, maximum IN/OUT Endpoint pairs that this driver supports is 3 !!!
-#endif
-
-#ifndef USBD_VBUS_DETECT
-#define USBD_VBUS_DETECT                0U
 #endif
 
 extern uint8_t otg_fs_role;
@@ -168,14 +168,14 @@ extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 // USBD Driver *****************************************************************
 
-#define ARM_USBD_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,13)
+#define ARM_USBD_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,15)
 
 // Driver Version
 static const ARM_DRIVER_VERSION usbd_driver_version = { ARM_USBD_API_VERSION, ARM_USBD_DRV_VERSION };
 
 // Driver Capabilities
 static const ARM_USBD_CAPABILITIES usbd_driver_capabilities = {
-#if (USBD_VBUS_DETECT == 1)
+#ifdef MX_USB_OTG_FS_VBUS_Pin
   1U,   // VBUS Detection
   1U,   // Event VBUS On
   1U,   // Event VBUS Off
@@ -186,26 +186,26 @@ static const ARM_USBD_CAPABILITIES usbd_driver_capabilities = {
 #endif
 };
 
-#define OTG                     OTG_FS
+#define OTG                     (OTG_FS)
 
 #define EP_NUM(ep_addr)         ((ep_addr) & ARM_USB_ENDPOINT_NUMBER_MASK)
 #define EP_ID(ep_addr)          ((EP_NUM(ep_addr) * 2U) + (((ep_addr) >> 7) & 1U))
 
 // FIFO sizes in bytes (total available memory for FIFOs is 1.25 kB)
 #ifndef OTG_RX_FIFO_SIZE
-#define OTG_RX_FIFO_SIZE        640U
+#define OTG_RX_FIFO_SIZE        (640U)
 #endif
 #ifndef OTG_TX0_FIFO_SIZE
-#define OTG_TX0_FIFO_SIZE       160U
+#define OTG_TX0_FIFO_SIZE       (160U)
 #endif
 #ifndef OTG_TX1_FIFO_SIZE
-#define OTG_TX1_FIFO_SIZE       160U
+#define OTG_TX1_FIFO_SIZE       (160U)
 #endif
 #ifndef OTG_TX2_FIFO_SIZE
-#define OTG_TX2_FIFO_SIZE       160U
+#define OTG_TX2_FIFO_SIZE       (160U)
 #endif
 #ifndef OTG_TX3_FIFO_SIZE
-#define OTG_TX3_FIFO_SIZE       160U
+#define OTG_TX3_FIFO_SIZE       (160U)
 #endif
 
 #define OTG_TX_FIFO(n)          *((volatile uint32_t *)(OTG_FS_BASE + 0x1000U + (n * 0x1000U)))
@@ -280,8 +280,7 @@ static void USBD_Reset (void) {
   setup_packet[0] = 0U;
   setup_packet[1] = 0U;
   setup_received  = 0U;
-  memset((void *)&usbd_state, 0, sizeof(usbd_state));
-  memset((void *)ep,          0, sizeof(ep));
+  memset((void *)(ep), 0U, sizeof(ep));
 
   // Clear Endpoint mask registers
   OTG->DOEPMSK = 0U;
@@ -539,7 +538,11 @@ static int32_t USBD_Initialize (ARM_USBD_SignalDeviceEvent_t   cb_device_event,
 
   otg_fs_role = ARM_USB_ROLE_DEVICE;
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
-  OTG_FS_PinsConfigure (ARM_USB_PIN_DP | ARM_USB_PIN_DM);
+  OTG_FS_PinsConfigure (ARM_USB_PIN_DP | ARM_USB_PIN_DM
+#ifdef MX_USB_OTG_FS_VBUS_Pin
+                      | ARM_USB_PIN_VBUS
+#endif
+                       );
 #endif
 
 #ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
@@ -559,7 +562,11 @@ static int32_t USBD_Initialize (ARM_USBD_SignalDeviceEvent_t   cb_device_event,
 static int32_t USBD_Uninitialize (void) {
 
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
-  OTG_FS_PinsUnconfigure (ARM_USB_PIN_DP | ARM_USB_PIN_DM);
+  OTG_FS_PinsUnconfigure (ARM_USB_PIN_DP | ARM_USB_PIN_DM
+#ifdef MX_USB_OTG_FS_VBUS_Pin
+                        | ARM_USB_PIN_VBUS
+#endif
+                         );
 #else
   hpcd_USB_OTG_FS.Instance = NULL;
 #endif
@@ -586,18 +593,19 @@ static int32_t USBD_PowerControl (ARM_POWER_STATE state) {
       NVIC_DisableIRQ      (OTG_FS_IRQn);               // Disable interrupt
       NVIC_ClearPendingIRQ (OTG_FS_IRQn);               // Clear pending interrupt
 #endif
-      hw_powered     = false;                           // Clear powered flag
+      hw_powered     =  false;                          // Clear powered flag
+      OTG->DCTL     |=  OTG_FS_DCTL_SDIS;               // Soft disconnect enabled
       OTG->GAHBCFG  &= ~OTG_FS_GAHBCFG_GINTMSK;         // Disable USB interrupts
       RCC->AHB2RSTR |=  RCC_AHB2RSTR_OTGFSRST;          // Reset OTG FS module
                                                         // Reset variables
       setup_received =  0U;
-      memset((void *)&usbd_state, 0, sizeof(usbd_state));
-      memset((void *)ep,          0, sizeof(ep));
+      memset((void *)(&usbd_state), 0, sizeof(usbd_state));
+      memset((void *)(ep),          0, sizeof(ep));
 
       OTG->GCCFG    &= ~OTG_FS_GCCFG_PWRDWN;            // Enable PHY power down
       OTG->PCGCCTL  |=  OTG_FS_PCGCCTL_STPPCLK;         // Stop PHY clock
-      OTG->DCTL     |=  OTG_FS_DCTL_SDIS;               // Soft disconnect enabled
       OTG->GCCFG     =  0U;                             // Reset core configuration
+
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
       RCC->AHB2ENR  &= ~RCC_AHB2ENR_OTGFSEN;            // Disable OTG FS clock
 #else
@@ -624,8 +632,6 @@ static int32_t USBD_PowerControl (ARM_POWER_STATE state) {
       RCC->AHB2RSTR &= ~RCC_AHB2RSTR_OTGFSRST;          // Clear reset of OTG FS module
       osDelay(1U);
 
-      // On-chip Full-speed PHY
-      OTG->PCGCCTL  &= ~OTG_FS_PCGCCTL_STPPCLK;         // Start PHY clock
       OTG->GCCFG    |=  OTG_FS_GCCFG_PWRDWN;            // Disable power down
       OTG->GUSBCFG  |=  OTG_FS_GUSBCFG_PHYSEL;          // Full-speed transceiver
 
@@ -639,23 +645,24 @@ static int32_t USBD_PowerControl (ARM_POWER_STATE state) {
       // Wait until AHB Master state machine is in the idle condition
       while ((OTG->GRSTCTL & OTG_FS_GRSTCTL_AHBIDL) == 0U);
 
-      USBD_Reset ();                                    // Reset variables and endpoint settings
-
-#if ((USBD_VBUS_DETECT == 1) && defined(MX_USB_OTG_FS_VBUS_Pin))
-      OTG->GCCFG    |=  OTG_FS_GCCFG_VBUSBSEN;          // Enable  VBUS sensing device "B"
-#else
-      OTG->GCCFG    |=  OTG_FS_GCCFG_NOVBUSSENS;        // Disable VBUS sensing
-#endif
       OTG->DCTL     |=  OTG_FS_DCTL_SDIS;               // Soft disconnect enabled
 
       // Set turnaround time
       OTG->GUSBCFG   = ((OTG->GUSBCFG & ~OTG_FS_GUSBCFG_TRDT_MSK) |
-                         OTG_FS_GUSBCFG_TRDT(9U))                 ;
+                         OTG_FS_GUSBCFG_TRDT(15U))                ;
       if (((OTG->GUSBCFG & OTG_FS_GUSBCFG_FDMOD) == 0U) || ((OTG->GUSBCFG & OTG_FS_GUSBCFG_FHMOD) != 0U)) {
         OTG->GUSBCFG &= ~OTG_FS_GUSBCFG_FHMOD;          // Clear force host mode
         OTG->GUSBCFG |=  OTG_FS_GUSBCFG_FDMOD;          // Force device mode
-        osDelay (100U);
+        osDelay (50U);
       }
+
+      USBD_Reset ();                                    // Reset variables and endpoint settings
+
+#ifdef MX_USB_OTG_FS_VBUS_Pin
+      OTG->GCCFG    |=  OTG_FS_GCCFG_VBUSBSEN;          // Enable  VBUS sensing device "B"
+#else
+      OTG->GCCFG    |=  OTG_FS_GCCFG_NOVBUSSENS;        // Disable VBUS sensing
+#endif
 
       OTG->DCFG     |=  OTG_FS_DCFG_DSPD_MSK;           // Full Speed
 
@@ -665,7 +672,7 @@ static int32_t USBD_PowerControl (ARM_POWER_STATE state) {
                         OTG_FS_GINTMSK_RXFLVLM  |
                         OTG_FS_GINTMSK_IEPINT   |
                         OTG_FS_GINTMSK_OEPINT   |
-#if (USBD_VBUS_DETECT == 1)
+#ifdef MX_USB_OTG_FS_VBUS_Pin
                         OTG_FS_GINTMSK_SRQIM    |
                         OTG_FS_GINTMSK_OTGINT   |
 #endif
@@ -735,7 +742,7 @@ static int32_t USBD_DeviceRemoteWakeup (void) {
 
   if (hw_powered == false) { return ARM_DRIVER_ERROR; }
 
-  OTG->DCTL |=   OTG_FS_DCTL_RWUSIG;    // Remote wakeup signalling
+  OTG->DCTL |=   OTG_FS_DCTL_RWUSIG;    // Remote wakeup signaling
   osDelay(5U);
   OTG->DCTL &=  ~OTG_FS_DCTL_RWUSIG;
 
@@ -1161,36 +1168,47 @@ static uint16_t USBD_GetFrameNumber (void) {
 void USBD_FS_IRQ (uint32_t gintsts) {
   volatile ENDPOINT_t *ptr_ep, *ptr_ep_in;
   uint32_t             val, msk, ep_int;
+#ifdef MX_USB_OTG_FS_VBUS_Pin
+  uint32_t             gotgint;
+#endif
   uint16_t             num;
   uint8_t              ep_num, i;
   static uint32_t      IsoInIncomplete = 0U;
 
   if ((gintsts & OTG_FS_GINTSTS_USBRST) != 0U) {        // Reset interrupt
+    OTG->GINTSTS  =  OTG_FS_GINTSTS_USBRST;
+    OTG->GINTMSK |=  OTG_FS_GINTMSK_SOFM;               // Unmask SOF interrupts (to detect initial SOF)
     USBD_Reset();
+    usbd_state.active = 0U;
     SignalDeviceEvent(ARM_USBD_EVENT_RESET);
-    OTG->GINTSTS = OTG_FS_GINTSTS_USBRST;
   }
 
   if ((gintsts & OTG_FS_GINTSTS_USBSUSP) != 0U) {       // Suspend interrupt
+    OTG->GINTSTS  =  OTG_FS_GINTSTS_USBSUSP;
+    OTG->PCGCCTL |=  OTG_FS_PCGCCTL_STPPCLK;            // Stop PHY clock
     usbd_state.active = 0U;
     SignalDeviceEvent(ARM_USBD_EVENT_SUSPEND);
-    OTG->PCGCCTL |=  OTG_FS_PCGCCTL_STPPCLK;            // Stop PHY clock
-    OTG->GINTSTS  =  OTG_FS_GINTSTS_USBSUSP;
   }
 
   if ((gintsts & OTG_FS_GINTSTS_WKUPINT) != 0U) {       // Resume interrupt
+    OTG->GINTSTS  =  OTG_FS_GINTSTS_WKUPINT;
+    OTG->PCGCCTL &= ~OTG_FS_PCGCCTL_STPPCLK;            // Start PHY clock
     usbd_state.active = 1U;
     SignalDeviceEvent(ARM_USBD_EVENT_RESUME);
-    OTG->PCGCCTL &= ~OTG_FS_PCGCCTL_STPPCLK;            // Start PHY clock
-    OTG->GINTSTS  =  OTG_FS_GINTSTS_WKUPINT;
   }
 
   if ((gintsts & OTG_FS_GINTSTS_ENUMDNE) != 0U) {       // Speed enumeration completed
+    OTG->GINTSTS  = OTG_FS_GINTSTS_ENUMDNE;
     usbd_state.speed  = ARM_USB_SPEED_FULL;
-    usbd_state.active = 1U;
     OTG->DCTL    |= OTG_FS_DCTL_CGINAK;                 // Clear global IN NAK
     OTG->DCTL    |= OTG_FS_DCTL_CGONAK;                 // Clear global OUT NAK
-    OTG->GINTSTS  = OTG_FS_GINTSTS_ENUMDNE;
+  }
+
+  if ((gintsts & OTG_FS_GINTSTS_SOF) != 0U) {           // First SOF after Reset
+    OTG->GINTMSK |= OTG_FS_GINTMSK_SOFM;                // Unmask SOF interrupts (to detect initial resume)
+    OTG->GINTSTS  = OTG_FS_GINTSTS_SOF;
+    usbd_state.active = 1U;
+    SignalDeviceEvent(ARM_USBD_EVENT_RESUME);
   }
 
   if ((gintsts & OTG_FS_GINTSTS_RXFLVL) != 0U) {        // Receive FIFO interrupt
@@ -1229,7 +1247,6 @@ void USBD_FS_IRQ (uint32_t gintsts) {
         ep_int = OTG_DOEPINT(ep_num) & OTG->DOEPMSK;
         ptr_ep = &ep[EP_ID(ep_num)];
         if ((ep_int & OTG_FS_DOEPINTx_EPDISD) != 0U) {  // If Endpoint disabled
-
           if (OTG_EP_OUT_TYPE(ep_num) == ARM_USB_ENDPOINT_ISOCHRONOUS) {
             // Isochronous OUT Endpoint
             // Set packet count and transfer size
@@ -1384,19 +1401,22 @@ void USBD_FS_IRQ (uint32_t gintsts) {
       }
     }
   }
-#if (USBD_VBUS_DETECT == 1)
+#ifdef MX_USB_OTG_FS_VBUS_Pin
   if ((gintsts & OTG_FS_GINTSTS_SRQINT) != 0U) {
-    usbd_state.vbus = true;
-    SignalDeviceEvent(ARM_USBD_EVENT_VBUS_ON);
     OTG->GINTSTS = OTG_FS_GINTSTS_SRQINT;
+    usbd_state.vbus = 1U;
+    SignalDeviceEvent(ARM_USBD_EVENT_VBUS_ON);
   }
 
   if ((gintsts & OTG_FS_GINTSTS_OTGINT) != 0U) {
-    if ((OTG->GOTGINT & OTG_FS_GOTGINT_SEDET) != 0U) {
-      usbd_state.vbus = false;
+    gotgint = OTG->GOTGINT;
+    OTG->GOTGINT = gotgint;
+    if ((gotgint & OTG_FS_GOTGINT_SEDET) != 0U) {
+      usbd_state.vbus   = 0U;
+      usbd_state.speed  = 0U;
+      usbd_state.active = 0U;
       SignalDeviceEvent(ARM_USBD_EVENT_VBUS_OFF);
     }
-    OTG->GOTGINT = OTG->GOTGINT;
   }
 #endif
 }

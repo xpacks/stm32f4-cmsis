@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013-2015 ARM Ltd.
+ * Copyright (c) 2013-2016 ARM Ltd.
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        16. October 2015
- * $Revision:    V2.5
+ * $Date:        27. May 2016
+ * $Revision:    V2.6
  *
  * Driver:       Driver_MCI0
  * Configured:   via RTE_Device.h configuration file
@@ -34,6 +34,8 @@
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.6
+ *    Added port configuration for ports supported by new subfamily.
  *  Version 2.5
  *    Corrected PowerControl function for:
  *      - Unconditional Power Off
@@ -149,7 +151,7 @@ Configuration tab
 
 #include "MCI_STM32F4xx.h"
 
-#define ARM_MCI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,5)  /* driver version */
+#define ARM_MCI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,6)  /* driver version */
 
 /* Enable High Speed bus mode */
 #if defined(MemoryCard_Bus_Mode_HS_Enable)
