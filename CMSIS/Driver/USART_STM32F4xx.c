@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        16. October 2015
- * $Revision:    V2.5
+ * $Date:        25. March 2016
+ * $Revision:    V2.6
  *
  * Driver:       Driver_USART1, Driver_USART2, Driver_USART3, Driver_USART4,
  *               Driver_USART5, Driver_USART6, Driver_USART7, Driver_USART8,
@@ -42,6 +42,8 @@
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.6
+ *    Corrected CTS handling and added Signal CTS change event.
  *  Version 2.5
  *    Corrected PowerControl function for:
  *      - Unconditional Power Off
@@ -122,7 +124,7 @@ Configuration tab
 
 #include "USART_STM32F4xx.h"
 
-#define ARM_USART_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,5)
+#define ARM_USART_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,6)
 
 // Driver Version
 static const ARM_DRIVER_VERSION usart_driver_version = { ARM_USART_API_VERSION, ARM_USART_DRV_VERSION };
@@ -258,7 +260,11 @@ static const USART_RESOURCES USART1_Resources = {
     0,  // DSR Line: 0=not available, 1=available
     0,  // DCD Line: 0=not available, 1=available
     0,  // RI Line: 0=not available, 1=available
+#ifdef MX_USART1_CTS_Pin
+    1,  // Signal CTS change event: \ref ARM_USART_EVENT_CTS
+#else
     0,  // Signal CTS change event: \ref ARM_USART_EVENT_CTS
+#endif
     0,  // Signal DSR change event: \ref ARM_USART_EVENT_DSR
     0,  // Signal DCD change event: \ref ARM_USART_EVENT_DCD
     0,  // Signal RI change event: \ref ARM_USART_EVENT_RI
@@ -445,7 +451,11 @@ static const USART_RESOURCES USART2_Resources = {
     0,  // DSR Line: 0=not available, 1=available
     0,  // DCD Line: 0=not available, 1=available
     0,  // RI Line: 0=not available, 1=available
+#ifdef MX_USART2_CTS_Pin
+    1,  // Signal CTS change event: \ref ARM_USART_EVENT_CTS
+#else
     0,  // Signal CTS change event: \ref ARM_USART_EVENT_CTS
+#endif
     0,  // Signal DSR change event: \ref ARM_USART_EVENT_DSR
     0,  // Signal DCD change event: \ref ARM_USART_EVENT_DCD
     0,  // Signal RI change event: \ref ARM_USART_EVENT_RI
@@ -632,7 +642,11 @@ static const USART_RESOURCES USART3_Resources = {
     0,  // DSR Line: 0=not available, 1=available
     0,  // DCD Line: 0=not available, 1=available
     0,  // RI Line: 0=not available, 1=available
+#ifdef MX_USART3_CTS_Pin
+    1,  // Signal CTS change event: \ref ARM_USART_EVENT_CTS
+#else
     0,  // Signal CTS change event: \ref ARM_USART_EVENT_CTS
+#endif
     0,  // Signal DSR change event: \ref ARM_USART_EVENT_DSR
     0,  // Signal DCD change event: \ref ARM_USART_EVENT_DCD
     0,  // Signal RI change event: \ref ARM_USART_EVENT_RI
@@ -1091,7 +1105,11 @@ static const USART_RESOURCES USART6_Resources = {
     0,  // DSR Line: 0=not available, 1=available
     0,  // DCD Line: 0=not available, 1=available
     0,  // RI Line: 0=not available, 1=available
+#ifdef MX_USART6_CTS_Pin
+    1,  // Signal CTS change event: \ref ARM_USART_EVENT_CTS
+#else
     0,  // Signal CTS change event: \ref ARM_USART_EVENT_CTS
+#endif
     0,  // Signal DSR change event: \ref ARM_USART_EVENT_DSR
     0,  // Signal DCD change event: \ref ARM_USART_EVENT_DCD
     0,  // Signal RI change event: \ref ARM_USART_EVENT_RI
@@ -2601,10 +2619,10 @@ static int32_t USART_Control (      uint32_t          control,
       else  { return ARM_USART_ERROR_FLOW_CONTROL; }
       break;
     case ARM_USART_FLOW_CONTROL_CTS:
-      if (usart->capabilities.flow_control_rts) {
+      if (usart->capabilities.flow_control_cts) {
         flow_control = ARM_USART_FLOW_CONTROL_CTS;
-        // CTS Enable
-        cr3 |= USART_CR3_CTSE;
+        // CTS Enable, CTS interrupt enable
+        cr3 |= USART_CR3_CTSE | USART_CR3_CTSIE;
       }
       else { return ARM_USART_ERROR_FLOW_CONTROL; }
       break;
@@ -2892,7 +2910,7 @@ void USART_IRQHandler (const USART_RESOURCES *usart) {
   // Read USART status register
   sr = usart->reg->SR;
 
-  // Reset local variablers
+  // Reset local variables
   val   = 0U;
   event = 0U;
   data  = 0U;
@@ -3055,6 +3073,14 @@ void USART_IRQHandler (const USART_RESOURCES *usart) {
 
     usart->info->status.rx_break = 1U;
     event |= ARM_USART_EVENT_RX_BREAK;
+  }
+
+  // CTS changed
+  if ((sr & USART_SR_CTS) != 0U) {
+    // Clear CTS flag
+    usart->reg->SR &= ~USART_SR_CTS;
+
+    event |= ARM_USART_EVENT_CTS;
   }
 
   // Send Event

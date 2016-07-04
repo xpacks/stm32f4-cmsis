@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013-2015 ARM Ltd.
+ * Copyright (c) 2013-2016 ARM Ltd.
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        27. November 2015
- * $Revision:    V2.17
+ * $Date:        2. February 2016
+ * $Revision:    V2.19
  *
  * Driver:       Driver_USBH1
  * Configured:   via RTE_Device.h configuration file
@@ -35,8 +35,15 @@
  * --------------------------------------------------------------------------
  * Defines used for driver configuration (at compile time):
  *
- *   USBH1_USE_DMA:    : specifies if this driver uses DMA
- *     - default value : 1 (= DMA is used)
+ *   USB_OTG_HS_VBUS_Power_Pin_Active:  specifies VBUS pin polarity
+ *                      (0 = active low, 1 = active high)
+ *     - default value : 0 = active low
+ *   USB_OTG_HS_Overcurrent_Pin_Active: specifies Overcurrent pin polarity
+ *                      (0 = active low, 1 = active high)
+ *     - default value : 0 = active low
+ *   USB_OTG_HS_DMA:     specifies if this driver uses dedicated DMA
+ *                      (0 = DMA not used, 1 = DMA used)
+ *     - default value : 0 = DMA not used
  *   USBH1_MAX_PIPE_NUM: defines maximum number of Pipes that driver will
  *                       support, this value impacts driver memory
  *                       requirements
@@ -45,8 +52,15 @@
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.19
+ *    DMA configuration added to RTE_Device.h
+ *    Corrected wrong result of PipeTransferGetResult for In Pipe transfers
+ *    in DMA mode
+ *    Added check to PipeTransfer function for 4-byte data alignment if DMA is used
+ *  Version 2.18
+ *    Removed interrupt priority handling
  *  Version 2.17
- *    Added DMA usage to reduce CPU usage for USB (enabled by default).
+ *    Added DMA usage to reduce CPU usage for USB.
  *    Renamed externally overridable setting for maximum number of pipes used
  *    from USBH_MAX_PIPE_NUM to USBH1_MAX_PIPE_NUM.
  *  Version 2.16
@@ -95,7 +109,7 @@
 /*! \page stm32f4_usbh_hs CMSIS-Driver USBH_HS Setup
 
 The CMSIS-Driver USBH_HS requires:
-  - Setup of USB clk to 48MHz (if internal Full-speed Phy is used)
+  - Setup of USB clock to 48MHz (if internal Full-speed Phy is used)
   - Configuration of USB_OTG_HS
   - Optional Configuration for VBUS Power Pin:
     - Configure arbitrary pin in GPIO_Output mode and add User Label: USB_OTG_HS_VBUS_Power
@@ -173,10 +187,6 @@ Configuration tab
 
 #include "OTG_HS_STM32F4xx.h"
 
-#ifndef USBH1_USE_DMA
-#define USBH1_USE_DMA                  (1U)
-#endif
-
 #ifndef USBH1_MAX_PIPE_NUM
 #define USBH1_MAX_PIPE_NUM             (16U)
 #endif
@@ -200,7 +210,7 @@ extern HCD_HandleTypeDef hhcd_USB_OTG_HS;
 
 // USBH Driver *****************************************************************
 
-#define ARM_USBH_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,17)
+#define ARM_USBH_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,19)
 
 // Driver Version
 static const ARM_DRIVER_VERSION usbh_driver_version = { ARM_USBH_API_VERSION, ARM_USBH_DRV_VERSION };
@@ -221,7 +231,7 @@ static const ARM_USBH_CAPABILITIES usbh_driver_capabilities = {
 #define TX_FIFO_SIZE_NON_PERI  (1024U)  // Non-periodic Tx FIFO size
 #define TX_FIFO_SIZE_PERI      (1024U)  // Periodic Tx FIFO size
 
-#if (USBH1_USE_DMA == 0U)               // If DMA is not used (Slave Mode)
+#if (USB_OTG_HS_DMA == 0U)              // If DMA is not used (Slave Mode)
 static const uint32_t *OTG_DFIFO[] = { OTG_HS_DFIFO0,
                                        OTG_HS_DFIFO1,
                                        OTG_HS_DFIFO2,
@@ -356,7 +366,7 @@ static bool USBH_HW_StartTransfer (PIPE_t *ptr_pipe, OTG_HS_HC *ptr_ch) {
   uint32_t  hctsiz;
   uint32_t  hcintmsk;
   uint32_t  num_to_transfer;
-#if (USBH1_USE_DMA == 0U)                       // If DMA is not used (Slave Mode)
+#if (USB_OTG_HS_DMA == 0U)                      // If DMA is not used (Slave Mode)
   uint32_t  txsts;
   uint32_t  pckt_num;
   uint32_t  data_num;
@@ -376,7 +386,7 @@ static bool USBH_HW_StartTransfer (PIPE_t *ptr_pipe, OTG_HS_HC *ptr_ch) {
   hcchar   = ptr_ch->HCCHAR;                    // Read channel characteristics
   hctsiz   = ptr_ch->HCTSIZ;                    // Read channel size info
   hcintmsk = 0U;
-#if (USBH1_USE_DMA == 0U)                       // If DMA is not used (Slave Mode)
+#if (USB_OTG_HS_DMA == 0U)                      // If DMA is not used (Slave Mode)
   cnt      = 0U;
   out      = 0U;
 #endif
@@ -391,7 +401,7 @@ static bool USBH_HW_StartTransfer (PIPE_t *ptr_pipe, OTG_HS_HC *ptr_ch) {
                    OTG_HS_HCCHARx_EPNUM_MSK |   // Keep EPNUM
                    OTG_HS_HCCHARx_MPSIZ_MSK);   // Keep MPSIZ
   hctsiz       &=  OTG_HS_HCTSIZx_DPID_MSK;     // Keep DPID
-#if (USBH1_USE_DMA != 0U)                       // If DMA is used
+#if (USB_OTG_HS_DMA != 0U)                      // If DMA is used
   switch ((ptr_pipe->packet & ARM_USBH_PACKET_TOKEN_Msk) & ~ARM_USBH_PACKET_PING) {
     case ARM_USBH_PACKET_IN:
       hcchar   |=  OTG_HS_HCCHARx_EPDIR;
@@ -550,7 +560,7 @@ static bool USBH_HW_StartTransfer (PIPE_t *ptr_pipe, OTG_HS_HC *ptr_ch) {
     hctsiz |=   0U;                             // Prepare XFRSIZ field
   }
 
-#if (USBH1_USE_DMA != 0U)                       // If DMA is used
+#if (USB_OTG_HS_DMA != 0U)                      // If DMA is used
   ptr_pipe->num_transferring = num_to_transfer;
   ptr_ch->DMAADDR  = (uint32_t)(ptr_pipe->data + ptr_pipe->num_transferred_total);
   ptr_ch->HCINTMSK = hcintmsk;                  // Enable channel interrupts
@@ -766,11 +776,10 @@ static int32_t USBH_PowerControl (ARM_POWER_STATE state) {
                         OTG_HS_GINTMSK_RXFLVLM |
                         OTG_HS_GINTMSK_SOFM)   ;
 
-#if (USBH1_USE_DMA != 0U)                               // If DMA is used
+#if (USB_OTG_HS_DMA != 0U)                              // If DMA is used
       OTG->GAHBCFG  |=  OTG_HS_GAHBCFG_DMAEN;           // Enable DMA
 #endif
       OTG->GAHBCFG  |=  OTG_HS_GAHBCFG_GINT;            // Enable interrupts
-      NVIC_SetPriority (OTG_HS_IRQn, 0);                // Set highest interrupt priority
 
       hw_powered     = true;                            // Set powered flag
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
@@ -937,10 +946,10 @@ static ARM_USBH_PIPE_HANDLE USBH_PipeCreate (uint8_t dev_addr, uint8_t dev_speed
   PIPE_t    *ptr_pipe;
   OTG_HS_HC *ptr_ch;
 
-  if (hw_powered == false) { return NULL; }
+  if (hw_powered == false) { return 0U; }
 
   ptr_ch = USBH_CH_FindFree ();                 // Find free Channel
-  if (ptr_ch == 0U) { return NULL; }            // If no free
+  if (ptr_ch == 0U) { return 0U; }              // If no free
 
   ptr_pipe = (PIPE_t *)(&pipe[USBH_CH_GetIndexFromAddress (ptr_ch)]);
 
@@ -1095,7 +1104,12 @@ static int32_t USBH_PipeTransfer (ARM_USBH_PIPE_HANDLE pipe_hndl, uint32_t packe
   if ((OTG->HPRT & OTG_HS_HPRT_PCSTS) == 0U) { return ARM_DRIVER_ERROR;           }
 
   ptr_pipe = (PIPE_t *)(&pipe[USBH_CH_GetIndexFromAddress ((OTG_HS_HC *)(pipe_hndl))]);
-  if (ptr_pipe->active != 0U)                         { return ARM_DRIVER_ERROR_BUSY;      }
+  if (ptr_pipe->active != 0U)                { return ARM_DRIVER_ERROR_BUSY;      }
+
+#if (USB_OTG_HS_DMA != 0U)                      // If DMA is used
+                                                // Check 4-byte alignment
+  if ((((uint32_t)(data)) & 3U) != 0U)       { return ARM_DRIVER_ERROR;           }
+#endif
 
   // Update current transfer information
   ptr_pipe->packet                = packet;
@@ -1179,7 +1193,7 @@ void USBH_HS_IRQ (uint32_t gintsts) {
   uint32_t   hprt, haint, hcint, pktcnt, mpsiz;
   uint32_t   ch;
   uint8_t    hchalt;
-#if (USBH1_USE_DMA != 0U)                               // If DMA is used
+#if (USB_OTG_HS_DMA != 0U)                              // If DMA is used
   uint32_t   xfrsiz;
 #else                                                   // If DMA is not used (Slave Mode)
   uint8_t   *ptr_data;
@@ -1246,7 +1260,7 @@ void USBH_HS_IRQ (uint32_t gintsts) {
       SignalPortEvent(0, ARM_USBH_EVENT_DISCONNECT);
     }
   }
-#if (USBH1_USE_DMA == 0U)                               // If DMA is not used (Slave Mode)
+#if (USB_OTG_HS_DMA == 0U)                              // If DMA is not used (Slave Mode)
                                                         // Handle reception interrupt
   if ((gintsts & OTG_HS_GINTSTS_RXFLVL) != 0U) {        // If RXFIFO non-empty interrupt
     OTG->GINTMSK &= ~OTG_HS_GINTMSK_RXFLVLM;
@@ -1292,7 +1306,7 @@ void USBH_HS_IRQ (uint32_t gintsts) {
         hcint      =   ptr_ch->HCINT & ptr_ch->HCINTMSK;
         hchalt     =   0U;
 
-#if (USBH1_USE_DMA != 0U)                               // If DMA is used
+#if (USB_OTG_HS_DMA != 0U)                              // If DMA is used
         ptr_ch->HCINTMSK = 0U;                          // Disable all channel interrupts
         ptr_ch->HCINT    = 0x7FFU;                      // Clear all interrupts
         ptr_pipe->in_progress = 0U;                     // Transfer not in progress
@@ -1303,13 +1317,7 @@ void USBH_HS_IRQ (uint32_t gintsts) {
           if ((ptr_ch->HCCHAR & (1U << 15)) != 0U) {    // If IN pipe
             // Update transferred count
             xfrsiz =  ptr_ch->HCTSIZ        & 0x0003FFFFU;
-            mpsiz  =  ptr_ch->HCCHAR        & 0x000007FFU;
-            pktcnt = (ptr_ch->HCTSIZ >> 19) & 0x000003FFU;
-            if (xfrsiz != 0U) {                         // If transferred less than requested data calculate exact number of transferred bytes
-              ptr_pipe->num_transferred_total += (ptr_pipe->num_transferring - mpsiz * pktcnt) - xfrsiz;
-            } else {                                    // else if transferred requested number of bytes
-              ptr_pipe->num_transferred_total +=  ptr_pipe->num_transferring;
-            }
+            ptr_pipe->num_transferred_total += ptr_pipe->num_transferring - xfrsiz;
             ptr_pipe->num_transferring = 0U;
             if ((ptr_pipe->num == ptr_pipe->num_transferred_total) || (xfrsiz != 0U)) {
               // If previous transfer ended by receiving all expected bytes or was terminated by short or
@@ -1332,7 +1340,6 @@ void USBH_HS_IRQ (uint32_t gintsts) {
           if ((ptr_ch->HCCHAR & (1U << 15)) != 0U) {    // If IN pipe
             if ((hcint & OTG_HS_HCINTx_NAK) == 0U) {    // If not NAK received
               // Update transferred count
-              xfrsiz =  ptr_ch->HCTSIZ        & 0x0003FFFFU;
               mpsiz  =  ptr_ch->HCCHAR        & 0x000007FFU;
               pktcnt = (ptr_ch->HCTSIZ >> 19) & 0x000003FFU;
               if (ptr_pipe->num_transferring > mpsiz) {

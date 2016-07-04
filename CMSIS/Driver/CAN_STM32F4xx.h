@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        8. October 2015
- * $Revision:    V1.1
+ * $Date:        24. December 2015
+ * $Revision:    V1.2
  *
  * Driver:       Driver_CAN1/2
  * Configured:   via RTE_Device.h configuration file
@@ -103,6 +103,19 @@
 #error "No CAN configured in STM32CubeMX!"
 #endif
 
+#endif
+
+#if    !defined(MX_CAN1)
+#define MX_CAN1                         (0U)
+#endif
+#if    !defined(MX_CAN2)
+#define MX_CAN2                         (0U)
+#endif
+
+#if    (MX_CAN2 == 1U)
+#define CAN_CTRL_NUM                    (2U)
+#else
+#define CAN_CTRL_NUM                    (1U)
 #endif
 
 #endif // __CAN_STM32F4XX_H
