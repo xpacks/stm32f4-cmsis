@@ -7,8 +7,8 @@
 	"vendorName": "Keil",
 	"name": "STM32F4xx_DFP",
 	"description": "STMicroelectronics STM32F4 Series Device Support, Drivers and Examples",
-	"version": "2.7.0",
-	"date": "2015-12-08",
+	"version": "2.8.0",
+	"date": "2016-04-14",
 	"devices": [
 		{
 			"name": "STM32F4 Series",
