@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013-2015 ARM Ltd.
+ * Copyright (c) 2013-2016 ARM Ltd.
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -17,8 +17,8 @@
  *
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * $Date:        10. September 2015
- * $Revision:    V2.3.0
+ * $Date:        2. February 2016
+ * $Revision:    V2.3.1
  *
  * Project:      RTE Device Configuration for ST STM32F4xx
  * -------------------------------------------------------------------------- */
@@ -2239,6 +2239,11 @@
 #define RTE_OTG_HS_OC_PORT              GPIO_PORT(5)
 #define RTE_OTG_HS_OC_BIT               12
 //   </e>
+
+//   <o.0> DMA
+//     <i> Use dedicated DMA for transfers
+//     <i> If DMA is used all USB transfer data buffers have to be 4-byte aligned.
+#define RTE_OTG_HS_DMA                  0
 
 // </e>
 

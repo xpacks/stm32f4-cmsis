@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013-2015 ARM Ltd.
+ * Copyright (c) 2013-2016 ARM Ltd.
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        16. October 2015
- * $Revision:    V2.5
+ * $Date:        29. March 2016
+ * $Revision:    V2.6
  *
  * Driver:       Driver_ETH_MAC0
  * Configured:   via RTE_Device.h configuration file
@@ -34,6 +34,8 @@
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.6
+ *    Corrected Ethernet PTP functionality
  *  Version 2.5
  *    Corrected PowerControl function for:
  *      - Unconditional Power Off
@@ -127,7 +129,7 @@ Configuration tab
 
 #include "EMAC_STM32F4xx.h"
 
-#define ARM_ETH_MAC_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,5) /* driver version */
+#define ARM_ETH_MAC_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,6) /* driver version */
 
 /* Timeouts */
 #define PHY_TIMEOUT         2U          /* PHY Register access timeout in ms  */
@@ -355,7 +357,7 @@ static uint32_t crc32_data (const uint8_t *data, uint32_t len) {
 /* Ethernet Driver functions */
 
 /**
-  \fn          ARM_DRIVER_VERSION ARM_ETH_MAC_GetVersion (void)
+  \fn          ARM_DRIVER_VERSION GetVersion (void)
   \brief       Get driver version.
   \return      \ref ARM_DRIVER_VERSION
 */
@@ -554,6 +556,9 @@ static int32_t PowerControl (ARM_POWER_STATE state) {
       ETH->MACA2HR = 0U; ETH->MACA2LR = 0U;
       ETH->MACA3HR = 0U; ETH->MACA3LR = 0U;
 
+      /* Mask timestamp interrupts */
+      ETH->MACIMR |= ETH_MACIMR_TSTIM | ETH_MACIMR_PMTIM;
+
       /* Initialize DMA Descriptors */
       init_rx_desc ();
       init_tx_desc ();
@@ -563,9 +568,20 @@ static int32_t PowerControl (ARM_POWER_STATE state) {
       ETH->DMAIER = ETH_DMAIER_NISE | ETH_DMAIER_RIE | ETH_DMAIER_TIE;
 
       #if (EMAC_TIME_STAMP)
-      ETH->PTPTSCR = ETH_PTPTSSR_TSSIPV4FE | ETH_PTPTSSR_TSSIPV6FE |
-                     ETH_PTPTSSR_TSSSR     | ETH_PTPTSCR_TSE;
-      ETH->PTPSSIR = PTPSSIR_Val(HAL_RCC_GetHCLKFreq());
+      /* Set clock accuracy to 20ns (50MHz) or 50ns (20MHz) */
+      if (hclk >= 51000000) {
+        ETH->PTPSSIR = 20;
+        ETH->PTPTSAR = (50000000ull << 32) / hclk;
+      }
+      else {
+        ETH->PTPSSIR = 50;
+        ETH->PTPTSAR = (20000000ull << 32) / hclk;
+      }
+
+      ETH->PTPTSCR = ETH_PTPTSSR_TSSIPV4FE | ETH_PTPTSSR_TSSIPV6FE | ETH_PTPTSSR_TSSSR |
+                                                                     ETH_PTPTSCR_TSARU |
+                                                                     ETH_PTPTSCR_TSFCU |
+                                                                     ETH_PTPTSCR_TSE;
       Emac.tx_ts_index  = 0U;
       #endif
 
@@ -952,33 +968,43 @@ static int32_t ControlTimer (uint32_t control, ARM_ETH_MAC_TIME *time) {
       /* Increment current time */
       ETH->PTPTSHUR = time->sec;
       ETH->PTPTSLUR = time->ns;
-      /* Coarse TS clock update */
-      ETH->PTPTSCR &= ~ETH_PTPTSCR_TSFCU;
-      ETH->PTPTSCR |= ETH_PTPTSCR_TSSTI;
+
+      /* Time stamp system time update */
+      ETH->PTPTSCR |=  ETH_PTPTSCR_TSSTU;
       break;
 
     case ARM_ETH_MAC_TIMER_DEC_TIME:
       /* Decrement current time */
       ETH->PTPTSHUR = time->sec;
       ETH->PTPTSLUR = time->ns | 0x80000000U;
-      /* Coarse TS clock update */
-      ETH->PTPTSCR &= ~ETH_PTPTSCR_TSFCU;
-      ETH->PTPTSCR |=  ETH_PTPTSCR_TSSTI;
+
+      /* Time stamp system time update */
+      ETH->PTPTSCR |=  ETH_PTPTSCR_TSSTU;
       break;
 
     case ARM_ETH_MAC_TIMER_SET_ALARM:
       /* Set alarm time */
       ETH->PTPTTHR  = time->sec;
       ETH->PTPTTLR  = time->ns;
-      /* Enable also PTP interrupts */
+
+      /* Enable timestamp interrupt in PTP control */
       ETH->PTPTSCR |= ETH_PTPTSCR_TSITE;
+
+      if (time->sec || time->ns) {
+        /* Enable timestamp trigger interrupt */
+        ETH->MACIMR &= ~ETH_MACIMR_TSTIM;
+      } else {
+        /* Disable timestamp trigger interrupt */
+        ETH->MACIMR |= ETH_MACIMR_TSTIM;
+      }
       break;
 
     case ARM_ETH_MAC_TIMER_ADJUST_CLOCK:
       /* Adjust current time, fine correction */
-      ETH->PTPTSAR = time->ns;
+      /* Correction factor is Q31 (0x80000000 = 1.000000000) */
+      ETH->PTPTSAR = ((uint64_t)time->ns * ETH->PTPTSAR) >> 31;
       /* Fine TS clock correction */
-      ETH->PTPTSCR |= (ETH_PTPTSCR_TSARU | ETH_PTPTSCR_TSFCU);
+      ETH->PTPTSCR |= ETH_PTPTSCR_TSARU;
       break;
 
     default:
@@ -1205,11 +1231,25 @@ void ETH_IRQHandler (void) {
 
   dmasr = ETH->DMASR;
   ETH->DMASR = dmasr & (ETH_DMASR_NIS | ETH_DMASR_RS | ETH_DMASR_TS);
-  if (dmasr & ETH_DMASR_TS)   { event |= ARM_ETH_MAC_EVENT_TX_FRAME; }
-  if (dmasr & ETH_DMASR_RS)   { event |= ARM_ETH_MAC_EVENT_RX_FRAME; }
+
+  if (dmasr & ETH_DMASR_TS) {
+    /* Frame sent */
+    event |= ARM_ETH_MAC_EVENT_TX_FRAME;
+  }
+  if (dmasr & ETH_DMASR_RS) {
+    /* Frame received */
+    event |= ARM_ETH_MAC_EVENT_RX_FRAME;
+  }
   macsr = ETH->MACSR;
+
 #if (EMAC_TIME_STAMP != 0)
-  if (macsr & ETH_MACSR_TSTS) { event |= ARM_ETH_MAC_EVENT_TIMER_ALARM; }
+  if (macsr & ETH_MACSR_TSTS) {
+    /* Timestamp interrupt */
+    if (ETH->PTPTSSR & 2U /*ETH_PTPTSSR_TSTTR*/) {
+      /* Time stamp target time reached */
+      event |= ARM_ETH_MAC_EVENT_TIMER_ALARM;
+    }
+  }
 #endif
   if (macsr & ETH_MACSR_PMTS) {
     ETH->MACPMTCSR;

@@ -10,7 +10,8 @@ IFS=$'\n\t'
 # RELEASE_VERSION="2.4.0"
 # RELEASE_VERSION="2.5.0"
 # RELEASE_VERSION="2.6.0"
-RELEASE_VERSION="2.7.0"
+# RELEASE_VERSION="2.7.0"
+RELEASE_VERSION="2.8.0"
 
 FAMILY="STM32F4"
 GITHUB_PROJECT="xpacks/stm32f4-cmsis"
@@ -41,9 +42,11 @@ echo "Unpacking '${ARCHIVE_NAME}'..."
 unzip -q "${LOCAL_ARCHIVE_FILE}"
 
 echo "Removing unnecessary files..."
+
 rm -rf \
 _htmresc \
 CMSIS/Flash \
+CMSIS/Debug \
 Documentation \
 Drivers/BSP/ \
 Drivers/CMSIS/CMSIS?END*.* \
@@ -92,8 +95,9 @@ These files were extracted from \`${ARCHIVE_NAME}\`.
 To save space, the following folders/files were removed:
 
 * all non-portable *.exe files
-* _htmresc
+* \_htmresc
 * CMSIS/Flash
+* CMSIS/Debug
 * Documentation
 * Drivers/BSP/
 * Drivers/CMSIS/CMSIS?END*.*
@@ -115,4 +119,6 @@ To save space, the following folders/files were removed:
 EOF
 
 echo
-echo Check if ok and when ready, issue: \`git commit -m ${ARCHIVE_NAME}\`
+echo Check if ok and when ready, issue:
+echo git add -A
+echo git commit -m ${ARCHIVE_NAME}

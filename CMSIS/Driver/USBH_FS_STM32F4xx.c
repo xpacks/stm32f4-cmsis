@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013-2015 ARM Ltd.
+ * Copyright (c) 2013-2016 ARM Ltd.
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        27. November 2015
- * $Revision:    V2.16
+ * $Date:        2. February 2016
+ * $Revision:    V2.18
  *
  * Driver:       Driver_USBH0
  * Configured:   via RTE_Device.h configuration file
@@ -35,6 +35,12 @@
  * --------------------------------------------------------------------------
  * Defines used for driver configuration (at compile time):
  *
+ *   USB_OTG_FS_VBUS_Power_Pin_Active:  specifies VBUS pin polarity
+ *                      (0 = active low, 1 = active high)
+ *     - default value : 0 = active low
+ *   USB_OTG_FS_Overcurrent_Pin_Active: specifies Overcurrent pin polarity
+ *                      (0 = active low, 1 = active high)
+ *     - default value : 0 = active low
  *   USBH0_MAX_PIPE_NUM: defines maximum number of Pipes that driver will
  *                       support, this value impacts driver memory
  *                       requirements
@@ -43,6 +49,10 @@
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.18
+ *    Added comments for external defines regarding VBUS and Overcurrent pin polarity
+ *  Version 2.17
+ *    Removed interrupt priority handling
  *  Version 2.16
  *    Renamed externally overridable setting for maximum number of pipes used
  *    from USBH_MAX_PIPE_NUM to USBH0_MAX_PIPE_NUM.
@@ -182,7 +192,7 @@ extern HCD_HandleTypeDef hhcd_USB_OTG_FS;
 
 // USBH Driver *****************************************************************
 
-#define ARM_USBH_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,16)
+#define ARM_USBH_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,18)
 
 // Driver Version
 static const ARM_DRIVER_VERSION usbh_driver_version = { ARM_USBH_API_VERSION, ARM_USBH_DRV_VERSION };
@@ -646,7 +656,6 @@ static int32_t USBH_PowerControl (ARM_POWER_STATE state) {
                         OTG_FS_GINTMSK_SOFM)   ;
 
       OTG->GAHBCFG  |=  OTG_FS_GAHBCFG_GINTMSK;         // Enable interrupts
-      NVIC_SetPriority (OTG_FS_IRQn, 0);                // Set highest interrupt priority
 
       hw_powered     = true;                            // Set powered flag
 #ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
@@ -810,13 +819,10 @@ static ARM_USBH_PIPE_HANDLE USBH_PipeCreate (uint8_t dev_addr, uint8_t dev_speed
   PIPE_t    *ptr_pipe;
   OTG_FS_HC *ptr_ch;
 
-  // [LNP]
-  if (hw_powered == false) { return 0; }
+  if (hw_powered == false) { return 0U; }
 
   ptr_ch = USBH_CH_FindFree ();                 // Find free Channel
-
-  // [LNP]
-  if (ptr_ch == 0U) { return 0; }               // If no free
+  if (ptr_ch == 0U) { return 0U; }              // If no free
 
   ptr_pipe = (PIPE_t *)(&pipe[USBH_CH_GetIndexFromAddress (ptr_ch)]);
 

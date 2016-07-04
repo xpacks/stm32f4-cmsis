@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013-2015 ARM Ltd.
+ * Copyright (c) 2013-2016 ARM Ltd.
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        27. August 2015
- * $Revision:    V1.5
+ * $Date:        14. January 2016
+ * $Revision:    V1.6
  *
  * Project:      OTG Full/Low-Speed Driver Header for ST STM32F4xx
  * -------------------------------------------------------------------------- */
@@ -536,24 +536,10 @@ typedef struct
 #define OTG_FS_DFIFO7         (((uint32_t *) OTG_FS_DFIFO7_BASE) )
 
 // OTG_FS Host Channel
-
-// [LNP]
-#if defined ( __CC_ARM )
-typedef __packed struct {               // Host Channel typedef (HC)
-#else
-typedef struct __packed {               // Host Channel typedef (HC)
-#endif
-
-  __packed union {
+typedef struct __attribute__((packed)) {// Host Channel typedef (HC)
+  union __attribute__((packed)) {
     uint32_t HCCHAR;                    // Channel Characteristics
-
-// [LNP]
-#if defined ( __CC_ARM )
-	__packed struct {
-#else
-    struct __packed {
-#endif
-
+    struct __attribute__((packed)) {
       uint32_t MPSIZ     : 11;          // Endpoint Maximum Packet Size
       uint32_t EPNUM     :  4;          // Endpoint Number
       uint32_t EPDIR     :  1;          // Endpoint Direction
@@ -568,16 +554,9 @@ typedef struct __packed {               // Host Channel typedef (HC)
     };
   };
   uint32_t Reserved1;                   // Reserved
-  __packed union {
+  union __attribute__((packed)) {
     uint32_t HCINT;                     // Channel Interrupt
-
-// [LNP]
-#if defined ( __CC_ARM )
-	__packed struct {
-#else
-    struct __packed {
-#endif
-
+    struct __attribute__((packed)) {
       uint32_t XFCR      :  1;          // Transfer Completed
       uint32_t CHH       :  1;          // Channel Halted
       uint32_t Reserved2 :  1;          // Reserved
@@ -591,16 +570,9 @@ typedef struct __packed {               // Host Channel typedef (HC)
       uint32_t DTERR     :  1;          // Data Toggle Error
     };
   };
-  __packed union {
+  union __attribute__((packed)) {
     uint32_t HCINTMSK;                  // Channel Interrupt Mask
-
-// [LNP]
-#if defined ( __CC_ARM )
-	__packed struct {
-#else
-    struct __packed {
-#endif
-
+    struct __attribute__((packed)) {
       uint32_t XFCRM     :  1;          // Transfer Completed Mask
       uint32_t CHHM      :  1;          // Channel Halted Mask
       uint32_t Reserved4 :  1;          // Reserved
@@ -614,16 +586,9 @@ typedef struct __packed {               // Host Channel typedef (HC)
       uint32_t DTERRM    :  1;          // Data Toggle Error Mask
     };
   };
-  __packed union {
+  union __attribute__((packed)) {
     uint32_t HCTSIZ;                    // Channel Transfer Size
-
-// [LNP]
-#if defined ( __CC_ARM )
-	__packed struct {
-#else
-    struct __packed {
-#endif
-
+    struct __attribute__((packed)) {
       uint32_t XFRSIZ    : 19;          // Transfer Size
       uint32_t PKTCNT    : 10;          // Packet Count
       uint32_t DPID      :  2;          // Data PID

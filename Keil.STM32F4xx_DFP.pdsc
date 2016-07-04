@@ -7,6 +7,28 @@
   <url>http://www.keil.com/pack</url>
 
   <releases>
+    <release version="2.8.0" date="2016-04-14">
+      Updated CMSIS drivers:
+      - EMAC: 
+      -- Corrected Ethernet PTP functionality
+      - CAN:
+      -- Corrected functionality when only one CAN controller is used
+      -- Corrected functionality when NULL pointer is provided for one or both signal callbacks in Initialize function call
+      - USB Host full-speed:
+      -- Removed interrupt priority handling
+      - USB Host high-speed:
+      -- Added DMA configuration to RTE_Device.h
+      -- Corrected wrong result of PipeTransferGetResult for In Pipe transfers in DMA mode
+      -- Added check to PipeTransfer function for 4-byte data alignment if DMA is used
+      -- Removed interrupt priority handling
+      - USART:
+      -- Corrected CTS handling and added signal CTS change event.
+      Updated examples:
+      - Updated emWin examples to emWin V5.32
+      - Updated CAN example
+      - Updated USB Host examples
+      - Updated USB Device CDC ACM VirtualCOM example for Keil MCBSTM32F400 evaluation board
+    </release>
     <release version="2.7.0" date="2015-12-08">
       Updated STMicroelectronics STM32CubeF4 Firmware Package to Version 1.10.0.
       - updated affected examples
@@ -19,9 +41,9 @@
       - Updated handling of Isochronous transfer
       - Updated IN Endpoint FIFO flush procedure
       Updated USB Host CMSIS drivers:
-      - Corrected speed setting for On-chip Full-speed PHY
-      - Corrected multiple packet sending and PING functionality
+      - Corrected speed setting in high-speed port for On-chip Full-speed PHY
       - Corrected low-speed device on high-speed port functionality
+      - Corrected multiple packet sending and PING functionality
       - Added DMA for high-speed port driver to reduce CPU usage for USB (enabled by default)
       - Renamed defines for overriding the maximum number of pipes used
       from USBH_MAX_PIPE_NUM to USBH0_MAX_PIPE_NUM in full-speed driver, and
@@ -30,6 +52,8 @@
       - Corrected 8bit/16bit Data register access, regarding the Data frame size
       Updated CAN driver:
       - added possibility to use only CAN1
+      Updated EMAC driver:
+      - corrected return value of the ReadFrame function
       Updated SVD files for STM32F427 and STM32F429 fixing inconsistencies and missing information
       Added Debug Description to PDSC for trace configuration
     </release>
@@ -2158,6 +2182,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <description>Keil MCBSTM32F400 Development Board</description>
       <image small="MDK/Boards/Keil/MCBSTM32F400/Documentation/mcbstm32f400_board.jpg" large="MDK/Boards/Keil/MCBSTM32F400/Documentation/MCBSTM32F200_F400.png"/>
       <book category="overview"  name="http://www.keil.com/mcbstm32f400/" title="MCBSTM32F400 Evaluation Board Web Page"/>
+      <book category="setup"     name="Documentation/MCBSTM32F400_QSG.pdf" title="MCBSTM32F400 Quick Start Guide"/>
       <book category="schematic" name="MDK/Boards/Keil/MCBSTM32F400/Documentation/mcbstm32f400-schematics.pdf" title="Schematics"/>
       <book category="manual"    name="MDK/Boards/Keil/MCBSTM32F400/Documentation/mcbstm32f200.chm" title="User Manual"/>
       <mountedDevice    deviceIndex="0" Dvendor="STMicroelectronics:13" Dname="STM32F407IG"/>
@@ -2197,6 +2222,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <image small="MDK/Boards/ST/STM32F401C-Discovery/Documentation/stm32f401c-disco_small.jpg" large="MDK/Boards/ST/STM32F401C-Discovery/Documentation/stm32f401c-disco_large.jpg"/>
       <book category="overview"  name="http://www.st.com/web/catalog/tools/FM116/SC959/SS1532/LN1199/PF259098" title="STM32F401C-Discovery Web Page"/>
       <book category="setup"     name="MDK/Boards/ST/STM32F401C-Discovery/Documentation/DM00092826.pdf" title="Getting Started"/>
+      <book category="setup"     name="Documentation/32F401C-DISCOVERY_QSG.pdf" title="STM32F401C-Discovery Quick Start Guide"/>
       <book category="schematic" name="MDK/Boards/ST/STM32F401C-Discovery/Documentation/stm32f401c-disco_sch.zip" title="Schematics"/>
       <book category="manual"    name="MDK/Boards/ST/STM32F401C-Discovery/Documentation/DM00093902.pdf" title="User Manual"/>
       <book category="other"     name="MDK/Boards/ST/STM32F401C-Discovery/Documentation/stm32f401c-disco_gerber.zip" title="Gerber Files"/>
@@ -2224,6 +2250,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <image small="MDK/Boards/ST/STM32F4-Discovery/Documentation/stm32f4_discovery_small.jpg" large="MDK/Boards/ST/STM32F4-Discovery/Documentation/stm32f4_discovery_large.jpg"/>
       <book category="overview"  name="http://www.st.com/web/catalog/tools/FM116/SC959/SS1532/LN1199/PF252419" title="STM32F4-Discovery Web Page"/>
       <book category="setup"     name="MDK/Boards/ST/STM32F4-Discovery/Documentation/DM00037368.pdf" title="Getting Started"/>
+      <book category="setup"     name="Documentation/32F4-DISCOVERY_QSG.pdf" title="STM32F4-Discovery Quick Start Guide"/>
       <book category="schematic" name="MDK/Boards/ST/STM32F4-Discovery/Documentation/stm32f4discovery_sch.zip" title="Schematics"/>
       <book category="manual"    name="MDK/Boards/ST/STM32F4-Discovery/Documentation/DM00039084.pdf" title="User Manual"/>
       <book category="other"     name="MDK/Boards/ST/STM32F4-Discovery/Documentation/stm32f4discovery_gerber.zip" title="Gerber Files"/>
@@ -2253,6 +2280,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       <image small="MDK/Boards/ST/STM32F429I-Discovery/Documentation/stm32f429i-disco_small.png" large="MDK/Boards/ST/STM32F429I-Discovery/Documentation/stm32f429i-disco.png"/>
       <book category="overview"  name="http://www.st.com/web/catalog/tools/FM116/SC959/SS1532/LN1199/PF259090" title="STM32F429I-Discovery Web Page"/>
       <book category="setup"     name="MDK/Boards/ST/STM32F429I-Discovery/Documentation/DM00092920.pdf" title="Getting Started"/>
+      <book category="setup"     name="Documentation/32F429IDISCOVERY_QSG.pdf" title="STM32F429I-Discovery Quick Start Guide"/>
       <book category="setup"     name="Documentation/STMicroelectronics_Blinky_Lab.pdf" title="STM32F429I-Discovery: Blinky Lab"/>
       <book category="schematic" name="MDK/Boards/ST/STM32F429I-Discovery/Documentation/stm32f429i-disco_sch.zip" title="Schematics"/>
       <book category="manual"    name="MDK/Boards/ST/STM32F429I-Discovery/Documentation/DM00093903.pdf" title="User Manual"/>
@@ -3350,11 +3378,11 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </attributes>
     </example>
 
-    <example name="CAN Data" doc="Abstract.txt" folder="MDK/Boards/Keil/MCBSTM32F400/Middleware/CAN/CAN_Data" version="1.0.0">
+    <example name="CAN" doc="Abstract.txt" folder="MDK/Boards/Keil/MCBSTM32F400/Middleware/CAN/CAN" version="1.0.0">
       <description>CAN example that sends and receives data messages</description>
       <board name="MCBSTM32F400" vendor="Keil"/>
       <project>
-        <environment name="uv" load="CAN_Data.uvprojx"/>
+        <environment name="uv" load="CAN.uvprojx"/>
       </project>
       <attributes>
         <category>Middleware</category>
@@ -3683,7 +3711,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
   </taxonomy>
 
   <apis>
-    <api Cclass="Device" Cgroup="STM32Cube Framework" exclusive="1">
+    <api Cclass="Device" Cgroup="STM32Cube Framework" Capiversion="1.0.0" exclusive="1">
       <description>STM32Cube Framework</description>
       <files>
         <file category="doc" name="MDK/CubeMX/Documentation/index.html"/>
@@ -3731,23 +3759,23 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
         <file category="source" condition="STM32F469xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f469xx.s" attr="config" version="2.4.2"/>
         <file category="source" condition="STM32F479xx_ARMCC"  name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f479xx.s" attr="config" version="2.4.2"/>
         <!-- GCC Toolchain -->
-        <file category="source" condition="STM32F401xC_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f401xc.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F401xE_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f401xe.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F405xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f405xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F407xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f407xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F410Cx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f410cx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F410Rx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f410rx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F410Tx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f410tx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F411xE_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f411xe.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F415xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f415xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F417xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f417xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F427xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f427xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F429xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f429xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F437xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f437xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F439xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f439xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F446xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f446xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F469xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f469xx.s" attr="config" version="2.4.2"/>
-        <file category="source" condition="STM32F479xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f479xx.s" attr="config" version="2.4.2"/>
+        <file category="source" condition="STM32F401xC_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f401xc.S" attr="config" version="2.4.2"/>
+        <file category="source" condition="STM32F401xE_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f401xe.S" attr="config" version="2.4.2"/>
+        <file category="source" condition="STM32F405xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f405xx.S" attr="config" version="2.4.2"/>
+        <file category="source" condition="STM32F407xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f407xx.S" attr="config" version="2.4.2"/>
+        <file category="source" condition="STM32F410Cx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f410cx.S" attr="config" version="2.4.2"/>
+        <file category="source" condition="STM32F410Rx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f410rx.S" attr="config" version="2.4.2"/>
+        <file category="source" condition="STM32F410Tx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f410tx.S" attr="config" version="2.4.2"/>
+        <file category="source" condition="STM32F411xE_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f411xe.S" attr="config" version="2.4.2"/>
+        <file category="source" condition="STM32F415xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f415xx.S" attr="config" version="2.4.2"/>
+        <file category="source" condition="STM32F417xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f417xx.S" attr="config" version="2.4.2"/>
+        <file category="source" condition="STM32F427xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f427xx.S" attr="config" version="2.4.2"/>
+        <file category="source" condition="STM32F429xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f429xx.S" attr="config" version="2.4.2"/>
+        <file category="source" condition="STM32F437xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f437xx.S" attr="config" version="2.4.2"/>
+        <file category="source" condition="STM32F439xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f439xx.S" attr="config" version="2.4.2"/>
+        <file category="source" condition="STM32F446xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f446xx.S" attr="config" version="2.4.2"/>
+        <file category="source" condition="STM32F469xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f469xx.S" attr="config" version="2.4.2"/>
+        <file category="source" condition="STM32F479xx_GCC"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f479xx.S" attr="config" version="2.4.2"/>
         <!-- IAR Toolchain -->
         <file category="source" condition="STM32F401xC_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f401xc.s" attr="config" version="2.4.2"/>
         <file category="source" condition="STM32F401xE_IAR"    name="Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/iar/startup_stm32f401xe.s" attr="config" version="2.4.2"/>
@@ -3772,15 +3800,15 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="Device" Cgroup="STM32Cube Framework" Csub="Classic" Cversion="1.4.2" condition="STM32F4 Framework Classic">
+    <component Cclass="Device" Cgroup="STM32Cube Framework" Csub="Classic" Cversion="1.4.2" Capiversion="1.0.0" condition="STM32F4 Framework Classic">
       <description>Configuration via RTE_Device.h</description>
       <RTE_Components_h>
         #define RTE_DEVICE_FRAMEWORK_CLASSIC
       </RTE_Components_h>
       <files>
         <file category="doc"     name="MDK/CubeMX/Documentation/classic.html"/>
-        <file category="header"  name="CMSIS/Driver/Config/RTE_Device.h" attr="config" version="2.3.0"/>
-        <file category="header"  name="MDK/Templates/Inc/stm32f4xx_hal_conf.h" attr="config"/>
+        <file category="header"  name="CMSIS/Driver/Config/RTE_Device.h" attr="config" version="2.3.1"/>
+        <file category="header"  name="MDK/Templates/Inc/stm32f4xx_hal_conf.h" attr="config" version="1.4.2"/>
         <file category="source"  name="MDK/Templates/Src/stm32f4xx_hal_msp.c"  attr="template" select="MCU Specific HAL Initialization / De-Initialization"/>
         <file category="header"  name="MDK/Templates/Inc/stm32f4xx_it.h" attr="template" select="Exception Handlers and Peripheral IRQ"/>
         <file category="source"  name="MDK/Templates/Src/stm32f4xx_it.c" attr="template" select="Exception Handlers and Peripheral IRQ"/>
@@ -3789,7 +3817,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component generator="STM32CubeMX" Cclass="Device" Cgroup="STM32Cube Framework" Csub="STM32CubeMX" Cversion="1.0.0" condition="STM32F4">
+    <component generator="STM32CubeMX" Cclass="Device" Cgroup="STM32Cube Framework" Csub="STM32CubeMX" Cversion="1.0.0" Capiversion="1.0.0" condition="STM32F4">
       <description>Configuration via STM32CubeMX</description>
       <RTE_Components_h>
         #define RTE_DEVICE_FRAMEWORK_CUBE_MX
@@ -4279,7 +4307,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
 
     <!-- END: STMicroelectronics STM32CubeF4 HAL -->
 
-    <component Cclass="CMSIS Driver" Cgroup="CAN" Capiversion="1.0" Cversion="1.2" condition="STM32F4 CMSIS_Driver CAN">
+    <component Cclass="CMSIS Driver" Cgroup="CAN" Capiversion="1.0" Cversion="1.4" condition="STM32F4 CMSIS_Driver CAN">
       <description>CAN Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_CAN1                /* Driver CAN1 */
@@ -4305,7 +4333,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="CMSIS Driver" Cgroup="USART" Capiversion="2.1" Cversion="2.5" condition="STM32F4 CMSIS_Driver USART">
+    <component Cclass="CMSIS Driver" Cgroup="USART" Capiversion="2.1" Cversion="2.6" condition="STM32F4 CMSIS_Driver USART">
       <description>USART Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_USART1              /* Driver USART1 */
@@ -4344,7 +4372,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="CMSIS Driver" Cgroup="Ethernet MAC" Capiversion="2.1" Cversion="2.5" condition="STM32F4 CMSIS_Driver ETH_MAC">
+    <component Cclass="CMSIS Driver" Cgroup="Ethernet MAC" Capiversion="2.1" Cversion="2.6" condition="STM32F4 CMSIS_Driver ETH_MAC">
       <description>Ethernet MAC Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_ETH_MAC0            /* Driver ETH_MAC0 */
@@ -4376,7 +4404,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="CMSIS Driver" Cgroup="USB Host" Csub="Full-speed" Capiversion="2.0" Cversion="2.16" condition="STM32F4 CMSIS_Driver USB0">
+    <component Cclass="CMSIS Driver" Cgroup="USB Host" Csub="Full-speed" Capiversion="2.0" Cversion="2.18" condition="STM32F4 CMSIS_Driver USB0">
       <description>USB Host Full-Speed Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_USBH0               /* Driver USBH0 */
@@ -4387,7 +4415,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </files>
     </component>
 
-    <component Cclass="CMSIS Driver" Cgroup="USB Host" Csub="High-speed" Capiversion="2.0" Cversion="2.17" condition="STM32F4 CMSIS_Driver USB1">
+    <component Cclass="CMSIS Driver" Cgroup="USB Host" Csub="High-speed" Capiversion="2.0" Cversion="2.19" condition="STM32F4 CMSIS_Driver USB1">
       <description>USB Host High-Speed Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_USBH1               /* Driver USBH1 */
@@ -4535,7 +4563,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
     <component Cclass="Graphics Display" Cgroup="STM32F429I-Discovery" Cvariant="RGB IF" Cversion="1.0.0" condition="STM32F4 HAL LTDC DMA2D Graphics LCD_RGB">
       <description>LCD Configuration for STM32F429I-Discovery LCD</description>
       <files>
-          <file category="source" name="MDK/Boards/ST/STM32F429I-Discovery/Common/LCDConf.c" attr="config"/>
+          <file category="source" name="MDK/Boards/ST/STM32F429I-Discovery/Common/LCDConf.c" attr="config" version="1.0.0"/>
       </files>
     </component>
   </components>

@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013-2015 ARM Ltd.
+ * Copyright (c) 2013-2016 ARM Ltd.
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        04. September 2015
- * $Revision:    V2.3
+ * $Date:        29. March 2016
+ * $Revision:    V2.6
  *
  * Project:      Ethernet Media Access (MAC) Definitions for STM32F4xx
  * -------------------------------------------------------------------------- */
@@ -122,9 +122,6 @@
 /* EMAC Driver state flags */
 #define EMAC_FLAG_INIT      (1 << 0)    // Driver initialized
 #define EMAC_FLAG_POWER     (1 << 1)    // Driver power on
-
-/* PTP subsecond increment value */
-#define PTPSSIR_Val(hclk)     ((0x7FFFFFFFU + (hclk)/2U) / (hclk))
 
 /* TDES0 - DMA Descriptor TX Packet Control/Status */
 #define DMA_TX_OWN      0x80000000U     // Own bit 1=DMA,0=CPU
