@@ -1262,7 +1262,10 @@ void USBD_HS_IRQ (uint32_t gintsts) {
 
   if ((gintsts & OTG_HS_GINTSTS_USBRST) != 0U) {        // Reset interrupt
     OTG->GINTSTS  =  OTG_HS_GINTSTS_USBRST;
-    OTG->GINTMSK |=  OTG_HS_GINTMSK_SOFM;               // Unmask SOF interrupts (to detect initial SOF)
+    
+// [LNP]
+//	OTG->GINTMSK |=  OTG_HS_GINTMSK_SOFM;               // Unmask SOF interrupts (to detect initial SOF)
+
     USBD_Reset();
     usbd_state.active = 0U;
     usbd_state.speed  = ARM_USB_SPEED_FULL;
