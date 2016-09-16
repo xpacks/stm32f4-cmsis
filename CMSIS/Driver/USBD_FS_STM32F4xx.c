@@ -1190,7 +1190,10 @@ void USBD_FS_IRQ (uint32_t gintsts) {
 
   if ((gintsts & OTG_FS_GINTSTS_USBRST) != 0U) {        // Reset interrupt
     OTG->GINTSTS  =  OTG_FS_GINTSTS_USBRST;
-    OTG->GINTMSK |=  OTG_FS_GINTMSK_SOFM;               // Unmask SOF interrupts (to detect initial SOF)
+    
+// [LNP]
+//  OTG->GINTMSK |=  OTG_FS_GINTMSK_SOFM;               // Unmask SOF interrupts (to detect initial SOF)
+
     USBD_Reset();
     usbd_state.active = 0U;
     SignalDeviceEvent(ARM_USBD_EVENT_RESET);

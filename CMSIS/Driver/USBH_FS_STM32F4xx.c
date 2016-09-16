@@ -1170,6 +1170,10 @@ void USBH_FS_IRQ (uint32_t gintsts) {
           ptr_ch->HCINT   = 0x7BBU;                     // Clear all interrupts
           if ((ptr_ch->HCCHAR & (1U << 15)) != 0U) {    // If endpoint IN
             ptr_pipe->active = 0U;                      // Transfer not active any more
+            
+// [LNP]
+            ptr_pipe->in_progress = 0U;                 // Transfer not in progress
+            
             ptr_pipe->event = ARM_USBH_EVENT_TRANSFER_COMPLETE;
           } else {                                      // If endpoint OUT
             ptr_pipe->num_transferred_total += ptr_pipe->num_transferring;
