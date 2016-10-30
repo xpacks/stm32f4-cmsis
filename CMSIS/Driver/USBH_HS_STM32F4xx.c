@@ -712,6 +712,12 @@ static int32_t USBH_PowerControl (ARM_POWER_STATE state) {
 #endif
 
       RCC->AHB1ENR  |=  RCC_AHB1ENR_OTGHSEN;            // OTG HS clock enable
+          
+      // [LNP]
+      // If USB_OTG_HS is used with the internal PHY and the processor goes to sleep
+      // (WFI or WFE), then the OTGHSULPILPEN bit in RCC->AHB1LPENR must be cleared.
+      RCC->AHB1LPENR &= ~RCC_AHB1LPENR_OTGHSULPILPEN;
+
 #else
       HAL_HCD_MspInit(&hhcd_USB_OTG_HS);
 #endif
