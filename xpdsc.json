@@ -7,8 +7,8 @@
 	"vendorName": "Keil",
 	"name": "STM32F4xx_DFP",
 	"description": "STMicroelectronics STM32F4 Series Device Support, Drivers and Examples",
-	"version": "2.9.0",
-	"date": "2016-05-31",
+	"version": "2.10.0",
+	"date": "2016-09-20",
 	"devices": [
 		{
 			"name": "STM32F4 Series",
@@ -953,6 +953,17 @@
 											"n": 48
 										}
 									]
+								},
+								{
+									"name": "STM32F410CBTx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 48
+										}
+									]
 								}
 							]
 						},
@@ -985,6 +996,17 @@
 									"features": [
 										{
 											"name": "QFP",
+											"type": "package",
+											"n": 64
+										}
+									]
+								},
+								{
+									"name": "STM32F410RBIx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "BGA",
 											"type": "package",
 											"n": 64
 										}
@@ -1061,6 +1083,17 @@
 											"n": 48
 										}
 									]
+								},
+								{
+									"name": "STM32F410C8Tx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 48
+										}
+									]
 								}
 							]
 						},
@@ -1093,6 +1126,17 @@
 									"features": [
 										{
 											"name": "QFP",
+											"type": "package",
+											"n": 64
+										}
+									]
+								},
+								{
+									"name": "STM32F410R8Ix",
+									"type": "variant",
+									"features": [
+										{
+											"name": "BGA",
 											"type": "package",
 											"n": 64
 										}

@@ -9,5 +9,5 @@ then
 fi
 
 PDSC_FILE="Keil.STM32F4xx_DFP.pdsc"
-${HOME}/node_modules/xcdl/bin/xcdl-js generate-xpdsc -i ${PDSC_FILE} -o xpdsc.json
+xcdl pdsc-convert --file ${PDSC_FILE} --output xpdsc.json
 
