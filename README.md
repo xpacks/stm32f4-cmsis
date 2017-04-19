@@ -5,7 +5,7 @@ includes the STM32F4 CMSIS files.
 
 ## Version
 
-* v2.9.0
+* v2.10.0
 
 ## Documentation
 
@@ -18,7 +18,7 @@ The list of latest packs is available from [keil.com](https://www.keil.com/dd2/p
 
 The original files are available from the `originals` branch.
 
-These files were extracted from `Keil.STM32F4xx_DFP.2.9.0.pack`.
+These files were extracted from `Keil.STM32F4xx_DFP.2.10.0.pack`.
 
 To save space, the following folders/files were removed:
 
