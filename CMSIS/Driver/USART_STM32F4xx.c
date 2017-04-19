@@ -18,11 +18,12 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        27. May 2016
- * $Revision:    V2.7
+ * $Date:        30. November 2016
+ * $Revision:    V2.8
  *
  * Driver:       Driver_USART1, Driver_USART2, Driver_USART3, Driver_USART4,
  *               Driver_USART5, Driver_USART6, Driver_USART7, Driver_USART8,
+ *               Driver_USART9, Driver_USART10
  * Configured:   via RTE_Device.h or MX_Device.h configuration file
  * Project:      USART Driver for ST STM32F4xx
  * --------------------------------------------------------------------------
@@ -39,9 +40,22 @@
  *   Connect to hardware via Driver_USART# = 6       use USART6
  *   Connect to hardware via Driver_USART# = 7       use UART7
  *   Connect to hardware via Driver_USART# = 8       use UART8
+ *   Connect to hardware via Driver_USART# = 9       use UART9
+ *   Connect to hardware via Driver_USART# = 10      use UART10
+ * --------------------------------------------------------------------------
+ *
+ * When RTE_DEVICE_FRAMEWORK_CLASSIC is used:
+ *  USART IO Speed frequencies can be defined by preprocessor:
+ *    USARTx_GPIO_SPEED_FREQ (where x = 1,2,3 and 6) and 
+ *    UARTy_GPIO_SPEED_FREQ (where y = 4,5,7,8,9 and 10) can be defined as:
+ *      GPIO_SPEED_FREQ_LOW, GPIO_SPEED_FREQ_MEDIUM, 
+ *      GPIO_SPEED_FREQ_HIGH or GPIO_SPEED_FREQ_VERY_HIGH
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.8
+ *    Added port configuration for ports supported by subfamily STM32F413, STM32F423.
+ *    I/O output speed is configurable
  *  Version 2.7
  *    Added port configuration for ports supported by new subfamily.
  *  Version 2.6
@@ -126,7 +140,7 @@ Configuration tab
 
 #include "USART_STM32F4xx.h"
 
-#define ARM_USART_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,7)
+#define ARM_USART_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,8)
 
 // Driver Version
 static const ARM_DRIVER_VERSION usart_driver_version = { ARM_USART_API_VERSION, ARM_USART_DRV_VERSION };
@@ -153,19 +167,19 @@ static USART_INFO          USART1_Info         = { 0U };
 static USART_TRANSFER_INFO USART1_TransferInfo = { 0U };
 
 #ifdef MX_USART1_TX_Pin
-  static USART_PIN USART1_tx = {MX_USART1_TX_GPIOx,  MX_USART1_TX_GPIO_Pin,  MX_USART1_TX_GPIO_AF};
+  static USART_PIN USART1_tx =  {MX_USART1_TX_GPIOx,  MX_USART1_TX_GPIO_Pin,  MX_USART1_TX_GPIO_AF,  MX_USART1_TX_GPIO_PuPd,  MX_USART1_TX_GPIO_Speed};
 #endif
 #ifdef MX_USART1_RX_Pin
-  static USART_PIN USART1_rx = {MX_USART1_RX_GPIOx,  MX_USART1_RX_GPIO_Pin,  MX_USART1_RX_GPIO_AF};
+  static USART_PIN USART1_rx =  {MX_USART1_RX_GPIOx,  MX_USART1_RX_GPIO_Pin,  MX_USART1_RX_GPIO_AF,  MX_USART1_RX_GPIO_PuPd,  MX_USART1_RX_GPIO_Speed};
 #endif
 #ifdef MX_USART1_CK_Pin
-  static USART_PIN USART1_ck = {MX_USART1_CK_GPIOx,  MX_USART1_CK_GPIO_Pin,  MX_USART1_CK_GPIO_AF};
+  static USART_PIN USART1_ck =  {MX_USART1_CK_GPIOx,  MX_USART1_CK_GPIO_Pin,  MX_USART1_CK_GPIO_AF,  MX_USART1_CK_GPIO_PuPd,  MX_USART1_CK_GPIO_Speed};
 #endif
 #ifdef MX_USART1_RTS_Pin
-  static USART_PIN USART1_rts = {MX_USART1_RTS_GPIOx, MX_USART1_RTS_GPIO_Pin, MX_USART1_RTS_GPIO_AF};
+  static USART_PIN USART1_rts = {MX_USART1_RTS_GPIOx, MX_USART1_RTS_GPIO_Pin, MX_USART1_RTS_GPIO_AF, MX_USART1_RTS_GPIO_PuPd, MX_USART1_RTS_GPIO_Speed};
 #endif
 #ifdef MX_USART1_CTS_Pin
-  static USART_PIN USART1_cts = {MX_USART1_CTS_GPIOx, MX_USART1_CTS_GPIO_Pin, MX_USART1_CTS_GPIO_AF};
+  static USART_PIN USART1_cts = {MX_USART1_CTS_GPIOx, MX_USART1_CTS_GPIO_Pin, MX_USART1_CTS_GPIO_AF, MX_USART1_CTS_GPIO_PuPd, MX_USART1_CTS_GPIO_Speed};
 #endif
 
 #ifdef MX_USART1_TX_DMA_Instance
@@ -344,19 +358,19 @@ static USART_INFO          USART2_Info         = { 0U };
 static USART_TRANSFER_INFO USART2_TransferInfo = { 0U };
 
 #ifdef MX_USART2_TX_Pin
-  static USART_PIN USART2_tx = {MX_USART2_TX_GPIOx,  MX_USART2_TX_GPIO_Pin,  MX_USART2_TX_GPIO_AF};
+  static USART_PIN USART2_tx =  {MX_USART2_TX_GPIOx,  MX_USART2_TX_GPIO_Pin,  MX_USART2_TX_GPIO_AF,  MX_USART2_TX_GPIO_PuPd,  MX_USART2_TX_GPIO_Speed};
 #endif
 #ifdef MX_USART2_RX_Pin
-  static USART_PIN USART2_rx = {MX_USART2_RX_GPIOx,  MX_USART2_RX_GPIO_Pin,  MX_USART2_RX_GPIO_AF};
+  static USART_PIN USART2_rx =  {MX_USART2_RX_GPIOx,  MX_USART2_RX_GPIO_Pin,  MX_USART2_RX_GPIO_AF,  MX_USART2_RX_GPIO_PuPd,  MX_USART2_RX_GPIO_Speed};
 #endif
 #ifdef MX_USART2_CK_Pin
-  static USART_PIN USART2_ck = {MX_USART2_CK_GPIOx,  MX_USART2_CK_GPIO_Pin,  MX_USART2_CK_GPIO_AF};
+  static USART_PIN USART2_ck =  {MX_USART2_CK_GPIOx,  MX_USART2_CK_GPIO_Pin,  MX_USART2_CK_GPIO_AF,  MX_USART2_CK_GPIO_PuPd,  MX_USART2_CK_GPIO_Speed};
 #endif
 #ifdef MX_USART2_RTS_Pin
-  static USART_PIN USART2_rts = {MX_USART2_RTS_GPIOx, MX_USART2_RTS_GPIO_Pin, MX_USART2_RTS_GPIO_AF};
+  static USART_PIN USART2_rts = {MX_USART2_RTS_GPIOx, MX_USART2_RTS_GPIO_Pin, MX_USART2_RTS_GPIO_AF, MX_USART2_RTS_GPIO_PuPd, MX_USART2_RTS_GPIO_Speed};
 #endif
 #ifdef MX_USART2_CTS_Pin
-  static USART_PIN USART2_cts = {MX_USART2_CTS_GPIOx, MX_USART2_CTS_GPIO_Pin, MX_USART2_CTS_GPIO_AF};
+  static USART_PIN USART2_cts = {MX_USART2_CTS_GPIOx, MX_USART2_CTS_GPIO_Pin, MX_USART2_CTS_GPIO_AF, MX_USART2_CTS_GPIO_PuPd, MX_USART2_CTS_GPIO_Speed};
 #endif
 
 #ifdef MX_USART2_TX_DMA_Instance
@@ -535,19 +549,19 @@ static USART_INFO          USART3_Info         = { 0U };
 static USART_TRANSFER_INFO USART3_TransferInfo = { 0U };
 
 #ifdef MX_USART3_TX_Pin
-  static USART_PIN USART3_tx = {MX_USART3_TX_GPIOx,  MX_USART3_TX_GPIO_Pin,  MX_USART3_TX_GPIO_AF};
+  static USART_PIN USART3_tx =  {MX_USART3_TX_GPIOx,  MX_USART3_TX_GPIO_Pin,  MX_USART3_TX_GPIO_AF,  MX_USART3_TX_GPIO_PuPd,  MX_USART3_TX_GPIO_Speed};
 #endif
 #ifdef MX_USART3_RX_Pin
-  static USART_PIN USART3_rx = {MX_USART3_RX_GPIOx,  MX_USART3_RX_GPIO_Pin,  MX_USART3_RX_GPIO_AF};
+  static USART_PIN USART3_rx =  {MX_USART3_RX_GPIOx,  MX_USART3_RX_GPIO_Pin,  MX_USART3_RX_GPIO_AF,  MX_USART3_RX_GPIO_PuPd,  MX_USART3_RX_GPIO_Speed};
 #endif
 #ifdef MX_USART3_CK_Pin
-  static USART_PIN USART3_ck = {MX_USART3_CK_GPIOx,  MX_USART3_CK_GPIO_Pin,  MX_USART3_CK_GPIO_AF};
+  static USART_PIN USART3_ck =  {MX_USART3_CK_GPIOx,  MX_USART3_CK_GPIO_Pin,  MX_USART3_CK_GPIO_AF,  MX_USART3_CK_GPIO_PuPd,  MX_USART3_CK_GPIO_Speed};
 #endif
 #ifdef MX_USART3_RTS_Pin
-  static USART_PIN USART3_rts = {MX_USART3_RTS_GPIOx, MX_USART3_RTS_GPIO_Pin, MX_USART3_RTS_GPIO_AF};
+  static USART_PIN USART3_rts = {MX_USART3_RTS_GPIOx, MX_USART3_RTS_GPIO_Pin, MX_USART3_RTS_GPIO_AF, MX_USART3_RTS_GPIO_PuPd, MX_USART3_RTS_GPIO_Speed};
 #endif
 #ifdef MX_USART3_CTS_Pin
-  static USART_PIN USART3_cts = {MX_USART3_CTS_GPIOx, MX_USART3_CTS_GPIO_Pin, MX_USART3_CTS_GPIO_AF};
+  static USART_PIN USART3_cts = {MX_USART3_CTS_GPIOx, MX_USART3_CTS_GPIO_Pin, MX_USART3_CTS_GPIO_AF, MX_USART3_CTS_GPIO_PuPd, MX_USART3_CTS_GPIO_Speed};
 #endif
 
 #ifdef MX_USART3_TX_DMA_Instance
@@ -722,10 +736,10 @@ static USART_INFO          UART4_Info         = { 0U };
 static USART_TRANSFER_INFO UART4_TransferInfo = { 0U };
 
 #ifdef MX_UART4_TX_Pin
-  static USART_PIN UART4_tx = {MX_UART4_TX_GPIOx,  MX_UART4_TX_GPIO_Pin,  MX_UART4_TX_GPIO_AF};
+  static USART_PIN UART4_tx = {MX_UART4_TX_GPIOx,  MX_UART4_TX_GPIO_Pin,  MX_UART4_TX_GPIO_AF, MX_UART4_TX_GPIO_PuPd, MX_UART4_TX_GPIO_Speed};
 #endif
 #ifdef MX_UART4_RX_Pin
-  static USART_PIN UART4_rx = {MX_UART4_RX_GPIOx,  MX_UART4_RX_GPIO_Pin,  MX_UART4_RX_GPIO_AF};
+  static USART_PIN UART4_rx = {MX_UART4_RX_GPIOx,  MX_UART4_RX_GPIO_Pin,  MX_UART4_RX_GPIO_AF, MX_UART4_RX_GPIO_PuPd, MX_UART4_RX_GPIO_Speed};
 #endif
 
 #ifdef MX_UART4_TX_DMA_Instance
@@ -858,10 +872,10 @@ static USART_INFO          UART5_Info         = { 0U };
 static USART_TRANSFER_INFO UART5_TransferInfo = { 0U };
 
 #ifdef MX_UART5_TX_Pin
-  static USART_PIN UART5_tx = {MX_UART5_TX_GPIOx,  MX_UART5_TX_GPIO_Pin,  MX_UART5_TX_GPIO_AF};
+  static USART_PIN UART5_tx = {MX_UART5_TX_GPIOx,  MX_UART5_TX_GPIO_Pin,  MX_UART5_TX_GPIO_AF, MX_UART5_TX_GPIO_PuPd, MX_UART5_TX_GPIO_Speed};
 #endif
 #ifdef MX_UART5_RX_Pin
-  static USART_PIN UART5_rx = {MX_UART5_RX_GPIOx,  MX_UART5_RX_GPIO_Pin,  MX_UART5_RX_GPIO_AF};
+  static USART_PIN UART5_rx = {MX_UART5_RX_GPIOx,  MX_UART5_RX_GPIO_Pin,  MX_UART5_RX_GPIO_AF, MX_UART5_RX_GPIO_PuPd, MX_UART5_RX_GPIO_Speed};
 #endif
 
 #ifdef MX_UART5_TX_DMA_Instance
@@ -998,19 +1012,19 @@ static USART_INFO          USART6_Info         = { 0U };
 static USART_TRANSFER_INFO USART6_TransferInfo = { 0U };
 
 #ifdef MX_USART6_TX_Pin
-  static USART_PIN USART6_tx = {MX_USART6_TX_GPIOx,  MX_USART6_TX_GPIO_Pin,  MX_USART6_TX_GPIO_AF};
+  static USART_PIN USART6_tx = {MX_USART6_TX_GPIOx,  MX_USART6_TX_GPIO_Pin,  MX_USART6_TX_GPIO_AF,  MX_USART6_TX_GPIO_PuPd,  MX_USART6_TX_GPIO_Speed};
 #endif
 #ifdef MX_USART6_RX_Pin
-  static USART_PIN USART6_rx = {MX_USART6_RX_GPIOx,  MX_USART6_RX_GPIO_Pin,  MX_USART6_RX_GPIO_AF};
+  static USART_PIN USART6_rx = {MX_USART6_RX_GPIOx,  MX_USART6_RX_GPIO_Pin,  MX_USART6_RX_GPIO_AF,  MX_USART6_RX_GPIO_PuPd,  MX_USART6_RX_GPIO_Speed};
 #endif
 #ifdef MX_USART6_CK_Pin
-  static USART_PIN USART6_ck = {MX_USART6_CK_GPIOx,  MX_USART6_CK_GPIO_Pin,  MX_USART6_CK_GPIO_AF};
+  static USART_PIN USART6_ck = {MX_USART6_CK_GPIOx,  MX_USART6_CK_GPIO_Pin,  MX_USART6_CK_GPIO_AF,  MX_USART6_CK_GPIO_PuPd,  MX_USART6_CK_GPIO_Speed};
 #endif
 #ifdef MX_USART6_RTS_Pin
-  static USART_PIN USART6_rts = {MX_USART6_RTS_GPIOx, MX_USART6_RTS_GPIO_Pin, MX_USART6_RTS_GPIO_AF};
+  static USART_PIN USART6_rts = {MX_USART6_RTS_GPIOx, MX_USART6_RTS_GPIO_Pin, MX_USART6_RTS_GPIO_AF, MX_USART6_RTS_GPIO_PuPd, MX_USART6_RTS_GPIO_Speed};
 #endif
 #ifdef MX_USART6_CTS_Pin
-  static USART_PIN USART6_cts = {MX_USART6_CTS_GPIOx, MX_USART6_CTS_GPIO_Pin, MX_USART6_CTS_GPIO_AF};
+  static USART_PIN USART6_cts = {MX_USART6_CTS_GPIOx, MX_USART6_CTS_GPIO_Pin, MX_USART6_CTS_GPIO_AF, MX_USART6_CTS_GPIO_PuPd, MX_USART6_CTS_GPIO_Speed};
 #endif
 
 #ifdef MX_USART6_TX_DMA_Instance
@@ -1185,10 +1199,10 @@ static USART_INFO          UART7_Info         = { 0U };
 static USART_TRANSFER_INFO UART7_TransferInfo = { 0U };
 
 #ifdef MX_UART7_TX_Pin
-  static USART_PIN UART7_tx = {MX_UART7_TX_GPIOx,  MX_UART7_TX_GPIO_Pin,  MX_UART7_TX_GPIO_AF};
+  static USART_PIN UART7_tx = {MX_UART7_TX_GPIOx,  MX_UART7_TX_GPIO_Pin,  MX_UART7_TX_GPIO_AF, MX_UART7_TX_GPIO_PuPd, MX_UART7_TX_GPIO_Speed};
 #endif
 #ifdef MX_UART7_RX_Pin
-  static USART_PIN UART7_rx = {MX_UART7_RX_GPIOx,  MX_UART7_RX_GPIO_Pin,  MX_UART7_RX_GPIO_AF};
+  static USART_PIN UART7_rx = {MX_UART7_RX_GPIOx,  MX_UART7_RX_GPIO_Pin,  MX_UART7_RX_GPIO_AF, MX_UART7_RX_GPIO_PuPd, MX_UART7_RX_GPIO_Speed};
 #endif
 
 #ifdef MX_UART7_TX_DMA_Instance
@@ -1321,10 +1335,10 @@ static USART_INFO          UART8_Info         = { 0U };
 static USART_TRANSFER_INFO UART8_TransferInfo = { 0U };
 
 #ifdef MX_UART8_TX_Pin
-  static USART_PIN UART8_tx = {MX_UART8_TX_GPIOx,  MX_UART8_TX_GPIO_Pin,  MX_UART8_TX_GPIO_AF};
+  static USART_PIN UART8_tx = {MX_UART8_TX_GPIOx,  MX_UART8_TX_GPIO_Pin,  MX_UART8_TX_GPIO_AF, MX_UART8_TX_GPIO_PuPd, MX_UART8_TX_GPIO_Speed};
 #endif
 #ifdef MX_UART8_RX_Pin
-  static USART_PIN UART8_rx = {MX_UART8_RX_GPIOx,  MX_UART8_RX_GPIO_Pin,  MX_UART8_RX_GPIO_AF};
+  static USART_PIN UART8_rx = {MX_UART8_RX_GPIOx,  MX_UART8_RX_GPIO_Pin,  MX_UART8_RX_GPIO_AF, MX_UART8_RX_GPIO_PuPd, MX_UART8_RX_GPIO_Speed};
 #endif
 
 #ifdef MX_UART8_TX_DMA_Instance
@@ -1439,6 +1453,278 @@ static const USART_RESOURCES USART8_Resources = {
 };
 #endif
 
+// UART9
+#ifdef MX_UART9
+
+#ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
+#if (MX_UART9_VM == Asynchronous)
+extern UART_HandleTypeDef huart9;
+#elif (MX_UART9_VM == IrDA)
+extern IRDA_HandleTypeDef hirda9;
+#else
+#error "Incorrect virtual mode is selected"
+#endif
+#endif
+
+// UART9 Run-Time Information
+static USART_INFO          UART9_Info         = { 0U };
+static USART_TRANSFER_INFO UART9_TransferInfo = { 0U };
+
+#ifdef MX_UART9_TX_Pin
+  static USART_PIN UART9_tx = {MX_UART9_TX_GPIOx,  MX_UART9_TX_GPIO_Pin,  MX_UART9_TX_GPIO_AF, MX_UART9_TX_GPIO_PuPd, MX_UART9_TX_GPIO_Speed};
+#endif
+#ifdef MX_UART9_RX_Pin
+  static USART_PIN UART9_rx = {MX_UART9_RX_GPIOx,  MX_UART9_RX_GPIO_Pin,  MX_UART9_RX_GPIO_AF, MX_UART9_RX_GPIO_PuPd, MX_UART9_RX_GPIO_Speed};
+#endif
+
+#ifdef MX_UART9_TX_DMA_Instance
+  void UART9_TX_DMA_Complete (DMA_HandleTypeDef *hdma);
+
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+  static DMA_HandleTypeDef hdma_uart9_tx = { 0U };
+#else
+  extern DMA_HandleTypeDef hdma_uart9_tx;
+#endif
+  static USART_DMA UART9_DMA_Tx = {
+    &hdma_uart9_tx,
+    UART9_TX_DMA_Complete,
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+    MX_UART9_TX_DMA_Instance,
+    MX_UART9_TX_DMA_Channel,
+    MX_UART9_TX_DMA_Priority,
+    MX_UART9_TX_DMA_IRQn
+#endif
+  };
+#endif
+#ifdef MX_UART9_RX_DMA_Instance
+  void UART9_RX_DMA_Complete (DMA_HandleTypeDef *hdma);
+
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+  static DMA_HandleTypeDef hdma_uart9_rx = { 0U };
+#else
+  extern DMA_HandleTypeDef hdma_uart9_rx;
+#endif
+  static USART_DMA UART9_DMA_Rx = {
+    &hdma_uart9_rx,
+    UART9_RX_DMA_Complete,
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+    MX_UART9_RX_DMA_Instance,
+    MX_UART9_RX_DMA_Channel,
+    MX_UART9_RX_DMA_Priority,
+    MX_UART9_RX_DMA_IRQn
+#endif
+  };
+#endif
+
+// UART9 Resources
+static const USART_RESOURCES USART9_Resources = {
+#ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
+#if (MX_UART9_VM == Asynchronous)
+  &huart9,
+  VM_ASYNC,
+#elif (MX_UART9_VM == IrDA)
+  &hirda9,
+  VM_IRDA,
+#endif
+#endif
+  {     // Capabilities
+    1,  // supports UART (Asynchronous) mode
+    0,  // supports Synchronous Master mode
+    0,  // supports Synchronous Slave mode
+    1,  // supports UART Single-wire mode
+    1,  // supports UART IrDA mode
+    0,  // supports UART Smart Card mode
+    0,  // Smart Card Clock generator
+    0,  // RTS Flow Control available
+    0,  // CTS Flow Control available
+    1,  // Transmit completed event: \ref ARM_USART_EVENT_TX_COMPLETE
+    1,  // Signal receive character timeout event: \ref ARM_USART_EVENT_RX_TIMEOUT
+    0,  // RTS Line: 0=not available, 1=available
+    0,  // CTS Line: 0=not available, 1=available
+    0,  // DTR Line: 0=not available, 1=available
+    0,  // DSR Line: 0=not available, 1=available
+    0,  // DCD Line: 0=not available, 1=available
+    0,  // RI Line: 0=not available, 1=available
+    0,  // Signal CTS change event: \ref ARM_USART_EVENT_CTS
+    0,  // Signal DSR change event: \ref ARM_USART_EVENT_DSR
+    0,  // Signal DCD change event: \ref ARM_USART_EVENT_DCD
+    0,  // Signal RI change event: \ref ARM_USART_EVENT_RI
+  },
+
+    UART9,
+    HAL_RCC_GetPCLK2Freq,
+
+  // PINS
+  {
+#ifdef MX_UART9_TX_Pin
+    &UART9_tx,
+#else
+    NULL,
+#endif
+#ifdef MX_UART9_RX_Pin
+    &UART9_rx,
+#else
+    NULL,
+#endif
+    NULL,
+    NULL,
+    NULL,
+  },
+
+    UART9_IRQn,
+
+#ifdef MX_UART9_TX_DMA_Instance
+  &UART9_DMA_Tx,
+#else
+  NULL,
+#endif
+#ifdef MX_UART9_RX_DMA_Instance
+  &UART9_DMA_Rx,
+#else
+  NULL,
+#endif
+
+  &UART9_Info,
+  &UART9_TransferInfo
+};
+#endif
+
+// UART10
+#ifdef MX_UART10
+
+#ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
+#if (MX_UART10_VM == Asynchronous)
+extern UART_HandleTypeDef huart10;
+#elif (MX_UART10_VM == IrDA)
+extern IRDA_HandleTypeDef hirda10;
+#else
+#error "Incorrect virtual mode is selected"
+#endif
+#endif
+
+// UART10 Run-Time Information
+static USART_INFO          UART10_Info         = { 0U };
+static USART_TRANSFER_INFO UART10_TransferInfo = { 0U };
+
+#ifdef MX_UART10_TX_Pin
+  static USART_PIN UART10_tx = {MX_UART10_TX_GPIOx,  MX_UART10_TX_GPIO_Pin,  MX_UART10_TX_GPIO_AF, MX_UART10_TX_GPIO_PuPd, MX_UART10_TX_GPIO_Speed};
+#endif
+#ifdef MX_UART10_RX_Pin
+  static USART_PIN UART10_rx = {MX_UART10_RX_GPIOx,  MX_UART10_RX_GPIO_Pin,  MX_UART10_RX_GPIO_AF, MX_UART10_RX_GPIO_PuPd, MX_UART10_RX_GPIO_Speed};
+#endif
+
+#ifdef MX_UART10_TX_DMA_Instance
+  void UART10_TX_DMA_Complete (DMA_HandleTypeDef *hdma);
+
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+  static DMA_HandleTypeDef hdma_uart10_tx = { 0U };
+#else
+  extern DMA_HandleTypeDef hdma_uart10_tx;
+#endif
+  static USART_DMA UART10_DMA_Tx = {
+    &hdma_uart10_tx,
+    UART10_TX_DMA_Complete,
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+    MX_UART10_TX_DMA_Instance,
+    MX_UART10_TX_DMA_Channel,
+    MX_UART10_TX_DMA_Priority,
+    MX_UART10_TX_DMA_IRQn
+#endif
+  };
+#endif
+#ifdef MX_UART10_RX_DMA_Instance
+  void UART10_RX_DMA_Complete (DMA_HandleTypeDef *hdma);
+
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+  static DMA_HandleTypeDef hdma_uart10_rx = { 0U };
+#else
+  extern DMA_HandleTypeDef hdma_uart10_rx;
+#endif
+  static USART_DMA UART10_DMA_Rx = {
+    &hdma_uart10_rx,
+    UART10_RX_DMA_Complete,
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+    MX_UART10_RX_DMA_Instance,
+    MX_UART10_RX_DMA_Channel,
+    MX_UART10_RX_DMA_Priority,
+    MX_UART10_RX_DMA_IRQn
+#endif
+  };
+#endif
+
+// UART10 Resources
+static const USART_RESOURCES USART10_Resources = {
+#ifdef RTE_DEVICE_FRAMEWORK_CUBE_MX
+#if (MX_UART10_VM == Asynchronous)
+  &huart10,
+  VM_ASYNC,
+#elif (MX_UART10_VM == IrDA)
+  &hirda10,
+  VM_IRDA,
+#endif
+#endif
+  {     // Capabilities
+    1,  // supports UART (Asynchronous) mode
+    0,  // supports Synchronous Master mode
+    0,  // supports Synchronous Slave mode
+    1,  // supports UART Single-wire mode
+    1,  // supports UART IrDA mode
+    0,  // supports UART Smart Card mode
+    0,  // Smart Card Clock generator
+    0,  // RTS Flow Control available
+    0,  // CTS Flow Control available
+    1,  // Transmit completed event: \ref ARM_USART_EVENT_TX_COMPLETE
+    1,  // Signal receive character timeout event: \ref ARM_USART_EVENT_RX_TIMEOUT
+    0,  // RTS Line: 0=not available, 1=available
+    0,  // CTS Line: 0=not available, 1=available
+    0,  // DTR Line: 0=not available, 1=available
+    0,  // DSR Line: 0=not available, 1=available
+    0,  // DCD Line: 0=not available, 1=available
+    0,  // RI Line: 0=not available, 1=available
+    0,  // Signal CTS change event: \ref ARM_USART_EVENT_CTS
+    0,  // Signal DSR change event: \ref ARM_USART_EVENT_DSR
+    0,  // Signal DCD change event: \ref ARM_USART_EVENT_DCD
+    0,  // Signal RI change event: \ref ARM_USART_EVENT_RI
+  },
+
+    UART10,
+    HAL_RCC_GetPCLK2Freq,
+
+  // PINS
+  {
+#ifdef MX_UART10_TX_Pin
+    &UART10_tx,
+#else
+    NULL,
+#endif
+#ifdef MX_UART10_RX_Pin
+    &UART10_rx,
+#else
+    NULL,
+#endif
+    NULL,
+    NULL,
+    NULL,
+  },
+
+    UART10_IRQn,
+
+#ifdef MX_UART10_TX_DMA_Instance
+  &UART10_DMA_Tx,
+#else
+  NULL,
+#endif
+#ifdef MX_UART10_RX_DMA_Instance
+  &UART10_DMA_Rx,
+#else
+  NULL,
+#endif
+
+  &UART10_Info,
+  &UART10_TransferInfo
+};
+#endif
+
 // Function prototypes
 void USART_IRQHandler (const USART_RESOURCES *usart);
 #ifdef __USART_DMA_TX
@@ -1514,6 +1800,12 @@ static void USART_PeripheralReset (USART_TypeDef *usart) {
 #ifdef UART8
   else if (usart == UART8)  { __HAL_RCC_UART8_FORCE_RESET();  }
 #endif
+#ifdef UART9
+  else if (usart == UART9)  { __HAL_RCC_UART9_FORCE_RESET();  }
+#endif
+#ifdef UART10
+  else if (usart == UART10) { __HAL_RCC_UART10_FORCE_RESET(); }
+#endif
 
       __NOP(); __NOP(); __NOP(); __NOP(); 
 
@@ -1536,6 +1828,12 @@ static void USART_PeripheralReset (USART_TypeDef *usart) {
 #endif
 #ifdef UART8
   else if (usart == UART8)  { __HAL_RCC_UART8_RELEASE_RESET();  }
+#endif
+#ifdef UART9
+  else if (usart == UART9)  { __HAL_RCC_UART9_RELEASE_RESET();  }
+#endif
+#ifdef UART10
+  else if (usart == UART10) { __HAL_RCC_UART10_RELEASE_RESET(); }
 #endif
 }
 
@@ -1818,6 +2116,12 @@ static int32_t USART_PowerControl (      ARM_POWER_STATE  state,
     #ifdef UART8
       else if (usart->reg == UART8)  { __HAL_RCC_UART8_CLK_DISABLE();  }
     #endif
+    #ifdef UART9
+      else if (usart->reg == UART9)  { __HAL_RCC_UART9_CLK_DISABLE();  }
+    #endif
+    #ifdef UART10
+      else if (usart->reg == UART10) { __HAL_RCC_UART10_CLK_DISABLE(); }
+    #endif
 #endif
 
       // Clear Status flags
@@ -1883,6 +2187,12 @@ static int32_t USART_PowerControl (      ARM_POWER_STATE  state,
     #endif
     #ifdef UART8
       else if (usart->reg == UART8)  { __HAL_RCC_UART8_CLK_ENABLE();  }
+    #endif
+    #ifdef UART9
+      else if (usart->reg == UART9)  { __HAL_RCC_UART9_CLK_ENABLE();  }
+    #endif
+    #ifdef UART10
+      else if (usart->reg == UART10) { __HAL_RCC_UART10_CLK_ENABLE(); }
     #endif
 
       // Clear and Enable USART IRQ
@@ -2360,8 +2670,8 @@ static int32_t USART_Control (      uint32_t          control,
           // USART TX pin function selected
           GPIO_InitStruct.Pin       = usart->io.tx->pin;
           GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
-          GPIO_InitStruct.Pull      = GPIO_NOPULL;
-          GPIO_InitStruct.Speed     = GPIO_SPEED_LOW;
+          GPIO_InitStruct.Pull      = usart->io.tx->pupd;
+          GPIO_InitStruct.Speed     = usart->io.tx->speed;
           GPIO_InitStruct.Alternate = usart->io.tx->af;
           HAL_GPIO_Init(usart->io.tx->port, &GPIO_InitStruct);
         }
@@ -2392,8 +2702,8 @@ static int32_t USART_Control (      uint32_t          control,
           // USART RX pin function selected
           GPIO_InitStruct.Pin       = usart->io.rx->pin;
           GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
-          GPIO_InitStruct.Pull      = GPIO_NOPULL;
-          GPIO_InitStruct.Speed     = GPIO_SPEED_LOW;
+          GPIO_InitStruct.Pull      = usart->io.rx->pupd;
+          GPIO_InitStruct.Speed     = usart->io.rx->speed;
           GPIO_InitStruct.Alternate = usart->io.rx->af;
           HAL_GPIO_Init(usart->io.rx->port, &GPIO_InitStruct);
         }
@@ -2689,8 +2999,8 @@ static int32_t USART_Control (      uint32_t          control,
       // USART TX pin function selected
       GPIO_InitStruct.Pin       = usart->io.tx->pin;
       GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
-      GPIO_InitStruct.Pull      = GPIO_NOPULL;
-      GPIO_InitStruct.Speed     = GPIO_SPEED_LOW;
+      GPIO_InitStruct.Pull      = usart->io.tx->pupd;
+      GPIO_InitStruct.Speed     = usart->io.tx->speed;
       GPIO_InitStruct.Alternate = usart->io.tx->af;
       HAL_GPIO_Init(usart->io.tx->port, &GPIO_InitStruct);
       break;
@@ -2700,8 +3010,8 @@ static int32_t USART_Control (      uint32_t          control,
         // USART TX pin function selected
         GPIO_InitStruct.Pin       = usart->io.tx->pin;
         GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
-        GPIO_InitStruct.Pull      = GPIO_NOPULL;
-        GPIO_InitStruct.Speed     = GPIO_SPEED_LOW;
+        GPIO_InitStruct.Pull      = usart->io.tx->pupd;
+        GPIO_InitStruct.Speed     = usart->io.tx->speed;
         GPIO_InitStruct.Alternate = usart->io.tx->af;
         HAL_GPIO_Init(usart->io.tx->port, &GPIO_InitStruct);
       } else {
@@ -2723,8 +3033,8 @@ static int32_t USART_Control (      uint32_t          control,
         // USART RX pin function selected
         GPIO_InitStruct.Pin       = usart->io.rx->pin;
         GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
-        GPIO_InitStruct.Pull      = GPIO_NOPULL;
-        GPIO_InitStruct.Speed     = GPIO_SPEED_LOW;
+        GPIO_InitStruct.Pull      = usart->io.rx->pupd;
+        GPIO_InitStruct.Speed     = usart->io.rx->speed;
         GPIO_InitStruct.Alternate = usart->io.rx->af;
         HAL_GPIO_Init(usart->io.rx->port, &GPIO_InitStruct);
       } else {
@@ -2742,8 +3052,8 @@ static int32_t USART_Control (      uint32_t          control,
         // USART CK pin function selected
         GPIO_InitStruct.Pin       = usart->io.ck->pin;
         GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
-        GPIO_InitStruct.Pull      = GPIO_NOPULL;
-        GPIO_InitStruct.Speed     = GPIO_SPEED_LOW;
+        GPIO_InitStruct.Pull      = usart->io.ck->pupd;
+        GPIO_InitStruct.Speed     = usart->io.ck->speed;
         GPIO_InitStruct.Alternate = usart->io.ck->af;
         HAL_GPIO_Init(usart->io.ck->port, &GPIO_InitStruct);
         break;
@@ -2761,16 +3071,16 @@ static int32_t USART_Control (      uint32_t          control,
       // USART RTS Alternate function
       GPIO_InitStruct.Pin       = usart->io.rts->pin;
       GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
-      GPIO_InitStruct.Pull      = GPIO_NOPULL;
-      GPIO_InitStruct.Speed     = GPIO_SPEED_LOW;
+      GPIO_InitStruct.Pull      = usart->io.rts->pupd;
+      GPIO_InitStruct.Speed     = usart->io.rts->speed;
       GPIO_InitStruct.Alternate = usart->io.rts->af;
       HAL_GPIO_Init(usart->io.rts->port, &GPIO_InitStruct);
     } else {
       // GPIO output
       GPIO_InitStruct.Pin       = usart->io.rts->pin;
       GPIO_InitStruct.Mode      = GPIO_MODE_OUTPUT_PP;
-      GPIO_InitStruct.Pull      = GPIO_NOPULL;
-      GPIO_InitStruct.Speed     = GPIO_SPEED_LOW;
+      GPIO_InitStruct.Pull      = usart->io.rts->pupd;
+      GPIO_InitStruct.Speed     = usart->io.rts->speed;
       HAL_GPIO_Init(usart->io.rts->port, &GPIO_InitStruct);
     }
   }
@@ -2782,16 +3092,16 @@ static int32_t USART_Control (      uint32_t          control,
       // USART CTS Alternate function
       GPIO_InitStruct.Pin       = usart->io.cts->pin;
       GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
-      GPIO_InitStruct.Pull      = GPIO_NOPULL;
-      GPIO_InitStruct.Speed     = GPIO_SPEED_LOW;
+      GPIO_InitStruct.Pull      = usart->io.cts->pupd;
+      GPIO_InitStruct.Speed     = usart->io.cts->speed;
       GPIO_InitStruct.Alternate = usart->io.cts->af;
       HAL_GPIO_Init(usart->io.cts->port, &GPIO_InitStruct);
     } else {
       // GPIO input
       GPIO_InitStruct.Pin       = usart->io.cts->pin;
       GPIO_InitStruct.Mode      = GPIO_MODE_INPUT;
-      GPIO_InitStruct.Pull      = GPIO_NOPULL;
-      GPIO_InitStruct.Speed     = GPIO_SPEED_LOW;
+      GPIO_InitStruct.Pull      = usart->io.cts->pupd;
+      GPIO_InitStruct.Speed     = usart->io.cts->speed;
       HAL_GPIO_Init(usart->io.cts->port, &GPIO_InitStruct);
     }
   }
@@ -3612,6 +3922,118 @@ ARM_DRIVER_USART Driver_USART8 = {
     USART8_GetStatus,
     USART8_SetModemControl,
     USART8_GetModemStatus
+};
+#endif
+
+#ifdef MX_UART9
+// USART9 Driver Wrapper functions
+static ARM_USART_CAPABILITIES  USART9_GetCapabilities (void)                                                { return USART_GetCapabilities (&USART9_Resources); }
+static int32_t                 USART9_Initialize      (ARM_USART_SignalEvent_t cb_event)                    { return USART_Initialize (cb_event, &USART9_Resources); }
+static int32_t                 USART9_Uninitialize    (void)                                                { return USART_Uninitialize (&USART9_Resources); }
+static int32_t                 USART9_PowerControl    (ARM_POWER_STATE state)                               { return USART_PowerControl (state, &USART9_Resources); }
+static int32_t                 USART9_Send            (const void *data, uint32_t num)                      { return USART_Send (data, num, &USART9_Resources); }
+static int32_t                 USART9_Receive         (void *data, uint32_t num)                            { return USART_Receive (data, num, &USART9_Resources); }
+static int32_t                 USART9_Transfer        (const void *data_out, void *data_in, uint32_t num)   { return USART_Transfer (data_out, data_in, num, &USART9_Resources); }
+static uint32_t                USART9_GetTxCount      (void)                                                { return USART_GetTxCount (&USART9_Resources); }
+static uint32_t                USART9_GetRxCount      (void)                                                { return USART_GetRxCount (&USART9_Resources); }
+static int32_t                 USART9_Control         (uint32_t control, uint32_t arg)                      { return USART_Control (control, arg, &USART9_Resources); }
+static ARM_USART_STATUS        USART9_GetStatus       (void)                                                { return USART_GetStatus (&USART9_Resources); }
+static int32_t                 USART9_SetModemControl (ARM_USART_MODEM_CONTROL control)                     { return USART_SetModemControl (control, &USART9_Resources); }
+static ARM_USART_MODEM_STATUS  USART9_GetModemStatus  (void)                                                { return USART_GetModemStatus (&USART9_Resources); }
+       void                    UART9_IRQHandler       (void)                                                {        USART_IRQHandler (&USART9_Resources); }
+#ifdef MX_UART9_TX_DMA_Instance
+      void                     UART8_TX_DMA_Complete (DMA_HandleTypeDef *hdma)                             {        USART_TX_DMA_Complete(&USART9_Resources); }
+
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+void UART9_TX_DMA_Handler (void) {
+  HAL_NVIC_ClearPendingIRQ(MX_UART9_TX_DMA_IRQn);
+  HAL_DMA_IRQHandler(&hdma_uart9_tx);
+}
+#endif
+#endif
+#ifdef MX_UART9_RX_DMA_Instance
+      void                     UART9_RX_DMA_Complete (DMA_HandleTypeDef *hdma)                             {        USART_RX_DMA_Complete(&USART9_Resources); }
+
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+void UART9_RX_DMA_Handler (void) {
+  HAL_NVIC_ClearPendingIRQ(MX_UART9_RX_DMA_IRQn);
+  HAL_DMA_IRQHandler(&hdma_uart9_rx);
+}
+#endif
+#endif
+
+// USART9 Driver Control Block
+ARM_DRIVER_USART Driver_USART9 = {
+    USARTx_GetVersion,
+    USART9_GetCapabilities,
+    USART9_Initialize,
+    USART9_Uninitialize,
+    USART9_PowerControl,
+    USART9_Send, 
+    USART9_Receive,
+    USART9_Transfer,
+    USART9_GetTxCount,
+    USART9_GetRxCount,
+    USART9_Control,
+    USART9_GetStatus,
+    USART9_SetModemControl,
+    USART9_GetModemStatus
+};
+#endif
+
+#ifdef MX_UART10
+// USART10 Driver Wrapper functions
+static ARM_USART_CAPABILITIES  USART10_GetCapabilities (void)                                                { return USART_GetCapabilities (&USART10_Resources); }
+static int32_t                 USART10_Initialize      (ARM_USART_SignalEvent_t cb_event)                    { return USART_Initialize (cb_event, &USART10_Resources); }
+static int32_t                 USART10_Uninitialize    (void)                                                { return USART_Uninitialize (&USART10_Resources); }
+static int32_t                 USART10_PowerControl    (ARM_POWER_STATE state)                               { return USART_PowerControl (state, &USART10_Resources); }
+static int32_t                 USART10_Send            (const void *data, uint32_t num)                      { return USART_Send (data, num, &USART10_Resources); }
+static int32_t                 USART10_Receive         (void *data, uint32_t num)                            { return USART_Receive (data, num, &USART10_Resources); }
+static int32_t                 USART10_Transfer        (const void *data_out, void *data_in, uint32_t num)   { return USART_Transfer (data_out, data_in, num, &USART10_Resources); }
+static uint32_t                USART10_GetTxCount      (void)                                                { return USART_GetTxCount (&USART10_Resources); }
+static uint32_t                USART10_GetRxCount      (void)                                                { return USART_GetRxCount (&USART10_Resources); }
+static int32_t                 USART10_Control         (uint32_t control, uint32_t arg)                      { return USART_Control (control, arg, &USART10_Resources); }
+static ARM_USART_STATUS        USART10_GetStatus       (void)                                                { return USART_GetStatus (&USART10_Resources); }
+static int32_t                 USART10_SetModemControl (ARM_USART_MODEM_CONTROL control)                     { return USART_SetModemControl (control, &USART10_Resources); }
+static ARM_USART_MODEM_STATUS  USART10_GetModemStatus  (void)                                                { return USART_GetModemStatus (&USART10_Resources); }
+       void                    UART10_IRQHandler       (void)                                                {        USART_IRQHandler (&USART10_Resources); }
+#ifdef MX_UART8_TX_DMA_Instance
+      void                     UART8_TX_DMA_Complete (DMA_HandleTypeDef *hdma)                             {        USART_TX_DMA_Complete(&USART10_Resources); }
+
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+void UART10_TX_DMA_Handler (void) {
+  HAL_NVIC_ClearPendingIRQ(MX_UART10_TX_DMA_IRQn);
+  HAL_DMA_IRQHandler(&hdma_uart10_tx);
+}
+#endif
+#endif
+#ifdef MX_UART10_RX_DMA_Instance
+      void                     UART10_RX_DMA_Complete (DMA_HandleTypeDef *hdma)                             {        USART_RX_DMA_Complete(&USART10_Resources); }
+
+#ifdef RTE_DEVICE_FRAMEWORK_CLASSIC
+void UART10_RX_DMA_Handler (void) {
+  HAL_NVIC_ClearPendingIRQ(MX_UART10_RX_DMA_IRQn);
+  HAL_DMA_IRQHandler(&hdma_uart10_rx);
+}
+#endif
+#endif
+
+// USART10 Driver Control Block
+ARM_DRIVER_USART Driver_USART10 = {
+    USARTx_GetVersion,
+    USART10_GetCapabilities,
+    USART10_Initialize,
+    USART10_Uninitialize,
+    USART10_PowerControl,
+    USART10_Send, 
+    USART10_Receive,
+    USART10_Transfer,
+    USART10_GetTxCount,
+    USART10_GetRxCount,
+    USART10_Control,
+    USART10_GetStatus,
+    USART10_SetModemControl,
+    USART10_GetModemStatus
 };
 #endif
 

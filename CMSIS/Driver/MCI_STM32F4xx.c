@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        27. May 2016
- * $Revision:    V2.6
+ * $Date:        5. December 2016
+ * $Revision:    V2.7
  *
  * Driver:       Driver_MCI0
  * Configured:   via RTE_Device.h configuration file
@@ -34,6 +34,8 @@
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.7
+ *    Updated pin Configuration/Unconfiguration
  *  Version 2.6
  *    Added port configuration for ports supported by new subfamily.
  *  Version 2.5
@@ -182,6 +184,26 @@ extern DMA_HandleTypeDef hdma_sdio_rx;
 extern DMA_HandleTypeDef hdma_sdio_tx;
 #endif
 
+#if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
+/* MCI0 I/O pin configuration */
+static MCI_IO mci_io[] = {
+/* CMD */{RTE_SDIO_CMD_PORT, RTE_SDIO_CMD_PIN, GPIO_PULLUP, GPIO_AF12_SDIO},
+/* CK */ {RTE_SDIO_CK_PORT,  RTE_SDIO_CK_PIN,  GPIO_NOPULL, GPIO_AF12_SDIO},
+/* D0 */ {RTE_SDIO_D0_PORT,  RTE_SDIO_D0_PIN,  GPIO_PULLUP, GPIO_AF12_SDIO},
+#if (MCI_BUS_WIDTH_4 != 0)
+/* D1 */ {RTE_SDIO_D1_PORT,  RTE_SDIO_D1_PIN,  GPIO_PULLUP, GPIO_AF12_SDIO},
+/* D2 */ {RTE_SDIO_D2_PORT,  RTE_SDIO_D2_PIN,  GPIO_PULLUP, GPIO_AF12_SDIO},
+/* D3 */ {RTE_SDIO_D3_PORT,  RTE_SDIO_D3_PIN,  GPIO_PULLUP, GPIO_AF12_SDIO},
+#endif
+#if (MCI_BUS_WIDTH_8 != 0)
+/* D4 */ {RTE_SDIO_D4_PORT,  RTE_SDIO_D4_PIN,  GPIO_PULLUP, GPIO_AF12_SDIO},
+/* D5 */ {RTE_SDIO_D5_PORT,  RTE_SDIO_D5_PIN,  GPIO_PULLUP, GPIO_AF12_SDIO},
+/* D6 */ {RTE_SDIO_D6_PORT,  RTE_SDIO_D6_PIN,  GPIO_PULLUP, GPIO_AF12_SDIO},
+/* D7 */ {RTE_SDIO_D7_PORT,  RTE_SDIO_D7_PIN,  GPIO_PULLUP, GPIO_AF12_SDIO},
+#endif
+};
+#endif
+
 static MCI_INFO MCI;
 
 /* DMA callback function */
@@ -295,64 +317,26 @@ static ARM_MCI_CAPABILITIES GetCapabilities (void) {
 */
 static int32_t Initialize (ARM_MCI_SignalEvent_t cb_event) {
 #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
+  uint32_t i;
   GPIO_InitTypeDef GPIO_InitStruct;
 #endif
 
   if (MCI.flags & MCI_INIT) { return ARM_DRIVER_OK; }
 
   #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
-    /* GPIO Ports Clock Enable */
-    Enable_GPIO_Clock (GPIOC);
-    Enable_GPIO_Clock (GPIOD);
+    /* Configure pins */
+    for (i = 0; i < sizeof (mci_io) / sizeof (mci_io[0]); i++) {
+      Enable_GPIO_Clock (mci_io[i].port);
 
-    /* Configure CMD, CK and D0 pins */
-    GPIO_InitStruct.Pin = GPIO_PIN_2;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_PULLUP;
-    GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF12_SDIO;
-    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+      GPIO_InitStruct.Pin       = mci_io[i].pin;
+      GPIO_InitStruct.Pull      = mci_io[i].pull;
+      GPIO_InitStruct.Alternate = mci_io[i].af;
 
-    GPIO_InitStruct.Pin = GPIO_PIN_12;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF12_SDIO;
-    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-    GPIO_InitStruct.Pin = GPIO_PIN_8;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_PULLUP;
-    GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF12_SDIO;
-    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-    #if (MCI_BUS_WIDTH_4)
-      GPIO_InitStruct.Pin = GPIO_PIN_11|GPIO_PIN_10|GPIO_PIN_9;
-      GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-      GPIO_InitStruct.Pull = GPIO_PULLUP;
+      GPIO_InitStruct.Mode  = GPIO_MODE_AF_PP;
       GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
-      GPIO_InitStruct.Alternate = GPIO_AF12_SDIO;
-      HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-    #endif
 
-    #if (MCI_BUS_WIDTH_8)
-      Enable_GPIO_Clock (GPIOB);
-
-      GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9;
-      GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-      GPIO_InitStruct.Pull = GPIO_PULLUP;
-      GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
-      GPIO_InitStruct.Alternate = GPIO_AF12_SDIO;
-      HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-      GPIO_InitStruct.Pin = GPIO_PIN_7|GPIO_PIN_6;
-      GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-      GPIO_InitStruct.Pull = GPIO_PULLUP;
-      GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
-      GPIO_InitStruct.Alternate = GPIO_AF12_SDIO;
-      HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-    #endif
+      HAL_GPIO_Init(mci_io[i].port, &GPIO_InitStruct);
+    }
 
     /* Configure CD (Card Detect) Pin */
     #if defined (MX_MemoryCard_CD_Pin)
@@ -444,7 +428,9 @@ static int32_t Initialize (ARM_MCI_SignalEvent_t cb_event) {
   \return        \ref execution_status
 */
 static int32_t Uninitialize (void) {
-
+#if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
+  uint32_t i;
+#endif
   MCI.flags = 0U;
 
   #if defined(RTE_DEVICE_FRAMEWORK_CUBE_MX)
@@ -452,20 +438,10 @@ static int32_t Uninitialize (void) {
   #endif
 
   #if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
-    /* SDIO_CMD, SDIO_CK and SDIO_D0 pins */
-    HAL_GPIO_DeInit(GPIOD, GPIO_PIN_2);
-    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_12|GPIO_PIN_8);
-
-    #if (MCI_BUS_WIDTH_4)
-      /* SDIO_D[3..1] */
-      HAL_GPIO_DeInit(GPIOC, GPIO_PIN_11|GPIO_PIN_10|GPIO_PIN_9);
-    #endif
-
-    #if (MCI_BUS_WIDTH_8)
-      /* SDIO_D[7..4] */
-      HAL_GPIO_DeInit(GPIOB, GPIO_PIN_8|GPIO_PIN_9);
-      HAL_GPIO_DeInit(GPIOC, GPIO_PIN_7|GPIO_PIN_6);
-    #endif
+    /* Unconfigure pins */
+    for (i = 0; i < sizeof (mci_io) / sizeof (mci_io[0]); i++) {
+      HAL_GPIO_DeInit(mci_io[i].port, mci_io[i].pin);
+    }
   #endif /* RTE_DEVICE_FRAMEWORK_CLASSIC */
 
   #if defined (MX_MemoryCard_CD_Pin)

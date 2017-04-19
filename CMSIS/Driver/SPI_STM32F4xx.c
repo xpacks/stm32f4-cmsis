@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        16. October 2015
- * $Revision:    V2.8
+ * $Date:        06. Decemberber 2016
+ * $Revision:    V2.9
  *
  * Driver:       Driver_SPI1, Driver_SPI2, Driver_SPI3,
  *               Driver_SPI4, Driver_SPI5, Driver_SPI6
@@ -37,9 +37,18 @@
  *   Connect to hardware via Driver_SPI# = 4       use SPI4
  *   Connect to hardware via Driver_SPI# = 5       use SPI5
  *   Connect to hardware via Driver_SPI# = 6       use SPI6
+ * --------------------------------------------------------------------------
+ *
+ * When RTE_DEVICE_FRAMEWORK_CLASSIC is used:
+ *  SPI IO Speed frequencies can be defined by preprocessor:
+ *  SPIx_GPIO_SPEED_FREQ (where x = 1..6) can be defined as
+ *    GPIO_SPEED_FREQ_LOW, GPIO_SPEED_FREQ_MEDIUM, 
+ *    GPIO_SPEED_FREQ_HIGH or GPIO_SPEED_FREQ_VERY_HIGH
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.9
+ *    I/O output speed is configurable
  *  Version 2.8
  *    Corrected PowerControl function for:
  *      - Unconditional Power Off
@@ -148,7 +157,7 @@ Configuration tab
 
 #include "SPI_STM32F4xx.h"
 
-#define ARM_SPI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,8)
+#define ARM_SPI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2,9)
 
 // Driver Version
 static const ARM_DRIVER_VERSION DriverVersion = { ARM_SPI_API_VERSION, ARM_SPI_DRV_VERSION };
@@ -174,16 +183,16 @@ static SPI_TRANSFER_INFO SPI1_TransferInfo = { 0U };
 
 
 #ifdef MX_SPI1_MOSI_Pin
-  static SPI_PIN SPI1_mosi = {MX_SPI1_MOSI_GPIOx, MX_SPI1_MOSI_GPIO_Pin, MX_SPI1_MOSI_GPIO_AF};
+  static SPI_PIN SPI1_mosi = {MX_SPI1_MOSI_GPIOx, MX_SPI1_MOSI_GPIO_Pin, MX_SPI1_MOSI_GPIO_AF, MX_SPI1_MOSI_GPIO_PuPd, MX_SPI1_MOSI_GPIO_Speed};
 #endif
 #ifdef MX_SPI1_MISO_Pin
-  static SPI_PIN SPI1_miso = {MX_SPI1_MISO_GPIOx, MX_SPI1_MISO_GPIO_Pin, MX_SPI1_MISO_GPIO_AF};
+  static SPI_PIN SPI1_miso = {MX_SPI1_MISO_GPIOx, MX_SPI1_MISO_GPIO_Pin, MX_SPI1_MISO_GPIO_AF, MX_SPI1_MISO_GPIO_PuPd, MX_SPI1_MISO_GPIO_Speed};
 #endif
 #ifdef MX_SPI1_SCK_Pin
-  static SPI_PIN SPI1_sck  = {MX_SPI1_SCK_GPIOx,  MX_SPI1_SCK_GPIO_Pin,  MX_SPI1_SCK_GPIO_AF};
+  static SPI_PIN SPI1_sck  = {MX_SPI1_SCK_GPIOx,  MX_SPI1_SCK_GPIO_Pin,  MX_SPI1_SCK_GPIO_AF,  MX_SPI1_SCK_GPIO_PuPd,  MX_SPI1_SCK_GPIO_Speed};
 #endif
 #ifdef MX_SPI1_NSS_Pin
-  static SPI_PIN SPI1_nss  = {MX_SPI1_NSS_GPIOx,  MX_SPI1_NSS_GPIO_Pin,  MX_SPI1_NSS_GPIO_AF};
+  static SPI_PIN SPI1_nss  = {MX_SPI1_NSS_GPIOx,  MX_SPI1_NSS_GPIO_Pin,  MX_SPI1_NSS_GPIO_AF,  MX_SPI1_NSS_GPIO_PuPd,  MX_SPI1_NSS_GPIO_Speed};
 #endif
 
 #ifdef MX_SPI1_RX_DMA_Instance
@@ -288,16 +297,16 @@ static SPI_TRANSFER_INFO SPI2_TransferInfo = { 0U };
 
 
 #ifdef MX_SPI2_MOSI_Pin
-  static SPI_PIN SPI2_mosi = {MX_SPI2_MOSI_GPIOx, MX_SPI2_MOSI_GPIO_Pin, MX_SPI2_MOSI_GPIO_AF};
+  static SPI_PIN SPI2_mosi = {MX_SPI2_MOSI_GPIOx, MX_SPI2_MOSI_GPIO_Pin, MX_SPI2_MOSI_GPIO_AF, MX_SPI2_MOSI_GPIO_PuPd, MX_SPI2_MOSI_GPIO_Speed};
 #endif
 #ifdef MX_SPI2_MISO_Pin
-  static SPI_PIN SPI2_miso = {MX_SPI2_MISO_GPIOx, MX_SPI2_MISO_GPIO_Pin, MX_SPI2_MISO_GPIO_AF};
+  static SPI_PIN SPI2_miso = {MX_SPI2_MISO_GPIOx, MX_SPI2_MISO_GPIO_Pin, MX_SPI2_MISO_GPIO_AF, MX_SPI2_MISO_GPIO_PuPd, MX_SPI2_MISO_GPIO_Speed};
 #endif
 #ifdef MX_SPI2_SCK_Pin
-  static SPI_PIN SPI2_sck  = {MX_SPI2_SCK_GPIOx,  MX_SPI2_SCK_GPIO_Pin,  MX_SPI2_SCK_GPIO_AF};
+  static SPI_PIN SPI2_sck  = {MX_SPI2_SCK_GPIOx,  MX_SPI2_SCK_GPIO_Pin,  MX_SPI2_SCK_GPIO_AF,  MX_SPI2_SCK_GPIO_PuPd,  MX_SPI2_SCK_GPIO_Speed};
 #endif
 #ifdef MX_SPI2_NSS_Pin
-  static SPI_PIN SPI2_nss  = {MX_SPI2_NSS_GPIOx,  MX_SPI2_NSS_GPIO_Pin,  MX_SPI2_NSS_GPIO_AF};
+  static SPI_PIN SPI2_nss  = {MX_SPI2_NSS_GPIOx,  MX_SPI2_NSS_GPIO_Pin,  MX_SPI2_NSS_GPIO_AF,  MX_SPI2_NSS_GPIO_PuPd,  MX_SPI2_NSS_GPIO_Speed};
 #endif
 
 #ifdef MX_SPI2_RX_DMA_Instance
@@ -402,16 +411,16 @@ static SPI_TRANSFER_INFO SPI3_TransferInfo = { 0U };
 
 
 #ifdef MX_SPI3_MOSI_Pin
-  static SPI_PIN SPI3_mosi = {MX_SPI3_MOSI_GPIOx, MX_SPI3_MOSI_GPIO_Pin, MX_SPI3_MOSI_GPIO_AF};
+  static SPI_PIN SPI3_mosi = {MX_SPI3_MOSI_GPIOx, MX_SPI3_MOSI_GPIO_Pin, MX_SPI3_MOSI_GPIO_AF, MX_SPI3_MOSI_GPIO_PuPd, MX_SPI3_MOSI_GPIO_Speed};
 #endif
 #ifdef MX_SPI3_MISO_Pin
-  static SPI_PIN SPI3_miso = {MX_SPI3_MISO_GPIOx, MX_SPI3_MISO_GPIO_Pin, MX_SPI3_MISO_GPIO_AF};
+  static SPI_PIN SPI3_miso = {MX_SPI3_MISO_GPIOx, MX_SPI3_MISO_GPIO_Pin, MX_SPI3_MISO_GPIO_AF, MX_SPI3_MISO_GPIO_PuPd, MX_SPI3_MISO_GPIO_Speed};
 #endif
 #ifdef MX_SPI3_SCK_Pin
-  static SPI_PIN SPI3_sck  = {MX_SPI3_SCK_GPIOx,  MX_SPI3_SCK_GPIO_Pin,  MX_SPI3_SCK_GPIO_AF};
+  static SPI_PIN SPI3_sck  = {MX_SPI3_SCK_GPIOx,  MX_SPI3_SCK_GPIO_Pin,  MX_SPI3_SCK_GPIO_AF,  MX_SPI3_SCK_GPIO_PuPd,  MX_SPI3_SCK_GPIO_Speed};
 #endif
 #ifdef MX_SPI3_NSS_Pin
-  static SPI_PIN SPI3_nss  = {MX_SPI3_NSS_GPIOx,  MX_SPI3_NSS_GPIO_Pin,  MX_SPI3_NSS_GPIO_AF};
+  static SPI_PIN SPI3_nss  = {MX_SPI3_NSS_GPIOx,  MX_SPI3_NSS_GPIO_Pin,  MX_SPI3_NSS_GPIO_AF,  MX_SPI3_NSS_GPIO_PuPd,  MX_SPI3_NSS_GPIO_Speed};
 #endif
 
 #ifdef MX_SPI3_RX_DMA_Instance
@@ -516,16 +525,16 @@ static SPI_TRANSFER_INFO SPI4_TransferInfo = { 0U };
 
 
 #ifdef MX_SPI4_MOSI_Pin
-  static SPI_PIN SPI4_mosi = {MX_SPI4_MOSI_GPIOx, MX_SPI4_MOSI_GPIO_Pin, MX_SPI4_MOSI_GPIO_AF};
+  static SPI_PIN SPI4_mosi = {MX_SPI4_MOSI_GPIOx, MX_SPI4_MOSI_GPIO_Pin, MX_SPI4_MOSI_GPIO_AF, MX_SPI4_MOSI_GPIO_PuPd, MX_SPI4_MOSI_GPIO_Speed};
 #endif
 #ifdef MX_SPI4_MISO_Pin
-  static SPI_PIN SPI4_miso = {MX_SPI4_MISO_GPIOx, MX_SPI4_MISO_GPIO_Pin, MX_SPI4_MISO_GPIO_AF};
+  static SPI_PIN SPI4_miso = {MX_SPI4_MISO_GPIOx, MX_SPI4_MISO_GPIO_Pin, MX_SPI4_MISO_GPIO_AF, MX_SPI4_MISO_GPIO_PuPd, MX_SPI4_MISO_GPIO_Speed};
 #endif
 #ifdef MX_SPI4_SCK_Pin
-  static SPI_PIN SPI4_sck  = {MX_SPI4_SCK_GPIOx,  MX_SPI4_SCK_GPIO_Pin,  MX_SPI4_SCK_GPIO_AF};
+  static SPI_PIN SPI4_sck  = {MX_SPI4_SCK_GPIOx,  MX_SPI4_SCK_GPIO_Pin,  MX_SPI4_SCK_GPIO_AF,  MX_SPI4_SCK_GPIO_PuPd,  MX_SPI4_SCK_GPIO_Speed};
 #endif
 #ifdef MX_SPI4_NSS_Pin
-  static SPI_PIN SPI4_nss  = {MX_SPI4_NSS_GPIOx,  MX_SPI4_NSS_GPIO_Pin,  MX_SPI4_NSS_GPIO_AF};
+  static SPI_PIN SPI4_nss  = {MX_SPI4_NSS_GPIOx,  MX_SPI4_NSS_GPIO_Pin,  MX_SPI4_NSS_GPIO_AF,  MX_SPI4_NSS_GPIO_PuPd,  MX_SPI4_NSS_GPIO_Speed};
 #endif
 
 #ifdef MX_SPI4_RX_DMA_Instance
@@ -630,16 +639,16 @@ static SPI_TRANSFER_INFO SPI5_TransferInfo = { 0U };
 
 
 #ifdef MX_SPI5_MOSI_Pin
-  static SPI_PIN SPI5_mosi = {MX_SPI5_MOSI_GPIOx, MX_SPI5_MOSI_GPIO_Pin, MX_SPI5_MOSI_GPIO_AF};
+  static SPI_PIN SPI5_mosi = {MX_SPI5_MOSI_GPIOx, MX_SPI5_MOSI_GPIO_Pin, MX_SPI5_MOSI_GPIO_AF, MX_SPI5_MOSI_GPIO_PuPd, MX_SPI5_MOSI_GPIO_Speed};
 #endif
 #ifdef MX_SPI5_MISO_Pin
-  static SPI_PIN SPI5_miso = {MX_SPI5_MISO_GPIOx, MX_SPI5_MISO_GPIO_Pin, MX_SPI5_MISO_GPIO_AF};
+  static SPI_PIN SPI5_miso = {MX_SPI5_MISO_GPIOx, MX_SPI5_MISO_GPIO_Pin, MX_SPI5_MISO_GPIO_AF, MX_SPI5_MISO_GPIO_PuPd, MX_SPI5_MISO_GPIO_Speed};
 #endif
 #ifdef MX_SPI5_SCK_Pin
-  static SPI_PIN SPI5_sck  = {MX_SPI5_SCK_GPIOx,  MX_SPI5_SCK_GPIO_Pin,  MX_SPI5_SCK_GPIO_AF};
+  static SPI_PIN SPI5_sck  = {MX_SPI5_SCK_GPIOx,  MX_SPI5_SCK_GPIO_Pin,  MX_SPI5_SCK_GPIO_AF,  MX_SPI5_SCK_GPIO_PuPd,  MX_SPI5_SCK_GPIO_Speed};
 #endif
 #ifdef MX_SPI5_NSS_Pin
-  static SPI_PIN SPI5_nss  = {MX_SPI5_NSS_GPIOx,  MX_SPI5_NSS_GPIO_Pin,  MX_SPI5_NSS_GPIO_AF};
+  static SPI_PIN SPI5_nss  = {MX_SPI5_NSS_GPIOx,  MX_SPI5_NSS_GPIO_Pin,  MX_SPI5_NSS_GPIO_AF,  MX_SPI5_NSS_GPIO_PuPd,  MX_SPI5_NSS_GPIO_Speed};
 #endif
 
 #ifdef MX_SPI5_RX_DMA_Instance
@@ -744,16 +753,16 @@ static SPI_TRANSFER_INFO SPI6_TransferInfo = { 0U };
 
 
 #ifdef MX_SPI6_MOSI_Pin
-  static SPI_PIN SPI6_mosi = {MX_SPI6_MOSI_GPIOx, MX_SPI6_MOSI_GPIO_Pin, MX_SPI6_MOSI_GPIO_AF};
+  static SPI_PIN SPI6_mosi = {MX_SPI6_MOSI_GPIOx, MX_SPI6_MOSI_GPIO_Pin, MX_SPI6_MOSI_GPIO_AF, MX_SPI6_MOSI_GPIO_PuPd, MX_SPI6_MOSI_GPIO_Speed};
 #endif
 #ifdef MX_SPI6_MISO_Pin
-  static SPI_PIN SPI6_miso = {MX_SPI6_MISO_GPIOx, MX_SPI6_MISO_GPIO_Pin, MX_SPI6_MISO_GPIO_AF};
+  static SPI_PIN SPI6_miso = {MX_SPI6_MISO_GPIOx, MX_SPI6_MISO_GPIO_Pin, MX_SPI6_MISO_GPIO_AF, MX_SPI6_MISO_GPIO_PuPd, MX_SPI6_MISO_GPIO_Speed};
 #endif
 #ifdef MX_SPI6_SCK_Pin
-  static SPI_PIN SPI6_sck  = {MX_SPI6_SCK_GPIOx,  MX_SPI6_SCK_GPIO_Pin,  MX_SPI6_SCK_GPIO_AF};
+  static SPI_PIN SPI6_sck  = {MX_SPI6_SCK_GPIOx,  MX_SPI6_SCK_GPIO_Pin,  MX_SPI6_SCK_GPIO_AF,  MX_SPI6_SCK_GPIO_PuPd,  MX_SPI6_SCK_GPIO_Speed};
 #endif
 #ifdef MX_SPI6_NSS_Pin
-  static SPI_PIN SPI6_nss  = {MX_SPI6_NSS_GPIOx,  MX_SPI6_NSS_GPIO_Pin,  MX_SPI6_NSS_GPIO_AF};
+  static SPI_PIN SPI6_nss  = {MX_SPI6_NSS_GPIOx,  MX_SPI6_NSS_GPIO_Pin,  MX_SPI6_NSS_GPIO_AF,  MX_SPI6_NSS_GPIO_PuPd,  MX_SPI6_NSS_GPIO_Speed};
 #endif
 
 #ifdef MX_SPI6_RX_DMA_Instance
@@ -982,8 +991,8 @@ static int32_t SPI_Initialize (ARM_SPI_SignalEvent_t cb_event, const SPI_RESOURC
   Enable_GPIO_Clock (spi->io.sck->port);
   GPIO_InitStruct.Pin       = spi->io.sck->pin;
   GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull      = GPIO_NOPULL;
-  GPIO_InitStruct.Speed     = GPIO_SPEED_LOW;
+  GPIO_InitStruct.Pull      = spi->io.sck->pupd;
+  GPIO_InitStruct.Speed     = spi->io.sck->speed;
   GPIO_InitStruct.Alternate = spi->io.sck->af;
   HAL_GPIO_Init(spi->io.sck->port, &GPIO_InitStruct);
 
@@ -991,8 +1000,8 @@ static int32_t SPI_Initialize (ARM_SPI_SignalEvent_t cb_event, const SPI_RESOURC
   Enable_GPIO_Clock (spi->io.mosi->port);
   GPIO_InitStruct.Pin       = spi->io.mosi->pin;
   GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull      = GPIO_NOPULL;
-  GPIO_InitStruct.Speed     = GPIO_SPEED_LOW;
+  GPIO_InitStruct.Pull      = spi->io.mosi->pupd;
+  GPIO_InitStruct.Speed     = spi->io.mosi->speed;
   GPIO_InitStruct.Alternate = spi->io.mosi->af;
   HAL_GPIO_Init(spi->io.mosi->port, &GPIO_InitStruct);
 
@@ -1000,8 +1009,8 @@ static int32_t SPI_Initialize (ARM_SPI_SignalEvent_t cb_event, const SPI_RESOURC
   Enable_GPIO_Clock (spi->io.miso->port);
   GPIO_InitStruct.Pin       = spi->io.miso->pin;
   GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull      = GPIO_NOPULL;
-  GPIO_InitStruct.Speed     = GPIO_SPEED_LOW;
+  GPIO_InitStruct.Pull      = spi->io.miso->pupd;
+  GPIO_InitStruct.Speed     = spi->io.miso->speed;
   GPIO_InitStruct.Alternate = spi->io.miso->af;
   HAL_GPIO_Init(spi->io.miso->port, &GPIO_InitStruct);
 
@@ -1728,8 +1737,8 @@ static int32_t SPI_Control (uint32_t control, uint32_t arg, const SPI_RESOURCES 
 #endif
           GPIO_InitStruct.Pin       = spi->io.nss->pin;
           GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
-          GPIO_InitStruct.Pull      = GPIO_NOPULL;
-          GPIO_InitStruct.Speed     = GPIO_SPEED_LOW;
+          GPIO_InitStruct.Pull      = spi->io.nss->pupd;
+          GPIO_InitStruct.Speed     = spi->io.nss->speed;
           GPIO_InitStruct.Alternate = spi->io.nss->af;
           HAL_GPIO_Init(spi->io.nss->port, &GPIO_InitStruct);
         } else {
@@ -1747,8 +1756,8 @@ static int32_t SPI_Control (uint32_t control, uint32_t arg, const SPI_RESOURCES 
 #endif
           GPIO_InitStruct.Pin       = spi->io.nss->pin;
           GPIO_InitStruct.Mode      = GPIO_MODE_OUTPUT_PP;
-          GPIO_InitStruct.Pull      = GPIO_NOPULL;
-          GPIO_InitStruct.Speed     = GPIO_SPEED_LOW;
+          GPIO_InitStruct.Pull      = spi->io.nss->pupd;
+          GPIO_InitStruct.Speed     = spi->io.nss->speed;
           HAL_GPIO_Init(spi->io.nss->port, &GPIO_InitStruct);
 
           // Software slave management
@@ -1769,8 +1778,8 @@ static int32_t SPI_Control (uint32_t control, uint32_t arg, const SPI_RESOURCES 
 #endif
           GPIO_InitStruct.Pin       = spi->io.nss->pin;
           GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
-          GPIO_InitStruct.Pull      = GPIO_NOPULL;
-          GPIO_InitStruct.Speed     = GPIO_SPEED_LOW;
+          GPIO_InitStruct.Pull      = spi->io.nss->pupd;
+          GPIO_InitStruct.Speed     = spi->io.nss->speed;
           GPIO_InitStruct.Alternate = spi->io.nss->af;
           HAL_GPIO_Init(spi->io.nss->port, &GPIO_InitStruct);
 
@@ -1795,8 +1804,8 @@ static int32_t SPI_Control (uint32_t control, uint32_t arg, const SPI_RESOURCES 
           // Configure NSS pin - SPI NSS alternative function
           GPIO_InitStruct.Pin       = spi->io.nss->pin;
           GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
-          GPIO_InitStruct.Pull      = GPIO_NOPULL;
-          GPIO_InitStruct.Speed     = GPIO_SPEED_LOW;
+          GPIO_InitStruct.Pull      = spi->io.nss->pupd;
+          GPIO_InitStruct.Speed     = spi->io.nss->speed;
           GPIO_InitStruct.Alternate = spi->io.nss->af;
           HAL_GPIO_Init(spi->io.nss->port, &GPIO_InitStruct);
 
