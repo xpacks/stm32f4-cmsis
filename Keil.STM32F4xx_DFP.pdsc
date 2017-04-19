@@ -7,6 +7,16 @@
   <url>http://www.keil.com/pack</url>
 
   <releases>
+    <release version="2.10.0" date="2016-09-20">
+      Add device variants STM32F410C8, STM32F410CB, STM32F410R8, STM32F410RB (LQFP48 and UFBGA64 packages)
+      Updated CMSIS drivers:
+      - USART: Added "Not Used" support for TX and RX pins
+      - SPI:   Added "Not Used" support for MISO and MOSI pins
+      - CAN: Corrected clearing of overrun flag in interrupt routine
+      - USB Host: Corrected over-current pin configuration
+      Updated RTE_Device configuration file:
+      - Added "Not Used" support for SPI MOSI/MISO pins and USART TX/RX pins.
+    </release>
     <release version="2.9.0" date="2016-05-31">
       Added device support for subfamily STM32F412
       - updated device list according STM32Cube V1.45.0
@@ -659,6 +669,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           <memory     id="IRAM1"                             start="0x20000000"  size="0x8000"     init   ="0"   default="1"/>
           <algorithm  name="CMSIS/Flash/STM32F4xx_128.FLM"   start="0x08000000"  size="0x20000"                  default="1"/> 
           <variant Dvariant="STM32F410CBUx"> <feature type="QFN" n="48"/> </variant>
+          <variant Dvariant="STM32F410CBTx"> <feature type="QFP" n="48"/> </variant>
         </device>
 
         <!-- *************************  Device 'STM32F410RB'  ***************************** -->
@@ -668,6 +679,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           <memory     id="IRAM1"                             start="0x20000000"  size="0x8000"     init   ="0"   default="1"/>
           <algorithm  name="CMSIS/Flash/STM32F4xx_128.FLM"   start="0x08000000"  size="0x20000"                  default="1"/> 
           <variant Dvariant="STM32F410RBTx"> <feature type="QFP" n="64"/> </variant>
+          <variant Dvariant="STM32F410RBIx"> <feature type="BGA" n="64"/> </variant>
         </device>
 
         <!-- *************************  Device 'STM32F410TB'  ***************************** -->
@@ -686,6 +698,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           <memory     id="IRAM1"                             start="0x20000000"  size="0x8000"     init   ="0"   default="1"/>
           <algorithm  name="CMSIS/Flash/STM32F4xx_128.FLM"   start="0x08000000"  size="0x10000"                  default="1"/> 
           <variant Dvariant="STM32F410C8Ux"> <feature type="QFN" n="48"/> </variant>
+          <variant Dvariant="STM32F410C8Tx"> <feature type="QFP" n="48"/> </variant>
         </device>
 
         <!-- *************************  Device 'STM32F410R8'  ***************************** -->
@@ -695,6 +708,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
           <memory     id="IRAM1"                             start="0x20000000"  size="0x8000"     init   ="0"   default="1"/>
           <algorithm  name="CMSIS/Flash/STM32F4xx_128.FLM"   start="0x08000000"  size="0x10000"                  default="1"/>
           <variant Dvariant="STM32F410R8Tx"> <feature type="QFP" n="64"/> </variant>
+          <variant Dvariant="STM32F410R8Ix"> <feature type="BGA" n="64"/> </variant>
         </device>
 
         <!-- *************************  Device 'STM32F410T8'  ***************************** -->
@@ -4333,7 +4347,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
       </RTE_Components_h>
       <files>
         <file category="doc"     name="MDK/CubeMX/Documentation/classic.html"/>
-        <file category="header"  name="CMSIS/Driver/Config/RTE_Device.h" attr="config" version="2.4.1"/>
+        <file category="header"  name="CMSIS/Driver/Config/RTE_Device.h" attr="config" version="2.4.2"/>
         <file category="header"  name="MDK/Templates/Inc/stm32f4xx_hal_conf.h" attr="config" version="1.5.0"/>
         <file category="source"  name="MDK/Templates/Src/stm32f4xx_hal_msp.c"  attr="template" select="MCU Specific HAL Initialization / De-Initialization"/>
         <file category="header"  name="MDK/Templates/Inc/stm32f4xx_it.h" attr="template" select="Exception Handlers and Peripheral IRQ"/>
@@ -4843,7 +4857,7 @@ The STM32F4 family incorporates high-speed embedded memories and an extensive ra
 
     <!-- END: STMicroelectronics STM32CubeF4 HAL -->
 
-    <component Cclass="CMSIS Driver" Cgroup="CAN" Capiversion="1.0" Cversion="1.7" condition="STM32F4 CMSIS_Driver CAN">
+    <component Cclass="CMSIS Driver" Cgroup="CAN" Capiversion="1.0" Cversion="1.8" condition="STM32F4 CMSIS_Driver CAN">
       <description>CAN Driver for STM32F4 Series</description>
       <RTE_Components_h>  <!-- the following content goes into file 'RTE_Components.h' -->
         #define RTE_Drivers_CAN1                /* Driver CAN1 */

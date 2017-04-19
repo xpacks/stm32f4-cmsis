@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2013-2015 ARM Ltd.
+ * Copyright (c) 2013-2016 ARM Ltd.
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -18,14 +18,16 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        27. August 2015
- * $Revision:    V2.4
+ * $Date:        3. June 2016
+ * $Revision:    V2.5
  *
  * Project:      OTG Full/Low-Speed Common Driver for ST STM32F4xx
  * Configured:   via RTE_Device.h configuration file
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 2.5
+ *    Corrected over-current pin configuration
  *  Version 2.4
  *    STM32CubeMX generated code can also be used to configure the driver
  *  Version 2.3
@@ -211,7 +213,7 @@ void OTG_FS_PinsConfigure (uint8_t pins_mask) {
     }
   }
 #endif
-#ifdef MX_USB_OTG_FS_Overrcurrent_Pin   // Host overcurrent sensing pin (input)
+#ifdef MX_USB_OTG_FS_Overcurrent_Pin   // Host overcurrent sensing pin (input)
   if ((pins_mask & ARM_USB_PIN_OC) != 0U) {
     if (otg_fs_role == ARM_USB_ROLE_HOST) {
       Enable_GPIO_Clock           (MX_USB_OTG_FS_Overcurrent_GPIOx);
@@ -262,7 +264,7 @@ void OTG_FS_PinsUnconfigure (uint8_t pins_mask) {
     }
   }
 #endif
-#ifdef MX_USB_OTG_FS_Overrcurrent_Pin
+#ifdef MX_USB_OTG_FS_Overcurrent_Pin
   if ((pins_mask & ARM_USB_PIN_OC) != 0U) {
     if (otg_fs_role == ARM_USB_ROLE_HOST) {
       HAL_GPIO_DeInit (MX_USB_OTG_FS_Overcurrent_GPIOx, MX_USB_OTG_FS_Overcurrent_GPIO_Pin);

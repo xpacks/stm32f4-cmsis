@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        27. May 2016
- * $Revision:    V1.7
+ * $Date:        21. June 2016
+ * $Revision:    V1.8
  *
  * Driver:       Driver_CAN1/2
  * Configured:   via RTE_Device.h configuration file
@@ -46,8 +46,10 @@
  * -------------------------------------------------------------------------- */
 
 /* History:
+ *  Version 1.8
+ *    Corrected clearing of overrun flag in interrupt routine
  *  Version 1.7
- *    Added port configuration for ports supported by new subfamily.
+ *    Added port configuration for ports supported by new subfamily
  *  Version 1.6
  *    Corrected CAN2 initialization was disabling CAN1 filters
  *  Version 1.5
@@ -205,7 +207,7 @@ static void Enable_GPIO_Clock (const GPIO_TypeDef *GPIOx) {
 
 // CAN Driver ******************************************************************
 
-#define ARM_CAN_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(1,7) // CAN driver version
+#define ARM_CAN_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(1,8) // CAN driver version
 
 // Driver Version
 static const ARM_DRIVER_VERSION can_driver_version = { ARM_CAN_API_VERSION, ARM_CAN_DRV_VERSION };
@@ -1553,6 +1555,7 @@ void CAN1_RX0_IRQHandler (void) {
 
   if (can_obj_cfg[0][0] == ARM_CAN_OBJ_RX) {
     if ((CAN1->RF0R & CAN_RF0R_FOVR0) != 0U) {
+      CAN1->RF0R = CAN_RF0R_FOVR0;      // Clear overrun flag
       if (CAN_SignalObjectEvent[0] != NULL) { CAN_SignalObjectEvent[0](0U, ARM_CAN_EVENT_RECEIVE | ARM_CAN_EVENT_RECEIVE_OVERRUN); }
     } else if ((CAN1->RF0R & CAN_RF0R_FMP0) != 0U) {
       if (CAN_SignalObjectEvent[0] != NULL) { CAN_SignalObjectEvent[0](0U, ARM_CAN_EVENT_RECEIVE); }
@@ -1586,6 +1589,7 @@ void CAN1_RX1_IRQHandler (void) {
 
   if (can_obj_cfg[0][1] == ARM_CAN_OBJ_RX) {
     if ((CAN1->RF1R & CAN_RF1R_FOVR1) != 0U) {
+      CAN1->RF1R = CAN_RF1R_FOVR1;      // Clear overrun flag
       if (CAN_SignalObjectEvent[0] != NULL) { CAN_SignalObjectEvent[0](1U, ARM_CAN_EVENT_RECEIVE | ARM_CAN_EVENT_RECEIVE_OVERRUN); }
     } else if ((CAN1->RF1R & CAN_RF1R_FMP1) != 0U) {
       if (CAN_SignalObjectEvent[0] != NULL) { CAN_SignalObjectEvent[0](1U, ARM_CAN_EVENT_RECEIVE); }
@@ -1680,6 +1684,7 @@ void CAN2_RX0_IRQHandler (void) {
 
   if (can_obj_cfg[1][0] == ARM_CAN_OBJ_RX) {
     if ((CAN2->RF0R & CAN_RF0R_FOVR0) != 0U) {
+      CAN2->RF0R = CAN_RF0R_FOVR0;      // Clear overrun flag
       if (CAN_SignalObjectEvent[1] != NULL) { CAN_SignalObjectEvent[1](0U, ARM_CAN_EVENT_RECEIVE | ARM_CAN_EVENT_RECEIVE_OVERRUN); }
     } else if ((CAN2->RF0R & CAN_RF0R_FMP0) != 0U) {
       if (CAN_SignalObjectEvent[1] != NULL) { CAN_SignalObjectEvent[1](0U, ARM_CAN_EVENT_RECEIVE); }
@@ -1713,6 +1718,7 @@ void CAN2_RX1_IRQHandler (void) {
 
   if (can_obj_cfg[1][1] == ARM_CAN_OBJ_RX) {
     if ((CAN2->RF1R & CAN_RF1R_FOVR1) != 0U) {
+      CAN2->RF1R = CAN_RF1R_FOVR1;      // Clear overrun flag
       if (CAN_SignalObjectEvent[1] != NULL) { CAN_SignalObjectEvent[1](1U, ARM_CAN_EVENT_RECEIVE | ARM_CAN_EVENT_RECEIVE_OVERRUN); }
     } else if ((CAN2->RF1R & CAN_RF1R_FMP1) != 0U) {
       if (CAN_SignalObjectEvent[1] != NULL) { CAN_SignalObjectEvent[1](1U, ARM_CAN_EVENT_RECEIVE); }
