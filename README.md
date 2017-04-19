@@ -68,8 +68,14 @@ startup_stm32f410cx.s -> vectors_stm32f410cx.c
 startup_stm32f410rx.s -> vectors_stm32f410rx.c
 startup_stm32f410tx.s -> vectors_stm32f410tx.c
 startup_stm32f411xe.s -> vectors_stm32f411xe.c
+startup_stm32f412cx.s -> vectors_stm32f412cx.c
+startup_stm32f412rx.s -> vectors_stm32f412rx.c
+startup_stm32f412vx.s -> vectors_stm32f412vx.c
+startup_stm32f412zx.s -> vectors_stm32f412zx.c
+startup_stm32f413xx.s -> vectors_stm32f413xx.c
 startup_stm32f415xx.s -> vectors_stm32f415xx.c
 startup_stm32f417xx.s -> vectors_stm32f417xx.c
+startup_stm32f423xx.s -> vectors_stm32f423xx.c
 startup_stm32f427xx.s -> vectors_stm32f427xx.c
 startup_stm32f429xx.s -> vectors_stm32f429xx.c
 startup_stm32f437xx.s -> vectors_stm32f437xx.c

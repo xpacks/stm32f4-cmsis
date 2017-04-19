@@ -7,8 +7,8 @@
 	"vendorName": "Keil",
 	"name": "STM32F4xx_DFP",
 	"description": "STMicroelectronics STM32F4 Series Device Support, Drivers and Examples",
-	"version": "2.10.0",
-	"date": "2016-09-20",
+	"version": "2.11.0",
+	"date": "2016-12-07",
 	"devices": [
 		{
 			"name": "STM32F4 Series",
@@ -2020,6 +2020,994 @@
 											"name": "QFP",
 											"type": "package",
 											"n": 144
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "STM32F413",
+					"type": "subfamily",
+					"compile": {
+						"header": "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h",
+						"define": "STM32F413xx"
+					},
+					"processor": {
+						"clock": 100000000
+					},
+					"features": [
+						{
+							"name": "I2C",
+							"type": "interface",
+							"n": 4
+						},
+						{
+							"name": "USART",
+							"type": "interface",
+							"n": 3,
+							"m": 10500000
+						},
+						{
+							"name": "USBOTG",
+							"type": "interface",
+							"n": 1
+						},
+						{
+							"name": "VCC",
+							"n": 1.7,
+							"m": 3.6
+						}
+					],
+					"debugOptions": [
+						{
+							"svd": "CMSIS/SVD/STM32F413.svd"
+						}
+					],
+					"children": [
+						{
+							"name": "STM32F413ZH",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x00180000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x00050000",
+									"default": true
+								}
+							],
+							"features": [
+								{
+									"name": "ADC",
+									"n": 16,
+									"m": 12
+								},
+								{
+									"name": "IOs",
+									"n": 114
+								},
+								{
+									"name": "SPI",
+									"type": "interface",
+									"n": 5,
+									"m": 50000000
+								},
+								{
+									"name": "SDIO",
+									"type": "interface",
+									"description": "Secure Digital IO",
+									"n": 1,
+									"m": 4
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F413ZHJx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "BGA",
+											"type": "package",
+											"n": 144
+										}
+									]
+								},
+								{
+									"name": "STM32F413ZHTx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 144
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F413CH",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x00180000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x00050000",
+									"default": true
+								}
+							],
+							"features": [
+								{
+									"name": "ADC",
+									"n": 16,
+									"m": 12
+								},
+								{
+									"name": "IOs",
+									"n": 114
+								},
+								{
+									"name": "SPI",
+									"type": "interface",
+									"n": 5,
+									"m": 50000000
+								},
+								{
+									"name": "SDIO",
+									"type": "interface",
+									"description": "Secure Digital IO",
+									"n": 1,
+									"m": 4
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F413CHUx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFN",
+											"type": "package",
+											"n": 48
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F413RH",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x00180000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x00050000",
+									"default": true
+								}
+							],
+							"features": [
+								{
+									"name": "ADC",
+									"n": 16,
+									"m": 12
+								},
+								{
+									"name": "IOs",
+									"n": 114
+								},
+								{
+									"name": "SPI",
+									"type": "interface",
+									"n": 5,
+									"m": 50000000
+								},
+								{
+									"name": "SDIO",
+									"type": "interface",
+									"description": "Secure Digital IO",
+									"n": 1,
+									"m": 4
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F413RHTx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 64
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F413VH",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x00180000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x00050000",
+									"default": true
+								}
+							],
+							"features": [
+								{
+									"name": "ADC",
+									"n": 16,
+									"m": 12
+								},
+								{
+									"name": "IOs",
+									"n": 114
+								},
+								{
+									"name": "SPI",
+									"type": "interface",
+									"n": 5,
+									"m": 50000000
+								},
+								{
+									"name": "SDIO",
+									"type": "interface",
+									"description": "Secure Digital IO",
+									"n": 1,
+									"m": 4
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F413VHHx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "BGA",
+											"type": "package",
+											"n": 100
+										}
+									]
+								},
+								{
+									"name": "STM32F413VHTx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 100
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F413MH",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x00180000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x00050000",
+									"default": true
+								}
+							],
+							"features": [
+								{
+									"name": "ADC",
+									"n": 16,
+									"m": 12
+								},
+								{
+									"name": "IOs",
+									"n": 114
+								},
+								{
+									"name": "SPI",
+									"type": "interface",
+									"n": 5,
+									"m": 50000000
+								},
+								{
+									"name": "SDIO",
+									"type": "interface",
+									"description": "Secure Digital IO",
+									"n": 1,
+									"m": 4
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F413MHYx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "CSP",
+											"type": "package",
+											"n": 81
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F413ZG",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x00100000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x00050000",
+									"default": true
+								}
+							],
+							"features": [
+								{
+									"name": "ADC",
+									"n": 16,
+									"m": 12
+								},
+								{
+									"name": "IOs",
+									"n": 114
+								},
+								{
+									"name": "SPI",
+									"type": "interface",
+									"n": 5,
+									"m": 50000000
+								},
+								{
+									"name": "SDIO",
+									"type": "interface",
+									"description": "Secure Digital IO",
+									"n": 1,
+									"m": 4
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F413ZGJx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "BGA",
+											"type": "package",
+											"n": 144
+										}
+									]
+								},
+								{
+									"name": "STM32F413ZGTx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 144
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F413CG",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x00100000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x00050000",
+									"default": true
+								}
+							],
+							"features": [
+								{
+									"name": "ADC",
+									"n": 16,
+									"m": 12
+								},
+								{
+									"name": "IOs",
+									"n": 114
+								},
+								{
+									"name": "SPI",
+									"type": "interface",
+									"n": 5,
+									"m": 50000000
+								},
+								{
+									"name": "SDIO",
+									"type": "interface",
+									"description": "Secure Digital IO",
+									"n": 1,
+									"m": 4
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F413CGUx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFN",
+											"type": "package",
+											"n": 48
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F413RG",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x00100000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x00050000",
+									"default": true
+								}
+							],
+							"features": [
+								{
+									"name": "ADC",
+									"n": 16,
+									"m": 12
+								},
+								{
+									"name": "IOs",
+									"n": 114
+								},
+								{
+									"name": "SPI",
+									"type": "interface",
+									"n": 5,
+									"m": 50000000
+								},
+								{
+									"name": "SDIO",
+									"type": "interface",
+									"description": "Secure Digital IO",
+									"n": 1,
+									"m": 4
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F413RGTx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 64
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F413VG",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x00100000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x00050000",
+									"default": true
+								}
+							],
+							"features": [
+								{
+									"name": "ADC",
+									"n": 16,
+									"m": 12
+								},
+								{
+									"name": "IOs",
+									"n": 114
+								},
+								{
+									"name": "SPI",
+									"type": "interface",
+									"n": 5,
+									"m": 50000000
+								},
+								{
+									"name": "SDIO",
+									"type": "interface",
+									"description": "Secure Digital IO",
+									"n": 1,
+									"m": 4
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F413VGHx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "BGA",
+											"type": "package",
+											"n": 100
+										}
+									]
+								},
+								{
+									"name": "STM32F413VGTx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 100
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F413MG",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x00100000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x00050000",
+									"default": true
+								}
+							],
+							"features": [
+								{
+									"name": "ADC",
+									"n": 16,
+									"m": 12
+								},
+								{
+									"name": "IOs",
+									"n": 114
+								},
+								{
+									"name": "SPI",
+									"type": "interface",
+									"n": 5,
+									"m": 50000000
+								},
+								{
+									"name": "SDIO",
+									"type": "interface",
+									"description": "Secure Digital IO",
+									"n": 1,
+									"m": 4
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F413MGYx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "CSP",
+											"type": "package",
+											"n": 81
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "STM32F423",
+					"type": "subfamily",
+					"compile": {
+						"header": "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h",
+						"define": "STM32F423xx"
+					},
+					"processor": {
+						"clock": 100000000
+					},
+					"features": [
+						{
+							"name": "I2C",
+							"type": "interface",
+							"n": 4
+						},
+						{
+							"name": "USART",
+							"type": "interface",
+							"n": 3,
+							"m": 10500000
+						},
+						{
+							"name": "USBOTG",
+							"type": "interface",
+							"n": 1
+						},
+						{
+							"name": "VCC",
+							"n": 1.7,
+							"m": 3.6
+						}
+					],
+					"debugOptions": [
+						{
+							"svd": "CMSIS/SVD/STM32F413.svd"
+						}
+					],
+					"children": [
+						{
+							"name": "STM32F423ZH",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x00180000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x00050000",
+									"default": true
+								}
+							],
+							"features": [
+								{
+									"name": "ADC",
+									"n": 16,
+									"m": 12
+								},
+								{
+									"name": "IOs",
+									"n": 114
+								},
+								{
+									"name": "SPI",
+									"type": "interface",
+									"n": 5,
+									"m": 50000000
+								},
+								{
+									"name": "SDIO",
+									"type": "interface",
+									"description": "Secure Digital IO",
+									"n": 1,
+									"m": 4
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F423ZHJx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "BGA",
+											"type": "package",
+											"n": 144
+										}
+									]
+								},
+								{
+									"name": "STM32F423ZHTx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 144
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F423CH",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x00180000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x00050000",
+									"default": true
+								}
+							],
+							"features": [
+								{
+									"name": "ADC",
+									"n": 16,
+									"m": 12
+								},
+								{
+									"name": "IOs",
+									"n": 114
+								},
+								{
+									"name": "SPI",
+									"type": "interface",
+									"n": 5,
+									"m": 50000000
+								},
+								{
+									"name": "SDIO",
+									"type": "interface",
+									"description": "Secure Digital IO",
+									"n": 1,
+									"m": 4
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F423CHUx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFN",
+											"type": "package",
+											"n": 48
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F423RH",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x00180000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x00050000",
+									"default": true
+								}
+							],
+							"features": [
+								{
+									"name": "ADC",
+									"n": 16,
+									"m": 12
+								},
+								{
+									"name": "IOs",
+									"n": 114
+								},
+								{
+									"name": "SPI",
+									"type": "interface",
+									"n": 5,
+									"m": 50000000
+								},
+								{
+									"name": "SDIO",
+									"type": "interface",
+									"description": "Secure Digital IO",
+									"n": 1,
+									"m": 4
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F423RHTx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 64
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F423VH",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x00180000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x00050000",
+									"default": true
+								}
+							],
+							"features": [
+								{
+									"name": "ADC",
+									"n": 16,
+									"m": 12
+								},
+								{
+									"name": "IOs",
+									"n": 114
+								},
+								{
+									"name": "SPI",
+									"type": "interface",
+									"n": 5,
+									"m": 50000000
+								},
+								{
+									"name": "SDIO",
+									"type": "interface",
+									"description": "Secure Digital IO",
+									"n": 1,
+									"m": 4
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F423VHHx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "BGA",
+											"type": "package",
+											"n": 100
+										}
+									]
+								},
+								{
+									"name": "STM32F423VHTx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "QFP",
+											"type": "package",
+											"n": 100
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "STM32F423MH",
+							"type": "device",
+							"memorySections": [
+								{
+									"id": "IROM1",
+									"start": "0x08000000",
+									"size": "0x00180000",
+									"startup": true,
+									"default": true
+								},
+								{
+									"id": "IRAM1",
+									"start": "0x20000000",
+									"size": "0x00050000",
+									"default": true
+								}
+							],
+							"features": [
+								{
+									"name": "ADC",
+									"n": 16,
+									"m": 12
+								},
+								{
+									"name": "IOs",
+									"n": 114
+								},
+								{
+									"name": "SPI",
+									"type": "interface",
+									"n": 5,
+									"m": 50000000
+								},
+								{
+									"name": "SDIO",
+									"type": "interface",
+									"description": "Secure Digital IO",
+									"n": 1,
+									"m": 4
+								}
+							],
+							"children": [
+								{
+									"name": "STM32F423MHYx",
+									"type": "variant",
+									"features": [
+										{
+											"name": "CSP",
+											"type": "package",
+											"n": 81
 										}
 									]
 								}
