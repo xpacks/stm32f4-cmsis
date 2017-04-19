@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        2. September 2016
- * $Revision:    V2.6
+ * $Date:        30. November 2016
+ * $Revision:    V2.7
  *
  * Project:      USART Driver definitions for ST STM32F4xx
  * -------------------------------------------------------------------------- */
@@ -57,7 +57,9 @@
         defined(RTE_Drivers_UART5 ) || \
         defined(RTE_Drivers_USART6) || \
         defined(RTE_Drivers_UART7 ) || \
-        defined(RTE_Drivers_UART8 ))   \
+        defined(RTE_Drivers_UART8 ) || \
+        defined(RTE_Drivers_UART9 ) || \
+        defined(RTE_Drivers_UART10))   \
        && (RTE_USART1 == 0)            \
        && (RTE_USART2 == 0)            \
        && (RTE_USART3 == 0)            \
@@ -65,7 +67,9 @@
        && (RTE_UART5  == 0)            \
        && (RTE_USART6 == 0)            \
        && (RTE_UART7  == 0)            \
-       && (RTE_UART8  == 0))
+       && (RTE_UART8  == 0)            \
+       && (RTE_UART9  == 0)            \
+       && (RTE_UART10 == 0))
     #error "USART not configured in RTE_Device.h!"
   #endif
 
@@ -108,6 +112,10 @@
     #define USART1_TX_DMA_Handler     DMAx_STREAMy_IRQ(RTE_USART1_TX_DMA_NUMBER, RTE_USART1_TX_DMA_STREAM)
   #endif
 
+  #ifndef USART1_GPIO_SPEED_FREQ
+    #define USART1_GPIO_SPEED_FREQ    GPIO_SPEED_FREQ_LOW
+  #endif
+
   #if (RTE_USART1_TX == 1)
     #if defined (STM32F410Tx)
       // USART1 TX available on pins: PA15, PB6
@@ -120,12 +128,13 @@
         #error "PA15 can not be configured as USART1 TX on selected device!"
       #endif
     #endif
-  
-    #define MX_USART1_TX_Pin       1
-    #define MX_USART1_TX_GPIOx     RTE_USART1_TX_PORT
-    #define MX_USART1_TX_GPIO_Pin  (1U << RTE_USART1_TX_BIT)
-    #define MX_USART1_TX_GPIO_PuPd GPIO_NOPULL
-    #define MX_USART1_TX_GPIO_AF   GPIO_AF7_USART1
+
+    #define MX_USART1_TX_Pin        1
+    #define MX_USART1_TX_GPIOx      RTE_USART1_TX_PORT
+    #define MX_USART1_TX_GPIO_Pin   (1U << RTE_USART1_TX_BIT)
+    #define MX_USART1_TX_GPIO_PuPd  GPIO_NOPULL
+    #define MX_USART1_TX_GPIO_Speed USART1_GPIO_SPEED_FREQ
+    #define MX_USART1_TX_GPIO_AF    GPIO_AF7_USART1
   #endif
 
   #if (RTE_USART1_RX == 1)
@@ -141,19 +150,21 @@
       #endif
     #endif
 
-    #define MX_USART1_RX_Pin       1
-    #define MX_USART1_RX_GPIOx     RTE_USART1_RX_PORT
-    #define MX_USART1_RX_GPIO_Pin  (1U << RTE_USART1_RX_BIT)
-    #define MX_USART1_RX_GPIO_PuPd GPIO_NOPULL
-    #define MX_USART1_RX_GPIO_AF   GPIO_AF7_USART1
+    #define MX_USART1_RX_Pin        1
+    #define MX_USART1_RX_GPIOx      RTE_USART1_RX_PORT
+    #define MX_USART1_RX_GPIO_Pin   (1U << RTE_USART1_RX_BIT)
+    #define MX_USART1_RX_GPIO_PuPd  GPIO_NOPULL
+    #define MX_USART1_RX_GPIO_Speed USART1_GPIO_SPEED_FREQ
+    #define MX_USART1_RX_GPIO_AF    GPIO_AF7_USART1
   #endif
 
   #if (RTE_USART1_CK == 1)
-    #define MX_USART1_CK_Pin       1
-    #define MX_USART1_CK_GPIOx     RTE_USART1_CK_PORT
-    #define MX_USART1_CK_GPIO_Pin  (1U << RTE_USART1_CK_BIT)
-    #define MX_USART1_CK_GPIO_PuPd GPIO_NOPULL
-    #define MX_USART1_CK_GPIO_AF   GPIO_AF7_USART1
+    #define MX_USART1_CK_Pin        1
+    #define MX_USART1_CK_GPIOx      RTE_USART1_CK_PORT
+    #define MX_USART1_CK_GPIO_Pin   (1U << RTE_USART1_CK_BIT)
+    #define MX_USART1_CK_GPIO_PuPd  GPIO_NOPULL
+    #define MX_USART1_CK_GPIO_Speed USART1_GPIO_SPEED_FREQ
+    #define MX_USART1_CK_GPIO_AF    GPIO_AF7_USART1
   #endif
 
 
@@ -163,19 +174,21 @@
       #error "USART1 CTS pin is not available on selected device!"
     #endif
 
-    #define MX_USART1_RTS_Pin       1
-    #define MX_USART1_RTS_GPIOx     RTE_USART1_RTS_PORT
-    #define MX_USART1_RTS_GPIO_Pin  (1U << RTE_USART1_RTS_BIT)
-    #define MX_USART1_RTS_GPIO_PuPd GPIO_NOPULL
-    #define MX_USART1_RTS_GPIO_AF   GPIO_AF7_USART1
+    #define MX_USART1_RTS_Pin        1
+    #define MX_USART1_RTS_GPIOx      RTE_USART1_RTS_PORT
+    #define MX_USART1_RTS_GPIO_Pin   (1U << RTE_USART1_RTS_BIT)
+    #define MX_USART1_RTS_GPIO_PuPd  GPIO_NOPULL
+    #define MX_USART1_RTS_GPIO_Speed USART1_GPIO_SPEED_FREQ
+    #define MX_USART1_RTS_GPIO_AF    GPIO_AF7_USART1
   #endif
 
   #if (RTE_USART1_CTS == 1)
-    #define MX_USART1_CTS_Pin       1
-    #define MX_USART1_CTS_GPIOx     RTE_USART1_CTS_PORT
-    #define MX_USART1_CTS_GPIO_Pin  (1U << RTE_USART1_CTS_BIT)
-    #define MX_USART1_CTS_GPIO_PuPd GPIO_NOPULL
-    #define MX_USART1_CTS_GPIO_AF   GPIO_AF7_USART1
+    #define MX_USART1_CTS_Pin        1
+    #define MX_USART1_CTS_GPIOx      RTE_USART1_CTS_PORT
+    #define MX_USART1_CTS_GPIO_Pin   (1U << RTE_USART1_CTS_BIT)
+    #define MX_USART1_CTS_GPIO_PuPd  GPIO_NOPULL
+    #define MX_USART1_CTS_GPIO_Speed USART1_GPIO_SPEED_FREQ
+    #define MX_USART1_CTS_GPIO_AF    GPIO_AF7_USART1
   #endif
 #endif
 
@@ -200,6 +213,10 @@
     #define USART2_TX_DMA_Handler     DMAx_STREAMy_IRQ(RTE_USART2_TX_DMA_NUMBER, RTE_USART2_TX_DMA_STREAM)
   #endif
 
+  #ifndef USART2_GPIO_SPEED_FREQ
+    #define USART2_GPIO_SPEED_FREQ    GPIO_SPEED_FREQ_LOW
+  #endif
+
   #if (RTE_USART2_TX == 1)
     #if defined(STM32F410Tx) || defined(STM32F410Cx) || defined(STM32F410Rx)
       // USART2 TX available on pin: PA2
@@ -208,11 +225,12 @@
       #endif
     #endif
 
-    #define MX_USART2_TX_Pin       1
-    #define MX_USART2_TX_GPIOx     RTE_USART2_TX_PORT
-    #define MX_USART2_TX_GPIO_Pin  (1U << RTE_USART2_TX_BIT)
-    #define MX_USART2_TX_GPIO_PuPd GPIO_NOPULL
-    #define MX_USART2_TX_GPIO_AF   GPIO_AF7_USART2
+    #define MX_USART2_TX_Pin        1
+    #define MX_USART2_TX_GPIOx      RTE_USART2_TX_PORT
+    #define MX_USART2_TX_GPIO_Pin   (1U << RTE_USART2_TX_BIT)
+    #define MX_USART2_TX_GPIO_PuPd  GPIO_NOPULL
+    #define MX_USART2_TX_GPIO_Speed USART2_GPIO_SPEED_FREQ
+    #define MX_USART2_TX_GPIO_AF    GPIO_AF7_USART2
   #endif
 
   #if (RTE_USART2_RX == 1)
@@ -223,11 +241,12 @@
       #endif
     #endif
 
-    #define MX_USART2_RX_Pin       1
-    #define MX_USART2_RX_GPIOx     RTE_USART2_RX_PORT
-    #define MX_USART2_RX_GPIO_Pin  (1U << RTE_USART2_RX_BIT)
-    #define MX_USART2_RX_GPIO_PuPd GPIO_NOPULL
-    #define MX_USART2_RX_GPIO_AF   GPIO_AF7_USART2
+    #define MX_USART2_RX_Pin        1
+    #define MX_USART2_RX_GPIOx      RTE_USART2_RX_PORT
+    #define MX_USART2_RX_GPIO_Pin   (1U << RTE_USART2_RX_BIT)
+    #define MX_USART2_RX_GPIO_PuPd  GPIO_NOPULL
+    #define MX_USART2_RX_GPIO_Speed USART2_GPIO_SPEED_FREQ
+    #define MX_USART2_RX_GPIO_AF    GPIO_AF7_USART2
   #endif
 
   #if (RTE_USART2_CK == 1)
@@ -241,11 +260,12 @@
       #endif
     #endif
 
-    #define MX_USART2_CK_Pin       1
-    #define MX_USART2_CK_GPIOx     RTE_USART2_CK_PORT
-    #define MX_USART2_CK_GPIO_Pin  (1U << RTE_USART2_CK_BIT)
-    #define MX_USART2_CK_GPIO_PuPd GPIO_NOPULL
-    #define MX_USART2_CK_GPIO_AF   GPIO_AF7_USART2
+    #define MX_USART2_CK_Pin        1
+    #define MX_USART2_CK_GPIOx      RTE_USART2_CK_PORT
+    #define MX_USART2_CK_GPIO_Pin   (1U << RTE_USART2_CK_BIT)
+    #define MX_USART2_CK_GPIO_PuPd  GPIO_NOPULL
+    #define MX_USART2_CK_GPIO_Speed USART2_GPIO_SPEED_FREQ
+    #define MX_USART2_CK_GPIO_AF    GPIO_AF7_USART2
   #endif
 
 
@@ -257,11 +277,12 @@
       #endif
     #endif
 
-    #define MX_USART2_RTS_Pin       1
-    #define MX_USART2_RTS_GPIOx     RTE_USART2_RTS_PORT
-    #define MX_USART2_RTS_GPIO_Pin  (1U << RTE_USART2_RTS_BIT)
-    #define MX_USART2_RTS_GPIO_PuPd GPIO_NOPULL
-    #define MX_USART2_RTS_GPIO_AF   GPIO_AF7_USART2
+    #define MX_USART2_RTS_Pin        1
+    #define MX_USART2_RTS_GPIOx      RTE_USART2_RTS_PORT
+    #define MX_USART2_RTS_GPIO_Pin   (1U << RTE_USART2_RTS_BIT)
+    #define MX_USART2_RTS_GPIO_PuPd  GPIO_NOPULL
+    #define MX_USART2_RTS_GPIO_Speed USART2_GPIO_SPEED_FREQ
+    #define MX_USART2_RTS_GPIO_AF    GPIO_AF7_USART2
   #endif
 
   #if (RTE_USART2_CTS == 1)
@@ -275,11 +296,12 @@
       #endif
     #endif
 
-    #define MX_USART2_CTS_Pin       1
-    #define MX_USART2_CTS_GPIOx     RTE_USART2_CTS_PORT
-    #define MX_USART2_CTS_GPIO_Pin  (1U << RTE_USART2_CTS_BIT)
-    #define MX_USART2_CTS_GPIO_PuPd GPIO_NOPULL
-    #define MX_USART2_CTS_GPIO_AF   GPIO_AF7_USART2
+    #define MX_USART2_CTS_Pin        1
+    #define MX_USART2_CTS_GPIOx      RTE_USART2_CTS_PORT
+    #define MX_USART2_CTS_GPIO_Pin   (1U << RTE_USART2_CTS_BIT)
+    #define MX_USART2_CTS_GPIO_PuPd  GPIO_NOPULL
+    #define MX_USART2_CTS_GPIO_Speed USART2_GPIO_SPEED_FREQ
+    #define MX_USART2_CTS_GPIO_AF    GPIO_AF7_USART2
   #endif
 #endif
 
@@ -309,45 +331,66 @@
     #define USART3_TX_DMA_Handler     DMAx_STREAMy_IRQ(RTE_USART3_TX_DMA_NUMBER, RTE_USART3_TX_DMA_STREAM)
   #endif
 
+  #ifndef USART3_GPIO_SPEED_FREQ
+    #define USART3_GPIO_SPEED_FREQ    GPIO_SPEED_FREQ_LOW
+  #endif
+
   #if (RTE_USART3_TX == 1)
-    #define MX_USART3_TX_Pin       1
-    #define MX_USART3_TX_GPIOx     RTE_USART3_TX_PORT
-    #define MX_USART3_TX_GPIO_Pin  (1U << RTE_USART3_TX_BIT)
-    #define MX_USART3_TX_GPIO_PuPd GPIO_NOPULL
-    #define MX_USART3_TX_GPIO_AF   GPIO_AF7_USART3
+    #define MX_USART3_TX_Pin        1
+    #define MX_USART3_TX_GPIOx      RTE_USART3_TX_PORT
+    #define MX_USART3_TX_GPIO_Pin   (1U << RTE_USART3_TX_BIT)
+    #define MX_USART3_TX_GPIO_PuPd  GPIO_NOPULL
+    #define MX_USART3_TX_GPIO_Speed USART3_GPIO_SPEED_FREQ
+    #define MX_USART3_TX_GPIO_AF    GPIO_AF7_USART3
   #endif
 
   #if (RTE_USART3_RX == 1)
-    #define MX_USART3_RX_Pin       1
-    #define MX_USART3_RX_GPIOx     RTE_USART3_RX_PORT
-    #define MX_USART3_RX_GPIO_Pin  (1U << RTE_USART3_RX_BIT)
-    #define MX_USART3_RX_GPIO_PuPd GPIO_NOPULL
-    #define MX_USART3_RX_GPIO_AF   GPIO_AF7_USART3
+    #define MX_USART3_RX_Pin        1
+    #define MX_USART3_RX_GPIOx      RTE_USART3_RX_PORT
+    #define MX_USART3_RX_GPIO_Pin   (1U << RTE_USART3_RX_BIT)
+    #define MX_USART3_RX_GPIO_PuPd  GPIO_NOPULL
+    #define MX_USART3_RX_GPIO_Speed USART3_GPIO_SPEED_FREQ
+    #define MX_USART3_RX_GPIO_AF    GPIO_AF7_USART3
   #endif
 
   #if (RTE_USART3_CK == 1)
-    #define MX_USART3_CK_Pin       1
-    #define MX_USART3_CK_GPIOx     RTE_USART3_CK_PORT
-    #define MX_USART3_CK_GPIO_Pin  (1U << RTE_USART3_CK_BIT)
-    #define MX_USART3_CK_GPIO_PuPd GPIO_NOPULL
-    #define MX_USART3_CK_GPIO_AF   GPIO_AF7_USART3
+    #define MX_USART3_CK_Pin        1
+    #define MX_USART3_CK_GPIOx      RTE_USART3_CK_PORT
+    #define MX_USART3_CK_GPIO_Pin   (1U << RTE_USART3_CK_BIT)
+    #define MX_USART3_CK_GPIO_PuPd  GPIO_NOPULL
+    #define MX_USART3_CK_GPIO_Speed USART3_GPIO_SPEED_FREQ
+#if (RTE_USART3_CK_ID == 1) && \
+    (defined (STM32F413xx) || defined (STM32F423xx) || \
+     defined(STM32F412Zx ) || defined(STM32F412Vx ) || defined(STM32F412Rx) || defined(STM32F412Cx))
+    #define MX_USART3_CK_GPIO_AF    GPIO_AF8_USART3
+#else
+    #define MX_USART3_CK_GPIO_AF    GPIO_AF7_USART3
+#endif
   #endif
 
 
   #if (RTE_USART3_RTS == 1)
-    #define MX_USART3_RTS_Pin       1
-    #define MX_USART3_RTS_GPIOx     RTE_USART3_RTS_PORT
-    #define MX_USART3_RTS_GPIO_Pin  (1U << RTE_USART3_RTS_BIT)
-    #define MX_USART3_RTS_GPIO_PuPd GPIO_NOPULL
-    #define MX_USART3_RTS_GPIO_AF   GPIO_AF7_USART3
+    #define MX_USART3_RTS_Pin        1
+    #define MX_USART3_RTS_GPIOx      RTE_USART3_RTS_PORT
+    #define MX_USART3_RTS_GPIO_Pin   (1U << RTE_USART3_RTS_BIT)
+    #define MX_USART3_RTS_GPIO_PuPd  GPIO_NOPULL
+    #define MX_USART3_RTS_GPIO_Speed USART3_GPIO_SPEED_FREQ
+    #define MX_USART3_RTS_GPIO_AF    GPIO_AF7_USART3
   #endif
 
   #if (RTE_USART3_CTS == 1)
-    #define MX_USART3_CTS_Pin       1
-    #define MX_USART3_CTS_GPIOx     RTE_USART3_CTS_PORT
-    #define MX_USART3_CTS_GPIO_Pin  (1U << RTE_USART3_CTS_BIT)
-    #define MX_USART3_CTS_GPIO_PuPd GPIO_NOPULL
-    #define MX_USART3_CTS_GPIO_AF   GPIO_AF7_USART3
+    #define MX_USART3_CTS_Pin        1
+    #define MX_USART3_CTS_GPIOx      RTE_USART3_CTS_PORT
+    #define MX_USART3_CTS_GPIO_Pin   (1U << RTE_USART3_CTS_BIT)
+    #define MX_USART3_CTS_GPIO_PuPd  GPIO_NOPULL
+    #define MX_USART3_CTS_GPIO_Speed USART3_GPIO_SPEED_FREQ
+#if (RTE_USART3_CK_ID == 1) && \
+    (defined (STM32F413xx) || defined (STM32F423xx) || \
+     defined(STM32F412Zx ) || defined(STM32F412Vx ) || defined(STM32F412Rx) || defined(STM32F412Cx))
+    #define MX_USART3_CTS_GPIO_AF    GPIO_AF8_USART3
+#else
+    #define MX_USART3_CTS_GPIO_AF    GPIO_AF7_USART3
+#endif
   #endif
 #endif
 
@@ -377,20 +420,55 @@
     #define UART4_TX_DMA_Handler     DMAx_STREAMy_IRQ(RTE_UART4_TX_DMA_NUMBER, RTE_UART4_TX_DMA_STREAM)
   #endif
 
+  #ifndef UART4_GPIO_SPEED_FREQ
+    #define UART4_GPIO_SPEED_FREQ    GPIO_SPEED_FREQ_LOW
+  #endif
+
   #if (RTE_UART4_TX == 1)
-    #define MX_UART4_TX_Pin       1
-    #define MX_UART4_TX_GPIOx     RTE_UART4_TX_PORT
-    #define MX_UART4_TX_GPIO_Pin  (1U << RTE_UART4_TX_BIT)
-    #define MX_UART4_TX_GPIO_PuPd GPIO_NOPULL
+    #if defined (STM32F413xx) || defined (STM32F423xx)
+      // UART4 TX available on pins: PA0, PD10, PA12, PD1
+      #if ((RTE_UART4_TX_ID == 2))
+        #error "PC10 can not be configured as UART4 TX on selected device!"
+      #endif
+    #else
+      // UART4 TX available on pins: PA0, PC10
+      #if ((RTE_UART4_TX_ID != 1) && (RTE_UART4_TX_ID != 2))
+        #error "PD10, PA12, PD1 can not be configured as UART4 TX on selected device!"
+      #endif
+    #endif
+
+    #define MX_UART4_TX_Pin        1
+    #define MX_UART4_TX_GPIOx      RTE_UART4_TX_PORT
+    #define MX_UART4_TX_GPIO_Pin   (1U << RTE_UART4_TX_BIT)
+    #define MX_UART4_TX_GPIO_PuPd  GPIO_NOPULL
+    #define MX_UART4_TX_GPIO_Speed UART4_GPIO_SPEED_FREQ
+#if ((RTE_UART4_TX_ID == 4) || (RTE_UART4_TX_ID == 5)) && \
+    (defined (STM32F413xx) || defined (STM32F423xx))
+    #define MX_UART4_TX_GPIO_AF   GPIO_AF11_UART4
+#else
     #define MX_UART4_TX_GPIO_AF   GPIO_AF8_UART4
+#endif
   #endif
 
   #if (RTE_UART4_RX == 1)
-    #define MX_UART4_RX_Pin       1
-    #define MX_UART4_RX_GPIOx     RTE_UART4_RX_PORT
-    #define MX_UART4_RX_GPIO_Pin  (1U << RTE_UART4_RX_BIT)
-    #define MX_UART4_RX_GPIO_PuPd GPIO_NOPULL
-    #define MX_UART4_RX_GPIO_AF   GPIO_AF8_UART4
+    #if !defined (STM32F413xx) && !defined (STM32F423xx)
+      // UART4 RX available on pins: PA1, PC11
+      #if ((RTE_UART4_TX_ID != 1) && (RTE_UART4_TX_ID != 2))
+        #error "PA11, PD0 can not be configured as UART4 RX on selected device!"
+      #endif
+    #endif
+
+    #define MX_UART4_RX_Pin        1
+    #define MX_UART4_RX_GPIOx      RTE_UART4_RX_PORT
+    #define MX_UART4_RX_GPIO_Pin   (1U << RTE_UART4_RX_BIT)
+    #define MX_UART4_RX_GPIO_PuPd  GPIO_NOPULL
+    #define MX_UART4_RX_GPIO_Speed UART4_GPIO_SPEED_FREQ
+#if ((RTE_UART4_RX_ID == 3) || (RTE_UART4_RX_ID == 4)) && \
+    (defined (STM32F413xx) || defined (STM32F423xx))
+    #define MX_UART4_RX_GPIO_AF    GPIO_AF11_UART4
+#else
+    #define MX_UART4_RX_GPIO_AF    GPIO_AF8_UART4
+#endif
   #endif
 #endif
 
@@ -420,20 +498,50 @@
     #define UART5_TX_DMA_Handler     DMAx_STREAMy_IRQ(RTE_UART5_TX_DMA_NUMBER, RTE_UART5_TX_DMA_STREAM)
   #endif
 
+  #ifndef UART5_GPIO_SPEED_FREQ
+    #define UART5_GPIO_SPEED_FREQ    GPIO_SPEED_FREQ_LOW
+  #endif
+
   #if (RTE_UART5_TX == 1)
-    #define MX_UART5_TX_Pin       1
-    #define MX_UART5_TX_GPIOx     RTE_UART5_TX_PORT
-    #define MX_UART5_TX_GPIO_Pin  (1U << RTE_UART5_TX_BIT)
-    #define MX_UART5_TX_GPIO_PuPd GPIO_NOPULL
-    #define MX_UART5_TX_GPIO_AF   GPIO_AF8_UART5
+    #if !defined (STM32F413xx) && !defined (STM32F423xx)
+      // UART5 TX available on pins: PC12
+      #if ((RTE_UART5_TX_ID != 1))
+        #error "PB6, PB9, PB13 can not be configured as UART5 TX on selected device!"
+      #endif
+    #endif
+
+    #define MX_UART5_TX_Pin        1
+    #define MX_UART5_TX_GPIOx      RTE_UART5_TX_PORT
+    #define MX_UART5_TX_GPIO_Pin   (1U << RTE_UART5_TX_BIT)
+    #define MX_UART5_TX_GPIO_PuPd  GPIO_NOPULL
+    #define MX_UART5_TX_GPIO_Speed UART5_GPIO_SPEED_FREQ
+#if ((RTE_UART5_TX_ID == 2) || (RTE_UART5_TX_ID == 3) || (RTE_UART5_TX_ID == 4)) && \
+    (defined (STM32F413xx) || defined (STM32F423xx))
+    #define MX_UART5_TX_GPIO_AF    GPIO_AF11_UART5
+#else
+    #define MX_UART5_TX_GPIO_AF    GPIO_AF8_UART5
+#endif
   #endif
 
   #if (RTE_UART5_RX == 1)
-    #define MX_UART5_RX_Pin       1
-    #define MX_UART5_RX_GPIOx     RTE_UART5_RX_PORT
-    #define MX_UART5_RX_GPIO_Pin  (1U << RTE_UART5_RX_BIT)
-    #define MX_UART5_RX_GPIO_PuPd GPIO_NOPULL
-    #define MX_UART5_RX_GPIO_AF   GPIO_AF8_UART5
+    #if !defined (STM32F413xx) && !defined (STM32F423xx)
+      // UART5 RX available on pins: PD2
+      #if ((RTE_UART5_RX_ID != 1))
+        #error "PB5, PB8, PB12 can not be configured as UART5 RX on selected device!"
+      #endif
+    #endif
+
+    #define MX_UART5_RX_Pin        1
+    #define MX_UART5_RX_GPIOx      RTE_UART5_RX_PORT
+    #define MX_UART5_RX_GPIO_Pin   (1U << RTE_UART5_RX_BIT)
+    #define MX_UART5_RX_GPIO_PuPd  GPIO_NOPULL
+    #define MX_UART5_RX_GPIO_Speed UART5_GPIO_SPEED_FREQ
+#if ((RTE_UART5_RX_ID == 2) || (RTE_UART5_RX_ID == 3) || (RTE_UART5_RX_ID == 4)) && \
+    (defined (STM32F413xx) || defined (STM32F423xx))
+    #define MX_UART5_RX_GPIO_AF    GPIO_AF11_UART5
+#else
+    #define MX_UART5_RX_GPIO_AF    GPIO_AF8_UART5
+#endif
   #endif
 #endif
 
@@ -467,6 +575,10 @@
     #define USART6_TX_DMA_Handler     DMAx_STREAMy_IRQ(RTE_USART6_TX_DMA_NUMBER, RTE_USART6_TX_DMA_STREAM)
   #endif
 
+  #ifndef USART6_GPIO_SPEED_FREQ
+    #define USART6_GPIO_SPEED_FREQ    GPIO_SPEED_FREQ_LOW
+  #endif
+
   #if (RTE_USART6_TX == 1)
     #if defined (STM32F410Cx)
       // USART6 TX available on pin: PA11
@@ -483,6 +595,8 @@
       #if (RTE_USART6_TX_ID == 3)
         #error "PG14 can not be configured as USART6 TX on selected device!"
       #endif
+    #elif defined (STM32F413xx) || defined (STM32F423xx)
+      // USART6 TX available on pins: PA11, PC6, PG14
     #else
       // PA11 as USART6 TX only available on STM32F401xx and STM32F411xx
       #if (RTE_USART6_TX_ID == 1)
@@ -490,11 +604,12 @@
       #endif
     #endif
 
-    #define MX_USART6_TX_Pin       1
-    #define MX_USART6_TX_GPIOx     RTE_USART6_TX_PORT
-    #define MX_USART6_TX_GPIO_Pin  (1U << RTE_USART6_TX_BIT)
-    #define MX_USART6_TX_GPIO_PuPd GPIO_NOPULL
-    #define MX_USART6_TX_GPIO_AF   GPIO_AF8_USART6
+    #define MX_USART6_TX_Pin        1
+    #define MX_USART6_TX_GPIOx      RTE_USART6_TX_PORT
+    #define MX_USART6_TX_GPIO_Pin   (1U << RTE_USART6_TX_BIT)
+    #define MX_USART6_TX_GPIO_PuPd  GPIO_NOPULL
+    #define MX_USART6_TX_GPIO_Speed USART6_GPIO_SPEED_FREQ
+    #define MX_USART6_TX_GPIO_AF    GPIO_AF8_USART6
   #endif
 
   #if (RTE_USART6_RX == 1)
@@ -513,6 +628,8 @@
       #if (RTE_USART6_RX_ID == 3)
         #error "PG9 can not be configured as USART6 RX on selected device!"
       #endif
+    #elif defined (STM32F413xx) || defined (STM32F423xx)
+      // USART6 RX available on pins: PA12, PC7, PG9
     #else
       // PA12 as USART6 RX only available on STM32F401xx and STM32F411xx
       #if (RTE_USART6_RX_ID == 1)
@@ -520,11 +637,12 @@
       #endif
     #endif
 
-    #define MX_USART6_RX_Pin       1
-    #define MX_USART6_RX_GPIOx     RTE_USART6_RX_PORT
-    #define MX_USART6_RX_GPIO_Pin  (1U << RTE_USART6_RX_BIT)
-    #define MX_USART6_RX_GPIO_PuPd GPIO_NOPULL
-    #define MX_USART6_RX_GPIO_AF   GPIO_AF8_USART6
+    #define MX_USART6_RX_Pin        1
+    #define MX_USART6_RX_GPIOx      RTE_USART6_RX_PORT
+    #define MX_USART6_RX_GPIO_Pin   (1U << RTE_USART6_RX_BIT)
+    #define MX_USART6_RX_GPIO_PuPd  GPIO_NOPULL
+    #define MX_USART6_RX_GPIO_Speed USART6_GPIO_SPEED_FREQ
+    #define MX_USART6_RX_GPIO_AF    GPIO_AF8_USART6
   #endif
 
   #if (RTE_USART6_CK == 1)
@@ -543,11 +661,12 @@
       #endif
     #endif
 
-    #define MX_USART6_CK_Pin       1
-    #define MX_USART6_CK_GPIOx     RTE_USART6_CK_PORT
-    #define MX_USART6_CK_GPIO_Pin  (1U << RTE_USART6_CK_BIT)
-    #define MX_USART6_CK_GPIO_PuPd GPIO_NOPULL
-    #define MX_USART6_CK_GPIO_AF   GPIO_AF8_USART6
+    #define MX_USART6_CK_Pin        1
+    #define MX_USART6_CK_GPIOx      RTE_USART6_CK_PORT
+    #define MX_USART6_CK_GPIO_Pin   (1U << RTE_USART6_CK_BIT)
+    #define MX_USART6_CK_GPIO_PuPd  GPIO_NOPULL
+    #define MX_USART6_CK_GPIO_Speed USART6_GPIO_SPEED_FREQ
+    #define MX_USART6_CK_GPIO_AF    GPIO_AF8_USART6
   #endif
 
   #if (RTE_USART6_RTS == 1)
@@ -555,11 +674,12 @@
         defined (STM32F410Cx) || defined (STM32F410Rx)
       #error "CTS line not available on selected device!"
     #endif
-    #define MX_USART6_RTS_Pin       1
-    #define MX_USART6_RTS_GPIOx     RTE_USART6_RTS_PORT
-    #define MX_USART6_RTS_GPIO_Pin  (1U << RTE_USART6_RTS_BIT)
-    #define MX_USART6_RTS_GPIO_PuPd GPIO_NOPULL
-    #define MX_USART6_RTS_GPIO_AF   GPIO_AF8_USART6
+    #define MX_USART6_RTS_Pin        1
+    #define MX_USART6_RTS_GPIOx      RTE_USART6_RTS_PORT
+    #define MX_USART6_RTS_GPIO_Pin   (1U << RTE_USART6_RTS_BIT)
+    #define MX_USART6_RTS_GPIO_PuPd  GPIO_NOPULL
+    #define MX_USART6_RTS_GPIO_Speed USART6_GPIO_SPEED_FREQ
+    #define MX_USART6_RTS_GPIO_AF    GPIO_AF8_USART6
   #endif
 
   #if (RTE_USART6_CTS == 1)
@@ -567,11 +687,12 @@
         defined (STM32F410Cx) || defined (STM32F410Rx)
       #error "RTS line not available on selected device!"
     #endif
-    #define MX_USART6_CTS_Pin       1
-    #define MX_USART6_CTS_GPIOx     RTE_USART6_CTS_PORT
-    #define MX_USART6_CTS_GPIO_Pin  (1U << RTE_USART6_CTS_BIT)
-    #define MX_USART6_CTS_GPIO_PuPd GPIO_NOPULL
-    #define MX_USART6_CTS_GPIO_AF   GPIO_AF8_USART6
+    #define MX_USART6_CTS_Pin        1
+    #define MX_USART6_CTS_GPIOx      RTE_USART6_CTS_PORT
+    #define MX_USART6_CTS_GPIO_Pin   (1U << RTE_USART6_CTS_BIT)
+    #define MX_USART6_CTS_GPIO_PuPd  GPIO_NOPULL
+    #define MX_USART6_CTS_GPIO_Speed USART6_GPIO_SPEED_FREQ
+    #define MX_USART6_CTS_GPIO_AF    GPIO_AF8_USART6
   #endif
 #endif
 
@@ -601,19 +722,39 @@
     #define UART7_TX_DMA_Handler     DMAx_STREAMy_IRQ(RTE_UART7_TX_DMA_NUMBER, RTE_UART7_TX_DMA_STREAM)
   #endif
 
+  #ifndef UART7_GPIO_SPEED_FREQ
+    #define UART7_GPIO_SPEED_FREQ    GPIO_SPEED_FREQ_LOW
+  #endif
+
   #if (RTE_UART7_TX == 1)
-    #define MX_UART7_TX_Pin       1
-    #define MX_UART7_TX_GPIOx     RTE_UART7_TX_PORT
-    #define MX_UART7_TX_GPIO_Pin  (1U << RTE_UART7_TX_BIT)
-    #define MX_UART7_TX_GPIO_PuPd GPIO_NOPULL
-    #define MX_UART7_TX_GPIO_AF   GPIO_AF8_UART7
+    #if !defined (STM32F413xx) && !defined (STM32F423xx)
+      // UART7 TX available on pins: PF7, PE8
+      #if ((RTE_UART7_TX_ID == 3) || (RTE_UART7_TX_ID == 3))
+        #error "PA15, PB4 can not be configured as UART7 TX on selected device!"
+      #endif
+    #endif
+
+    #define MX_UART7_TX_Pin        1
+    #define MX_UART7_TX_GPIOx      RTE_UART7_TX_PORT
+    #define MX_UART7_TX_GPIO_Pin   (1U << RTE_UART7_TX_BIT)
+    #define MX_UART7_TX_GPIO_PuPd  GPIO_NOPULL
+    #define MX_UART7_TX_GPIO_Speed UART7_GPIO_SPEED_FREQ
+    #define MX_UART7_TX_GPIO_AF    GPIO_AF8_UART7
   #endif
 
   #if (RTE_UART7_RX == 1)
-    #define MX_UART7_RX_Pin       1
-    #define MX_UART7_RX_GPIOx     RTE_UART7_RX_PORT
-    #define MX_UART7_RX_GPIO_Pin  (1U << RTE_UART7_RX_BIT)
-    #define MX_UART7_RX_GPIO_PuPd GPIO_NOPULL
+    #if !defined (STM32F413xx) && !defined (STM32F423xx)
+      // UART7 RX available on pins: PF6, PE7
+      #if ((RTE_UART7_RX_ID == 3) || (RTE_UART7_RX_ID == 3))
+        #error "PA8, PB3 can not be configured as UART7 RX on selected device!"
+      #endif
+    #endif
+
+    #define MX_UART7_RX_Pin        1
+    #define MX_UART7_RX_GPIOx      RTE_UART7_RX_PORT
+    #define MX_UART7_RX_GPIO_Pin   (1U << RTE_UART7_RX_BIT)
+    #define MX_UART7_RX_GPIO_PuPd  GPIO_NOPULL
+    #define MX_UART7_RX_GPIO_Speed UART7_GPIO_SPEED_FREQ
     #define MX_UART7_RX_GPIO_AF   GPIO_AF8_UART7
   #endif
 #endif
@@ -644,20 +785,148 @@
     #define UART8_TX_DMA_Handler     DMAx_STREAMy_IRQ(RTE_UART8_TX_DMA_NUMBER, RTE_UART8_TX_DMA_STREAM)
   #endif
 
+  #ifndef UART8_GPIO_SPEED_FREQ
+    #define UART8_GPIO_SPEED_FREQ    GPIO_SPEED_FREQ_LOW
+  #endif
+
   #if (RTE_UART8_TX == 1)
-    #define MX_UART8_TX_Pin       1
-    #define MX_UART8_TX_GPIOx     RTE_UART8_TX_PORT
-    #define MX_UART8_TX_GPIO_Pin  (1U << RTE_UART8_TX_BIT)
-    #define MX_UART8_TX_GPIO_PuPd GPIO_NOPULL
+    #if !defined (STM32F413xx) && !defined (STM32F423xx)
+      // UART8 TX available on pins: PE1
+      #if ((RTE_UART8_TX_ID == 2))
+        #error "PF9 can not be configured as UART8 TX on selected device!"
+      #endif
+    #endif
+
+    #define MX_UART8_TX_Pin        1
+    #define MX_UART8_TX_GPIOx      RTE_UART8_TX_PORT
+    #define MX_UART8_TX_GPIO_Pin   (1U << RTE_UART8_TX_BIT)
+    #define MX_UART8_TX_GPIO_PuPd  GPIO_NOPULL
+    #define MX_UART8_TX_GPIO_Speed UART8_GPIO_SPEED_FREQ
     #define MX_UART8_TX_GPIO_AF   GPIO_AF8_UART8
   #endif
 
   #if (RTE_UART8_RX == 1)
-    #define MX_UART8_RX_Pin       1
-    #define MX_UART8_RX_GPIOx     RTE_UART8_RX_PORT
-    #define MX_UART8_RX_GPIO_Pin  (1U << RTE_UART8_RX_BIT)
-    #define MX_UART8_RX_GPIO_PuPd GPIO_NOPULL
-    #define MX_UART8_RX_GPIO_AF   GPIO_AF8_UART8
+    #if !defined (STM32F413xx) && !defined (STM32F423xx)
+      // UART8 RX available on pins: PE0
+      #if ((RTE_UART8_RX_ID == 2))
+        #error "PF8 can not be configured as UART8 RX on selected device!"
+      #endif
+    #endif
+
+    #define MX_UART8_RX_Pin        1
+    #define MX_UART8_RX_GPIOx      RTE_UART8_RX_PORT
+    #define MX_UART8_RX_GPIO_Pin   (1U << RTE_UART8_RX_BIT)
+    #define MX_UART8_RX_GPIO_PuPd  GPIO_NOPULL
+    #define MX_UART8_RX_GPIO_Speed UART8_GPIO_SPEED_FREQ
+    #define MX_UART8_RX_GPIO_AF    GPIO_AF8_UART8
+  #endif
+#endif
+
+// UART9 configuration definitions
+#if (!defined (STM32F413xx) && !defined (STM32F423xx)) && defined (USART9)
+  // USART9 not available
+  #undef USART9
+#endif
+
+#if (RTE_UART9 == 1)
+
+  #ifndef UART9
+    #error "UART9 not available for selected device!"
+  #endif
+
+  #define MX_UART9
+
+  #if (RTE_UART9_RX_DMA == 1)
+    #define MX_UART9_RX_DMA_Instance DMAx_STREAMy(RTE_UART9_RX_DMA_NUMBER, RTE_UART9_RX_DMA_STREAM)
+    #define MX_UART9_RX_DMA_IRQn     DMAx_STREAMy_IRQn(RTE_UART9_RX_DMA_NUMBER, RTE_UART9_RX_DMA_STREAM)
+    #define MX_UART9_RX_DMA_Channel  DMA_CHANNEL_x(RTE_UART9_RX_DMA_CHANNEL)
+    #define MX_UART9_RX_DMA_Priority DMA_PRIORITY(RTE_UART9_RX_DMA_PRIORITY)
+
+    #define UART9_RX_DMA_Handler     DMAx_STREAMy_IRQ(RTE_UART9_RX_DMA_NUMBER, RTE_UART9_RX_DMA_STREAM)
+  #endif
+  #if (RTE_UART9_TX_DMA == 1)
+    #define MX_UART9_TX_DMA_Instance DMAx_STREAMy(RTE_UART9_TX_DMA_NUMBER, RTE_UART9_TX_DMA_STREAM)
+    #define MX_UART9_TX_DMA_IRQn     DMAx_STREAMy_IRQn(RTE_UART9_TX_DMA_NUMBER, RTE_UART9_TX_DMA_STREAM)
+    #define MX_UART9_TX_DMA_Channel  DMA_CHANNEL_x(RTE_UART9_TX_DMA_CHANNEL)
+    #define MX_UART9_TX_DMA_Priority DMA_PRIORITY(RTE_UART9_TX_DMA_PRIORITY)
+
+    #define UART9_TX_DMA_Handler     DMAx_STREAMy_IRQ(RTE_UART9_TX_DMA_NUMBER, RTE_UART9_TX_DMA_STREAM)
+  #endif
+
+  #ifndef UART9_GPIO_SPEED_FREQ
+    #define UART9_GPIO_SPEED_FREQ    GPIO_SPEED_FREQ_LOW
+  #endif
+
+  #if (RTE_UART9_TX == 1)
+    #define MX_UART9_TX_Pin        1
+    #define MX_UART9_TX_GPIOx      RTE_UART9_TX_PORT
+    #define MX_UART9_TX_GPIO_Pin   (1U << RTE_UART9_TX_BIT)
+    #define MX_UART9_TX_GPIO_PuPd  GPIO_NOPULL
+    #define MX_UART9_TX_GPIO_Speed UART9_GPIO_SPEED_FREQ
+    #define MX_UART9_TX_GPIO_AF    GPIO_AF11_UART9
+  #endif
+
+  #if (RTE_UART9_RX == 1)
+    #define MX_UART9_RX_Pin        1
+    #define MX_UART9_RX_GPIOx      RTE_UART9_RX_PORT
+    #define MX_UART9_RX_GPIO_Pin   (1U << RTE_UART9_RX_BIT)
+    #define MX_UART9_RX_GPIO_PuPd  GPIO_NOPULL
+    #define MX_UART9_RX_GPIO_Speed UART9_GPIO_SPEED_FREQ
+    #define MX_UART9_RX_GPIO_AF    GPIO_AF11_UART9
+  #endif
+#endif
+
+// UART10 configuration definitions
+#if (!defined (STM32F413xx) && !defined (STM32F423xx)) && defined (USART10)
+  // USART10 not available
+  #undef USART10
+#endif
+
+#if (RTE_UART10 == 1)
+
+  #ifndef UART10
+    #error "UART10 not available for selected device!"
+  #endif
+
+  #define MX_UART10
+
+  #if (RTE_UART10_RX_DMA == 1)
+    #define MX_UART10_RX_DMA_Instance DMAx_STREAMy(RTE_UART10_RX_DMA_NUMBER, RTE_UART10_RX_DMA_STREAM)
+    #define MX_UART10_RX_DMA_IRQn     DMAx_STREAMy_IRQn(RTE_UART10_RX_DMA_NUMBER, RTE_UART10_RX_DMA_STREAM)
+    #define MX_UART10_RX_DMA_Channel  DMA_CHANNEL_x(RTE_UART10_RX_DMA_CHANNEL)
+    #define MX_UART10_RX_DMA_Priority DMA_PRIORITY(RTE_UART10_RX_DMA_PRIORITY)
+
+    #define UART10_RX_DMA_Handler     DMAx_STREAMy_IRQ(RTE_UART10_RX_DMA_NUMBER, RTE_UART10_RX_DMA_STREAM)
+  #endif
+  #if (RTE_UART10_TX_DMA == 1)
+    #define MX_UART10_TX_DMA_Instance DMAx_STREAMy(RTE_UART10_TX_DMA_NUMBER, RTE_UART10_TX_DMA_STREAM)
+    #define MX_UART10_TX_DMA_IRQn     DMAx_STREAMy_IRQn(RTE_UART10_TX_DMA_NUMBER, RTE_UART10_TX_DMA_STREAM)
+    #define MX_UART10_TX_DMA_Channel  DMA_CHANNEL_x(RTE_UART10_TX_DMA_CHANNEL)
+    #define MX_UART10_TX_DMA_Priority DMA_PRIORITY(RTE_UART10_TX_DMA_PRIORITY)
+
+    #define UART10_TX_DMA_Handler     DMAx_STREAMy_IRQ(RTE_UART10_TX_DMA_NUMBER, RTE_UART10_TX_DMA_STREAM)
+  #endif
+
+  #ifndef UART10_GPIO_SPEED_FREQ
+    #define UART10_GPIO_SPEED_FREQ    GPIO_SPEED_FREQ_LOW
+  #endif
+
+  #if (RTE_UART10_TX == 1)
+    #define MX_UART10_TX_Pin        1
+    #define MX_UART10_TX_GPIOx      RTE_UART10_TX_PORT
+    #define MX_UART10_TX_GPIO_Pin   (1U << RTE_UART10_TX_BIT)
+    #define MX_UART10_TX_GPIO_PuPd  GPIO_NOPULL
+    #define MX_UART10_TX_GPIO_Speed UART10_GPIO_SPEED_FREQ
+    #define MX_UART10_TX_GPIO_AF    GPIO_AF11_UART10
+  #endif
+
+  #if (RTE_UART10_RX == 1)
+    #define MX_UART10_RX_Pin        1
+    #define MX_UART10_RX_GPIOx      RTE_UART10_RX_PORT
+    #define MX_UART10_RX_GPIO_Pin   (1U << RTE_UART10_RX_BIT)
+    #define MX_UART10_RX_GPIO_PuPd  GPIO_NOPULL
+    #define MX_UART10_RX_GPIO_Speed UART10_GPIO_SPEED_FREQ
+    #define MX_UART10_RX_GPIO_AF    GPIO_AF11_UART10
   #endif
 #endif
 
@@ -671,7 +940,9 @@
         defined(RTE_Drivers_UART5 ) || \
         defined(RTE_Drivers_USART6) || \
         defined(RTE_Drivers_UART7 ) || \
-        defined(RTE_Drivers_UART8 ))   \
+        defined(RTE_Drivers_UART8 ) || \
+        defined(RTE_Drivers_UART9 ) || \
+        defined(RTE_Drivers_UART10))   \
         && (!defined (MX_USART1))      \
         && (!defined (MX_USART2))      \
         && (!defined (MX_USART3))      \
@@ -679,7 +950,9 @@
         && (!defined (MX_UART5 ))      \
         && (!defined (MX_USART6))      \
         && (!defined (MX_UART7 ))      \
-        && (!defined (MX_UART8 )))
+        && (!defined (MX_UART8 ))      \
+        && (!defined (MX_UART9 ))      \
+        && (!defined (MX_UART10)))
     #error "USART not configured in STM32CubeMX!"
   #endif
 
@@ -833,6 +1106,34 @@
 #endif
 #endif
 
+
+#ifdef MX_UART9
+
+#if (MX_UART9_VM == VM_ASYNC)
+#ifndef USART_ASYNC
+#define USART_ASYNC                      (1UL)
+#endif
+#elif (MX_UART9_VM == VM_IRDA)
+#ifndef USART_IRDA
+#define USART_IRDA                       (1UL)
+#endif
+#endif
+#endif
+
+
+#ifdef MX_UART10
+
+#if (MX_UART10_VM == VM_ASYNC)
+#ifndef USART_ASYNC
+#define USART_ASYNC                      (1UL)
+#endif
+#elif (MX_UART10_VM == VM_IRDA)
+#ifndef USART_IRDA
+#define USART_IRDA                       (1UL)
+#endif
+#endif
+#endif
+
 #endif  /* RTE_DEVICE_FRAMEWORK_CUBE_MX */
 
 #ifdef MX_USART1
@@ -923,6 +1224,28 @@
 #endif
 #endif
 
+#ifdef MX_UART9
+#if (defined(MX_UART9_RX_DMA_Instance) || defined(MX_UART9_TX_DMA_Instance))
+#ifndef MX_UART9_RX_DMA_Instance
+  #error "UART using DMA requires Rx and Tx DMA channel enabled in RTE_Device.h or MX_Device.h!"
+#endif
+#ifndef MX_UART9_TX_DMA_Instance
+  #error "UART9 using DMA requires Rx and Tx DMA channel enabled in RTE_Device.h or MX_Device.h!"
+#endif
+#endif
+#endif
+
+#ifdef MX_UART10
+#if (defined(MX_UART10_RX_DMA_Instance) || defined(MX_UART10_TX_DMA_Instance))
+#ifndef MX_UART10_RX_DMA_Instance
+  #error "UART using DMA requires Rx and Tx DMA channel enabled in RTE_Device.h or MX_Device.h!"
+#endif
+#ifndef MX_UART10_TX_DMA_Instance
+  #error "UART9 using DMA requires Rx and Tx DMA channel enabled in RTE_Device.h or MX_Device.h!"
+#endif
+#endif
+#endif
+
 
 #if (defined(MX_USART1_RX_DMA_Instance) || \
      defined(MX_USART2_RX_DMA_Instance) || \
@@ -931,7 +1254,9 @@
      defined(MX_UART5_RX_DMA_Instance ) || \
      defined(MX_USART6_RX_DMA_Instance) || \
      defined(MX_UART7_RX_DMA_Instance ) || \
-     defined(MX_UART8_RX_DMA_Instance))
+     defined(MX_UART8_RX_DMA_Instance ) || \
+     defined(MX_UART9_RX_DMA_Instance ) || \
+     defined(MX_UART10_RX_DMA_Instance))
 #define __USART_DMA_RX
 #endif
 #if (defined(MX_USART1_TX_DMA_Instance) || \
@@ -941,7 +1266,9 @@
      defined(MX_UART5_TX_DMA_Instance ) || \
      defined(MX_USART6_TX_DMA_Instance) || \
      defined(MX_UART7_TX_DMA_Instance ) || \
-     defined(MX_UART8_TX_DMA_Instance))
+     defined(MX_UART8_TX_DMA_Instance ) || \
+     defined(MX_UART9_TX_DMA_Instance ) || \
+     defined(MX_UART10_TX_DMA_Instance))
 #define __USART_DMA_TX
 #endif
 #if (defined(__USART_DMA_RX) && defined(__USART_DMA_TX))
@@ -987,6 +1314,8 @@ typedef const struct _USART_PIN {
   GPIO_TypeDef         *port;           // Port
   uint16_t              pin;            // Pin
   uint8_t               af;             // Alternate function
+  uint8_t               pupd;           // Pull up/down
+  uint8_t               speed;          // Speed
 } USART_PIN;
 
 // USART Input/Output Configuration

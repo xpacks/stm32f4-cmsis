@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        04. September 2015
- * $Revision:    V2.4
+ * $Date:        05. December 2016
+ * $Revision:    V2.5
  *
  * Project:      MCI Driver Definitions for ST STM32F4xx
  * -------------------------------------------------------------------------- */
@@ -217,6 +217,16 @@
 #define MCI_RESPONSE_EXPECTED_Msk (ARM_MCI_RESPONSE_SHORT      | \
                                    ARM_MCI_RESPONSE_SHORT_BUSY | \
                                    ARM_MCI_RESPONSE_LONG)
+
+#if defined(RTE_DEVICE_FRAMEWORK_CLASSIC)
+/* MCI Input/Output Definition */
+typedef const struct _MCI_IO {
+  GPIO_TypeDef         *port;           /* IO port                            */
+  uint16_t              pin;            /* IO pin                             */
+  uint32_t              pull;           /* IO pin pull resistor               */
+  uint32_t              af;             /* IO alternate function              */
+} MCI_IO;
+#endif
 
 /* MCI Transfer Information Definition */
 typedef struct _MCI_XFER {

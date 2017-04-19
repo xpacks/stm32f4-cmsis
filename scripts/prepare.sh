@@ -2,6 +2,8 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+# http://www.keil.com/dd2/pack/
+
 # Archives are to be downloaded from:
 # http://www.keil.com/pack/Keil.STM32F4xx_DFP.x.x.x.pack
 
@@ -13,7 +15,8 @@ IFS=$'\n\t'
 # RELEASE_VERSION="2.7.0"
 # RELEASE_VERSION="2.8.0"
 # RELEASE_VERSION="2.9.0"
-RELEASE_VERSION="2.10.0"
+# RELEASE_VERSION="2.10.0"
+RELEASE_VERSION="2.11.0"
 
 FAMILY="STM32F4"
 GITHUB_PROJECT="xpacks/stm32f4-cmsis"

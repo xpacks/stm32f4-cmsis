@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  *
- * $Date:        30. May 2016
- * $Revision:    V2.6
+ * $Date:        01. December 2016
+ * $Revision:    V2.7
  *
  * Project:      I2C Driver definitions for ST STM32F4xx
  * -------------------------------------------------------------------------- */
@@ -188,6 +188,17 @@
     #endif
   #endif
 
+  #if defined (STM32F413xx) || defined (STM32F423xx)
+    /* SDA available on pins: PB3, PB9, PB11, PF0 */
+    #if (RTE_I2C2_SDA_PORT_ID == 1)
+      #error "Only PB3, PB9, PB11 and PF0 can be configured as I2C2 SDA on selected device!"
+    #endif
+    /* SCL available on pin:  PF1, PB10 */
+    #if (RTE_I2C2_SCL_PORT_ID == 1)
+      #error "Only PB10 and PF1 can be configured as I2C2 SCL on selected device!"
+    #endif
+  #endif
+
   #define MX_I2C2
 
   #if (RTE_I2C2_RX_DMA == 1)
@@ -215,7 +226,14 @@
   #define MX_I2C2_SDA_GPIOx         RTE_I2C2_SDA_PORT
   #define MX_I2C2_SDA_GPIO_Pin      (1U << RTE_I2C2_SDA_BIT)
   #define MX_I2C2_SDA_GPIO_PuPdOD   GPIO_NOPULL
+
+  #if ((defined (STM32F413xx) || defined (STM32F423xx)) && \
+       ((RTE_I2C2_SDA_PORT_ID == 3) || (RTE_I2C2_SDA_PORT_ID == 4)))
+  #define MX_I2C2_SDA_GPIO_AF       GPIO_AF9_I2C2
+  #else
   #define MX_I2C2_SDA_GPIO_AF       GPIO_AF4_I2C2
+#endif
+
 #endif
 
 /* I2C3 configuration definitions */
@@ -259,6 +277,17 @@
     #endif
   #endif
 
+  #if defined (STM32F413xx) || defined (STM32F423xx)
+    /* SDA available on pins: PB3, PB9, PB11, PF0 */
+    #if (RTE_I2C3_SDA_PORT_ID == 0)
+      #error "Only PB4, PB8, PC9 can be configured as I2C3 SDA on selected device!"
+    #endif
+    /* SCL available on pin:  PA8 */
+    #if (RTE_I2C3_SCL_PORT_ID != 1)
+      #error "Only PA8 can be configured as I2C3 SCL on selected device!"
+    #endif
+  #endif
+
   #define MX_I2C3
 
   #if (RTE_I2C3_RX_DMA == 1)
@@ -286,7 +315,14 @@
   #define MX_I2C3_SDA_GPIOx         RTE_I2C3_SDA_PORT
   #define MX_I2C3_SDA_GPIO_Pin      (1U << RTE_I2C3_SDA_BIT)
   #define MX_I2C3_SDA_GPIO_PuPdOD   GPIO_NOPULL
+
+  #if ((defined (STM32F413xx) || defined (STM32F423xx)) && \
+       ((RTE_I2C3_SDA_PORT_ID == 2) || (RTE_I2C3_SDA_PORT_ID == 3)))
+  #define MX_I2C3_SDA_GPIO_AF       GPIO_AF9_I2C3
+  #else
   #define MX_I2C3_SDA_GPIO_AF       GPIO_AF4_I2C3
+  #endif
+
 #endif
 
 #endif /* RTE_DEVICE_FRAMEWORK_CLASSIC */

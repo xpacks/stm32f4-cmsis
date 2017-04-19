@@ -17,8 +17,8 @@
  *
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * $Date:        31. August 2016
- * $Revision:    V2.4.2
+ * $Date:        1. December 2016
+ * $Revision:    V2.4.4
  *
  * Project:      RTE Device Configuration for ST STM32F4xx
  * -------------------------------------------------------------------------- */
@@ -246,9 +246,9 @@
 //   <e> DMA Rx
 //     <o1> Number <1=>1
 //     <i>  Selects DMA Number (only DMA1 can be used)
-//     <o2> Stream <5=>5
-//     <i>  Selects DMA Stream (only Stream 5 can be used)
-//     <o3> Channel <4=>4
+//     <o2> Stream <5=>5 <7=>7
+//     <i>  Selects DMA Stream (only Stream 5 or 7 can be used)
+//     <o3> Channel <4=>4 <6=>6
 //     <i>  Selects DMA Channel (only Channel 4 can be used)
 //     <o4> Priority <0=>Low <1=>Medium <2=>High <3=>Very High
 //     <i>  Selects DMA Priority
@@ -381,10 +381,10 @@
 //   <e> DMA Rx
 //     <o1> Number <1=>1
 //     <i>  Selects DMA Number (only DMA1 can be used)
-//     <o2> Stream <1=>1
-//     <i>  Selects DMA Stream (only Stream 1 can be used)
-//     <o3> Channel <4=>4
-//     <i>  Selects DMA Channel (only Channel 4 can be used)
+//     <o2> Stream <1=>1 <4=>4
+//     <i>  Selects DMA Stream (only Stream 1 or 4 can be used)
+//     <o3> Channel <4=>4 <7=>7
+//     <i>  Selects DMA Channel (only Channel 4 or 7 can be used)
 //     <o4> Priority <0=>Low <1=>Medium <2=>High <3=>Very High
 //     <i>  Selects DMA Priority
 //   </e>
@@ -397,10 +397,10 @@
 //   <e> DMA Tx
 //     <o1> Number <1=>1
 //     <i>  Selects DMA Number (only DMA1 can be used)
-//     <o2> Stream <3=>3
-//     <i>  Selects DMA Stream (only Stream 3 can be used)
-//     <o3> Channel <4=>4
-//     <i>  Selects DMA Channel (only Channel 4 can be used)
+//     <o2> Stream <3=>3 <4=>4
+//     <i>  Selects DMA Stream (only Stream 3 or 4 can be used)
+//     <o3> Channel <4=>4 <7=>7
+//     <i>  Selects DMA Channel (only Channel 4 or 7 can be used)
 //     <o4> Priority <0=>Low <1=>Medium <2=>High <3=>Very High
 //     <i>  Selects DMA Priority
 //   </e>
@@ -417,7 +417,7 @@
 // <i> Configuration settings for Driver_USART4 in component ::CMSIS Driver:USART
 #define RTE_UART4                       0
 
-//   <o> UART4_TX Pin <0=>Not Used <1=>PA0 <2=>PC10
+//   <o> UART4_TX Pin <0=>Not Used <1=>PA0 <2=>PC10 <3=>PD10 <4=>PA12 <5=>PD1
 #define RTE_UART4_TX_ID                 0
 #if    (RTE_UART4_TX_ID == 0)
 #define RTE_UART4_TX                    0
@@ -429,11 +429,23 @@
 #define RTE_UART4_TX                    1
 #define RTE_UART4_TX_PORT               GPIOC
 #define RTE_UART4_TX_BIT                10
+#elif  (RTE_UART4_TX_ID == 3)
+#define RTE_UART4_TX                    1
+#define RTE_UART4_TX_PORT               GPIOD
+#define RTE_UART4_TX_BIT                10
+#elif  (RTE_UART4_TX_ID == 4)
+#define RTE_UART4_TX                    1
+#define RTE_UART4_TX_PORT               GPIOA
+#define RTE_UART4_TX_BIT                12
+#elif  (RTE_UART4_TX_ID == 5)
+#define RTE_UART4_TX                    1
+#define RTE_UART4_TX_PORT               GPIOD
+#define RTE_UART4_TX_BIT                1
 #else
 #error "Invalid UART4_TX Pin Configuration!"
 #endif
 
-//   <o> UART4_RX Pin <0=>Not Used <1=>PA1 <2=>PC11
+//   <o> UART4_RX Pin <0=>Not Used <1=>PA1 <2=>PC11 <3=>PA11 <4=>PD0
 #define RTE_UART4_RX_ID                 0
 #if    (RTE_UART4_RX_ID == 0)
 #define RTE_UART4_RX                    0
@@ -445,6 +457,14 @@
 #define RTE_UART4_RX                    1
 #define RTE_UART4_RX_PORT               GPIOC
 #define RTE_UART4_RX_BIT                11
+#elif  (RTE_UART4_RX_ID == 3)
+#define RTE_UART4_RX                    1
+#define RTE_UART4_RX_PORT               GPIOA
+#define RTE_UART4_RX_BIT                11
+#elif  (RTE_UART4_RX_ID == 4)
+#define RTE_UART4_RX                    1
+#define RTE_UART4_RX_PORT               GPIOD
+#define RTE_UART4_RX_BIT                0
 #else
 #error "Invalid UART4_RX Pin Configuration!"
 #endif
@@ -488,7 +508,7 @@
 // <i> Configuration settings for Driver_USART5 in component ::CMSIS Driver:USART
 #define RTE_UART5                       0
 
-//   <o> UART5_TX Pin <0=>Not Used <1=>PC12
+//   <o> UART5_TX Pin <0=>Not Used <1=>PC12 <1=>PB6 <1=>PB9 <1=>PB13
 #define RTE_UART5_TX_ID                 0
 #if    (RTE_UART5_TX_ID == 0)
 #define RTE_UART5_TX                    0
@@ -496,11 +516,23 @@
 #define RTE_UART5_TX                    1
 #define RTE_UART5_TX_PORT               GPIOC
 #define RTE_UART5_TX_BIT                12
+#elif  (RTE_UART5_TX_ID == 2)
+#define RTE_UART5_TX                    1
+#define RTE_UART5_TX_PORT               GPIOB
+#define RTE_UART5_TX_BIT                6
+#elif  (RTE_UART5_TX_ID == 3)
+#define RTE_UART5_TX                    1
+#define RTE_UART5_TX_PORT               GPIOB
+#define RTE_UART5_TX_BIT                9
+#elif  (RTE_UART5_TX_ID == 4)
+#define RTE_UART5_TX                    1
+#define RTE_UART5_TX_PORT               GPIOB
+#define RTE_UART5_TX_BIT                13
 #else
 #error "Invalid UART5_TX Pin Configuration!"
 #endif
 
-//   <o> UART5_RX Pin <0=>Not Used <1=>PD2
+//   <o> UART5_RX Pin <0=>Not Used <1=>PD2 <1=>PB5 <1=>PB8 <1=>PB12
 #define RTE_UART5_RX_ID                 0
 #if    (RTE_UART5_RX_ID == 0)
 #define RTE_UART5_RX                    0
@@ -508,6 +540,18 @@
 #define RTE_UART5_RX                    1
 #define RTE_UART5_RX_PORT               GPIOD
 #define RTE_UART5_RX_BIT                2
+#elif  (RTE_UART5_TX_ID == 2)
+#define RTE_UART5_TX                    1
+#define RTE_UART5_TX_PORT               GPIOB
+#define RTE_UART5_TX_BIT                5
+#elif  (RTE_UART5_TX_ID == 3)
+#define RTE_UART5_TX                    1
+#define RTE_UART5_TX_PORT               GPIOB
+#define RTE_UART5_TX_BIT                8
+#elif  (RTE_UART5_TX_ID == 4)
+#define RTE_UART5_TX                    1
+#define RTE_UART5_TX_PORT               GPIOB
+#define RTE_UART5_TX_BIT                12
 #else
 #error "Invalid UART5_RX Pin Configuration!"
 #endif
@@ -533,8 +577,8 @@
 //     <i>  Selects DMA Number (only DMA1 can be used)
 //     <o2> Stream <7=>7
 //     <i>  Selects DMA Stream (only Stream 7 can be used)
-//     <o3> Channel <4=>4
-//     <i>  Selects DMA Channel (only Channel 4 can be used)
+//     <o3> Channel <4=>4 <8=>8
+//     <i>  Selects DMA Channel (only Channel 4 or 8 can be used)
 //     <o4> Priority <0=>Low <1=>Medium <2=>High <3=>Very High
 //     <i>  Selects DMA Priority
 //   </e>
@@ -677,7 +721,7 @@
 // <i> Configuration settings for Driver_USART7 in component ::CMSIS Driver:USART
 #define RTE_UART7                       0
 
-//   <o> UART7_TX Pin <0=>Not Used <1=>PF7 <2=>PE8
+//   <o> UART7_TX Pin <0=>Not Used <1=>PF7 <2=>PE8 <3=>PA15 <4=>PB4
 #define RTE_UART7_TX_ID                 0
 #if    (RTE_UART7_TX_ID == 0)
 #define RTE_UART7_TX                    0
@@ -689,11 +733,19 @@
 #define RTE_UART7_TX                    1
 #define RTE_UART7_TX_PORT               GPIOE
 #define RTE_UART7_TX_BIT                8
+#elif  (RTE_UART7_TX_ID == 3)
+#define RTE_UART7_TX                    1
+#define RTE_UART7_TX_PORT               GPIOA
+#define RTE_UART7_TX_BIT                15
+#elif  (RTE_UART7_TX_ID == 4)
+#define RTE_UART7_TX                    1
+#define RTE_UART7_TX_PORT               GPIOB
+#define RTE_UART7_TX_BIT                4
 #else
 #error "Invalid UART7_TX Pin Configuration!"
 #endif
 
-//   <o> UART7_RX Pin <0=>Not Used <1=>PF6 <2=>PE7
+//   <o> UART7_RX Pin <0=>Not Used <1=>PF6 <2=>PE7 <3=>PA8 <4=>PB3
 #define RTE_UART7_RX_ID                 0
 #if    (RTE_UART7_RX_ID == 0)
 #define RTE_UART7_RX                    0
@@ -705,6 +757,14 @@
 #define RTE_UART7_RX                    1
 #define RTE_UART7_RX_PORT               GPIOE
 #define RTE_UART7_RX_BIT                7
+#elif  (RTE_UART7_RX_ID == 3)
+#define RTE_UART7_RX                    1
+#define RTE_UART7_RX_PORT               GPIOA
+#define RTE_UART7_RX_BIT                8
+#elif  (RTE_UART7_RX_ID == 4)
+#define RTE_UART7_RX                    1
+#define RTE_UART7_RX_PORT               GPIOB
+#define RTE_UART7_RX_BIT                3
 #else
 #error "Invalid UART7_RX Pin Configuration!"
 #endif
@@ -747,7 +807,7 @@
 // <i> Configuration settings for Driver_USART8 in component ::CMSIS Driver:USART
 #define RTE_UART8                       0
 
-//   <o> UART8_TX Pin <0=>Not Used <1=>PE1
+//   <o> UART8_TX Pin <0=>Not Used <1=>PE1 <2=>PF9
 #define RTE_UART8_TX_ID                 0
 #if    (RTE_UART8_TX_ID == 0)
 #define RTE_UART8_TX                    0
@@ -755,11 +815,15 @@
 #define RTE_UART8_TX                    1
 #define RTE_UART8_TX_PORT               GPIOE
 #define RTE_UART8_TX_BIT                1
+#elif  (RTE_UART8_TX_ID == 2)
+#define RTE_UART8_TX                    1
+#define RTE_UART8_TX_PORT               GPIOF
+#define RTE_UART8_TX_BIT                9
 #else
 #error "Invalid UART8_TX Pin Configuration!"
 #endif
 
-//   <o> UART8_RX Pin <0=>Not Used <1=>PE0
+//   <o> UART8_RX Pin <0=>Not Used <1=>PE0 <2=>PF8
 #define RTE_UART8_RX_ID                 0
 #if    (RTE_UART8_RX_ID == 0)
 #define RTE_UART8_RX                    0
@@ -767,6 +831,10 @@
 #define RTE_UART8_RX                    1
 #define RTE_UART8_RX_PORT               GPIOE
 #define RTE_UART8_RX_BIT                0
+#elif  (RTE_UART8_RX_ID == 2)
+#define RTE_UART8_RX                    1
+#define RTE_UART8_RX_PORT               GPIOF
+#define RTE_UART8_RX_BIT                8
 #else
 #error "Invalid UART8_RX Pin Configuration!"
 #endif
@@ -802,6 +870,146 @@
 #define RTE_UART8_TX_DMA_STREAM         0
 #define RTE_UART8_TX_DMA_CHANNEL        5
 #define RTE_UART8_TX_DMA_PRIORITY       0
+
+// </e>
+
+// <e> UART9 (Universal asynchronous receiver transmitter) [Driver_USART9]
+// <i> Configuration settings for Driver_USART9 in component ::CMSIS Driver:USART
+#define RTE_UART9                       0
+
+//   <o> UART9_TX Pin <0=>Not Used <1=>PD15 <2=>PG1
+#define RTE_UART9_TX_ID                 0
+#if    (RTE_UART9_TX_ID == 0)
+#define RTE_UART9_TX                    0
+#elif  (RTE_UART9_TX_ID == 1)
+#define RTE_UART9_TX                    1
+#define RTE_UART9_TX_PORT               GPIOD
+#define RTE_UART9_TX_BIT                15
+#elif  (RTE_UART9_TX_ID == 2)
+#define RTE_UART9_TX                    1
+#define RTE_UART9_TX_PORT               GPIOG
+#define RTE_UART9_TX_BIT                1
+#else
+#error "Invalid UART9_TX Pin Configuration!"
+#endif
+
+//   <o> UART9_RX Pin <0=>Not Used <1=>PD14 <2=>PG0
+#define RTE_UART9_RX_ID                 0
+#if    (RTE_UART9_RX_ID == 0)
+#define RTE_UART9_RX                    0
+#elif  (RTE_UART9_RX_ID == 1)
+#define RTE_UART9_RX                    1
+#define RTE_UART9_RX_PORT               GPIOD
+#define RTE_UART9_RX_BIT                14
+#elif  (RTE_UART9_RX_ID == 2)
+#define RTE_UART9_RX                    1
+#define RTE_UART9_RX_PORT               GPIOG
+#define RTE_UART9_RX_BIT                0
+#else
+#error "Invalid UART9_RX Pin Configuration!"
+#endif
+
+//   <e> DMA Rx
+//     <o1> Number <2=>2
+//     <i>  Selects DMA Number (only DMA2 can be used)
+//     <o2> Stream <7=>7
+//     <i>  Selects DMA Stream (only Stream 7 can be used)
+//     <o3> Channel <0=>0
+//     <i>  Selects DMA Channel (only Channel 0 can be used)
+//     <o4> Priority <0=>Low <1=>Medium <2=>High <3=>Very High
+//     <i>  Selects DMA Priority
+//   </e>
+#define RTE_UART9_RX_DMA                0
+#define RTE_UART9_RX_DMA_NUMBER         1
+#define RTE_UART9_RX_DMA_STREAM         6
+#define RTE_UART9_RX_DMA_CHANNEL        5
+#define RTE_UART9_RX_DMA_PRIORITY       0
+
+//   <e> DMA Tx
+//     <o1> Number <2=>2
+//     <i>  Selects DMA Number (only DMA2 can be used)
+//     <o2> Stream <0=>0
+//     <i>  Selects DMA Stream (only Stream 0 can be used)
+//     <o3> Channel <1=>1
+//     <i>  Selects DMA Channel (only Channel 1 can be used)
+//     <o4> Priority <0=>Low <1=>Medium <2=>High <3=>Very High
+//     <i>  Selects DMA Priority
+//   </e>
+#define RTE_UART9_TX_DMA                0
+#define RTE_UART9_TX_DMA_NUMBER         1
+#define RTE_UART9_TX_DMA_STREAM         0
+#define RTE_UART9_TX_DMA_CHANNEL        5
+#define RTE_UART9_TX_DMA_PRIORITY       0
+
+// </e>
+
+// <e> UART10 (Universal asynchronous receiver transmitter) [Driver_USART10]
+// <i> Configuration settings for Driver_USART10 in component ::CMSIS Driver:USART
+#define RTE_UART10                      0
+
+//   <o> UART10_TX Pin <0=>Not Used <1=>PE3 <2=>PG12
+#define RTE_UART10_TX_ID                0
+#if    (RTE_UART10_TX_ID == 0)
+#define RTE_UART10_TX                   0
+#elif  (RTE_UART10_TX_ID == 1)
+#define RTE_UART10_TX                   1
+#define RTE_UART10_TX_PORT              GPIOE
+#define RTE_UART10_TX_BIT               3
+#elif  (RTE_UART10_TX_ID == 2)
+#define RTE_UART10_TX                   1
+#define RTE_UART10_TX_PORT              GPIOG
+#define RTE_UART10_TX_BIT               12
+#else
+#error "Invalid UART10_TX Pin Configuration!"
+#endif
+
+//   <o> UART10_RX Pin <0=>Not Used <1=>PE2 <2=>PG11
+#define RTE_UART10_RX_ID                0
+#if    (RTE_UART10_RX_ID == 0)
+#define RTE_UART10_RX                   0
+#elif  (RTE_UART10_RX_ID == 1)
+#define RTE_UART10_RX                   1
+#define RTE_UART10_RX_PORT              GPIOE
+#define RTE_UART10_RX_BIT               2
+#elif  (RTE_UART10_RX_ID == 2)
+#define RTE_UART10_RX                   1
+#define RTE_UART10_RX_PORT              GPIOG
+#define RTE_UART10_RX_BIT               11
+#else
+#error "Invalid UART10_RX Pin Configuration!"
+#endif
+
+//   <e> DMA Rx
+//     <o1> Number <2=>2
+//     <i>  Selects DMA Number (only DMA1 can be used)
+//     <o2> Stream <0=>0 <3=>3
+//     <i>  Selects DMA Stream (only Stream 0 or 3 can be used)
+//     <o3> Channel <5=>5 <9=>9
+//     <i>  Selects DMA Channel (only Channel 5 or 9 can be used)
+//     <o4> Priority <0=>Low <1=>Medium <2=>High <3=>Very High
+//     <i>  Selects DMA Priority
+//   </e>
+#define RTE_UART10_RX_DMA               0
+#define RTE_UART10_RX_DMA_NUMBER        1
+#define RTE_UART10_RX_DMA_STREAM        6
+#define RTE_UART10_RX_DMA_CHANNEL       5
+#define RTE_UART10_RX_DMA_PRIORITY      0
+
+//   <e> DMA Tx
+//     <o1> Number <2=>2
+//     <i>  Selects DMA Number (only DMA1 can be used)
+//     <o2> Stream <7=>7 <3=>5
+//     <i>  Selects DMA Stream (only Stream 7 or 5 can be used)
+//     <o3> Channel <6=>6 <9=>9
+//     <i>  Selects DMA Channel (only Channel 6 or 9 can be used)
+//     <o4> Priority <0=>Low <1=>Medium <2=>High <3=>Very High
+//     <i>  Selects DMA Priority
+//   </e>
+#define RTE_UART10_TX_DMA               0
+#define RTE_UART10_TX_DMA_NUMBER        1
+#define RTE_UART10_TX_DMA_STREAM        0
+#define RTE_UART10_TX_DMA_CHANNEL       5
+#define RTE_UART10_TX_DMA_PRIORITY      0
 
 // </e>
 
@@ -853,10 +1061,10 @@
 //   <e> DMA Tx
 //     <o1> Number <1=>1
 //     <i>  Selects DMA Number (only DMA1 can be used)
-//     <o2> Stream <6=>6 <7=>7
-//     <i>  Selects DMA Stream (only Stream 6 or 7 can be used)
-//     <o3> Channel <1=>1
-//     <i>  Selects DMA Channel (only Channel 1 can be used)
+//     <o2> Stream <1=>1 <6=>6 <7=>7
+//     <i>  Selects DMA Stream (only Stream 1 or 6 or 7 can be used)
+//     <o3> Channel <0=>0 <1=>1
+//     <i>  Selects DMA Channel (only Channel 0 or 1 can be used)
 //     <o4> Priority <0=>Low <1=>Medium <2=>High <3=>Very High
 //     <i>  Selects DMA Priority
 //   </e>
@@ -981,10 +1189,10 @@
 //   <e> DMA Rx
 //     <o1> Number <1=>1
 //     <i>  Selects DMA Number (only DMA1 can be used)
-//     <o2> Stream <2=>2
-//     <i>  Selects DMA Stream (only Stream 2 can be used)
-//     <o3> Channel <3=>3
-//     <i>  Selects DMA Channel (only Channel 3 can be used)
+//     <o2> Stream <1=>1 <2=>2
+//     <i>  Selects DMA Stream (only Stream 1 or 2 can be used)
+//     <o3> Channel <1=>1 <3=>3
+//     <i>  Selects DMA Channel (only Channel 1 or 3 can be used)
 //     <o4> Priority <0=>Low <1=>Medium <2=>High <3=>Very High
 //     <i>  Selects DMA Priority
 //   </e>
@@ -997,10 +1205,10 @@
 //   <e> DMA Tx
 //     <o1> Number <1=>1
 //     <i>  Selects DMA Number (only DMA1 can be used)
-//     <o2> Stream <4=>4
-//     <i>  Selects DMA Stream (only Stream 4 can be used)
-//     <o3> Channel <3=>3
-//     <i>  Selects DMA Channel (only Channel 3 can be used)
+//     <o2> Stream <4=>4 <5=>5
+//     <i>  Selects DMA Stream (only Stream 4 or 5 can be used)
+//     <o3> Channel <3=>3 <6=>6
+//     <i>  Selects DMA Channel (only Channel 3 or 6 can be used)
 //     <o4> Priority <0=>Low <1=>Medium <2=>High <3=>Very High
 //     <i>  Selects DMA Priority
 //   </e>
@@ -1096,10 +1304,10 @@
 //   <e> DMA Tx
 //     <o1> Number <2=>2
 //     <i>  Selects DMA Number (only DMA2 can be used)
-//     <o2> Stream <3=>3 <5=>5
-//     <i>  Selects DMA Stream (only Stream 3 or 5 can be used)
-//     <o3> Channel <3=>3
-//     <i>  Selects DMA Channel (only Channel 3 can be used)
+//     <o2> Stream <2=>2 <3=>3 <5=>5
+//     <i>  Selects DMA Stream (only Stream 2 or 3 or 5 can be used)
+//     <o3> Channel <2=>2 <3=>3
+//     <i>  Selects DMA Channel (only Channel 2 or 3 can be used)
 //     <o4> Priority <0=>Low <1=>Medium <2=>High <3=>Very High
 //     <i>  Selects DMA Priority
 //   </e>
@@ -1116,7 +1324,7 @@
 // <i> Configuration settings for Driver_SPI2 in component ::CMSIS Driver:SPI
 #define RTE_SPI2                        0
 
-//   <o> SPI2_MISO Pin <0=>Not Used <1=>PB14 <2=>PC2 <3=>PI2
+//   <o> SPI2_MISO Pin <0=>Not Used <1=>PB14 <2=>PC2 <3=>PI2 <4=>PA12
 #define RTE_SPI2_MISO_PORT_ID           0
 #if    (RTE_SPI2_MISO_PORT_ID == 0)
 #define RTE_SPI2_MISO                   0
@@ -1132,11 +1340,15 @@
 #define RTE_SPI2_MISO                   1
 #define RTE_SPI2_MISO_PORT              GPIOI
 #define RTE_SPI2_MISO_BIT               2
+#elif  (RTE_SPI2_MISO_PORT_ID == 4)
+#define RTE_SPI2_MISO                   1
+#define RTE_SPI2_MISO_PORT              GPIOA
+#define RTE_SPI2_MISO_BIT               12
 #else
 #error "Invalid SPI2_MISO Pin Configuration!"
 #endif
 
-//   <o> SPI2_MOSI Pin <0=>Not Used <1=>PB15 <2=>PC3 <3=>PI3
+//   <o> SPI2_MOSI Pin <0=>Not Used <1=>PB15 <2=>PC3 <3=>PI3 <4=>PA10
 #define RTE_SPI2_MOSI_PORT_ID           0
 #if    (RTE_SPI2_MOSI_PORT_ID == 0)
 #define RTE_SPI2_MOSI                   0
@@ -1152,11 +1364,15 @@
 #define RTE_SPI2_MOSI                   1
 #define RTE_SPI2_MOSI_PORT              GPIOI
 #define RTE_SPI2_MOSI_BIT               3
+#elif  (RTE_SPI2_MOSI_PORT_ID == 4)
+#define RTE_SPI2_MOSI                   1
+#define RTE_SPI2_MOSI_PORT              GPIOA
+#define RTE_SPI2_MOSI_BIT               10
 #else
 #error "Invalid SPI2_MOSI Pin Configuration!"
 #endif
 
-//   <o> SPI2_SCK Pin <0=>PB10 <1=>PB13 <2=>PC7 <3=>PD3 <4=>PI1
+//   <o> SPI2_SCK Pin <0=>PB10 <1=>PB13 <2=>PC7 <3=>PD3 <4=>PI1 <5=>PA9
 #define RTE_SPI2_SCL_PORT_ID            0
 #if    (RTE_SPI2_SCL_PORT_ID == 0)
 #define RTE_SPI2_SCL_PORT               GPIOB
@@ -1173,11 +1389,14 @@
 #elif  (RTE_SPI2_SCL_PORT_ID == 4)
 #define RTE_SPI2_SCL_PORT               GPIOI
 #define RTE_SPI2_SCL_BIT                1
+#elif  (RTE_SPI2_SCL_PORT_ID == 5)
+#define RTE_SPI2_SCL_PORT               GPIOA
+#define RTE_SPI2_SCL_BIT                9
 #else
 #error "Invalid SPI2_SCK Pin Configuration!"
 #endif
 
-//   <o> SPI2_NSS Pin <0=>Not Used <1=>PB9 <2=>PB12 <3=>PI0
+//   <o> SPI2_NSS Pin <0=>Not Used <1=>PB9 <2=>PB12 <3=>PI0 <4=>PA11
 #define RTE_SPI2_NSS_PORT_ID            0
 #if    (RTE_SPI2_NSS_PORT_ID == 0)
 #define RTE_SPI2_NSS_PIN                0
@@ -1193,6 +1412,10 @@
 #define RTE_SPI2_NSS_PIN                1
 #define RTE_SPI2_NSS_PORT               GPIOI
 #define RTE_SPI2_NSS_BIT                0
+#elif  (RTE_SPI2_NSS_PORT_ID == 4)
+#define RTE_SPI2_NSS_PIN                1
+#define RTE_SPI2_NSS_PORT               GPIOA
+#define RTE_SPI2_NSS_BIT                11
 #else
 #error "Invalid SPI2_NSS Pin Configuration!"
 #endif
@@ -1418,12 +1641,12 @@
 #endif
 
 //   <e> DMA Rx
-//     <o1> Number <1=>1
-//     <i>  Selects DMA Number (only DMA1 can be used)
-//     <o2> Stream <0=>0 <2=>2
-//     <i>  Selects DMA Stream (only Stream 0 or 2 can be used)
-//     <o3> Channel <0=>0
-//     <i>  Selects DMA Channel (only Channel 0 can be used)
+//     <o1> Number <2=>2
+//     <i>  Selects DMA Number (only DMA2 can be used)
+//     <o2> Stream <0=>0 <3=>3 <4=>4
+//     <i>  Selects DMA Stream (only Stream 0 or 3 can be used)
+//     <o3> Channel <4=>4 <5=>5
+//     <i>  Selects DMA Channel (only Channel 4 or 5 can be used)
 //     <o4> Priority <0=>Low <1=>Medium <2=>High <3=>Very High
 //     <i>  Selects DMA Priority
 //   </e>
@@ -1434,12 +1657,12 @@
 #define RTE_SPI4_RX_DMA_PRIORITY        0
 
 //   <e> DMA Tx
-//     <o1> Number <1=>1
-//     <i>  Selects DMA Number (only DMA1 can be used)
-//     <o2> Stream <5=>5 <7=>7
-//     <i>  Selects DMA Stream (only Stream 5 or 7 can be used)
-//     <o3> Channel <0=>0
-//     <i>  Selects DMA Channel (only Channel 0 can be used)
+//     <o1> Number <2=>2
+//     <i>  Selects DMA Number (only DMA2 can be used)
+//     <o2> Stream <1=>1 <4=>4
+//     <i>  Selects DMA Stream (only Stream 1 or 4 can be used)
+//     <o3> Channel <4=>4 <5=>5
+//     <i>  Selects DMA Channel (only Channel 4 or 5 can be used)
 //     <o4> Priority <0=>Low <1=>Medium <2=>High <3=>Very High
 //     <i>  Selects DMA Priority
 //   </e>
@@ -1584,9 +1807,9 @@
 //   <e> DMA Tx
 //     <o1> Number <2=>2
 //     <i>  Selects DMA Number (only DMA2 can be used)
-//     <o2> Stream <4=>4 <6=>6
+//     <o2> Stream <4=>4 <5=>5 <6=>6
 //     <i>  Selects DMA Stream (only Stream 4 or 6 can be used)
-//     <o3> Channel <2=>2 <7=>7
+//     <o3> Channel <2=>2 <5=>5 <7=>7
 //     <i>  Selects DMA Channel (only Channel 2 or 7 can be used)
 //     <o4> Priority <0=>Low <1=>Medium <2=>High <3=>Very High
 //     <i>  Selects DMA Priority
@@ -1952,6 +2175,38 @@
 #define RTE_CAN2_TX_BIT                 GPIO_PIN_12
 #else
 #error "Invalid CAN2_TX Pin Configuration!"
+#endif
+
+// </e>
+
+
+// <e> CAN3 (Controller Area Network 3) [Driver_CAN3]
+// <i> Configuration settings for Driver_CAN3 in component ::CMSIS Driver:CAN
+// <i> Available only on STM32F413xx and STM32F423xx device series
+#define RTE_CAN3                        0
+
+//   <o> CAN3_RX Pin <0=>PA8 <1=>PB3
+#define RTE_CAN3_RX_PORT_ID             0
+#if    (RTE_CAN3_RX_PORT_ID == 0)
+#define RTE_CAN3_RX_PORT                GPIOA
+#define RTE_CAN3_RX_BIT                 GPIO_PIN_8
+#elif  (RTE_CAN3_RX_PORT_ID == 1)
+#define RTE_CAN3_RX_PORT                GPIOB
+#define RTE_CAN3_RX_BIT                 GPIO_PIN_3
+#else
+#error "Invalid CAN3_RX Pin Configuration!"
+#endif
+
+//   <o> CAN3_TX Pin <0=>PA15 <1=>PB4
+#define RTE_CAN3_TX_PORT_ID             0
+#if    (RTE_CAN3_TX_PORT_ID == 0)
+#define RTE_CAN3_TX_PORT                GPIOA
+#define RTE_CAN3_TX_BIT                 GPIO_PIN_15
+#elif  (RTE_CAN3_TX_PORT_ID == 1)
+#define RTE_CAN3_TX_PORT                GPIOB
+#define RTE_CAN3_TX_BIT                 GPIO_PIN_4
+#else
+#error "Invalid CAN3_TX Pin Configuration!"
 #endif
 
 // </e>
