@@ -29,11 +29,14 @@ LOCAL_ARCHIVE_FILE="/tmp/xpacks/${ARCHIVE_NAME}"
 echo "Cleaning previous files..."
 for f in *
 do
-  if [ "${f}" == "scripts" ]
+  if [ -d "${f}" ]
   then
-    :
-  else
-    rm -rf "${f}"
+    if [ "${f}" == "scripts" -o "${f}" == "test" ]
+    then
+      :
+    else
+      rm -rf "${f}"
+    fi
   fi
 done
 
